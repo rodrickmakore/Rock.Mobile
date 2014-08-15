@@ -10,10 +10,39 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)CoreLocation\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Network\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Math\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Threading\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformCommon\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformUI\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\iBeacon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\iOS_iBeacon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\HttpWebRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Util.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Threading\Threading.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformCommon\DroidCommon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformCommon\iOSCommon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformBaseUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformTextField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidRevealLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidTextField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidNative\DroidFadeTextView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSRevealLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSTextField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)PlatformUI\.DS_Store" />
+    <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
   </ItemGroup>
 </Project>

@@ -7,433 +7,448 @@ using RadiusNetworks.IBeaconAndroid;
 
 namespace RockMobile
 {
-	namespace CoreLocation
-	{
-		namespace iBeacon
-		{
-			public class DroidBeacon : Beacon
-			{
-				#region MemberAccessors //Accessor Implementations
-				protected override string getUUID()
-				{
-					return IBeacon != null ? IBeacon.ProximityUuid : string.Empty;
-				}
+    namespace CoreLocation
+    {
+        namespace iBeacon
+        {
+            public class DroidBeacon : Beacon
+            {
+                #region MemberAccessors //Accessor Implementations
 
-				protected override Proximity getProximity ()
-				{
-					// cast to our proximity, which is the same mapping
-					return IBeacon != null ? (Proximity) IBeacon.Proximity : Proximity.Unknown;
-				}
+                protected override string getUUID( )
+                {
+                    return IBeacon != null ? IBeacon.ProximityUuid : string.Empty;
+                }
 
-				protected override double getAccuracy ()
-				{
-					return IBeacon != null ? IBeacon.Accuracy : 0.00;
-				}
+                protected override Proximity getProximity( )
+                {
+                    // cast to our proximity, which is the same mapping
+                    return IBeacon != null ? ( Proximity )IBeacon.Proximity : Proximity.Unknown;
+                }
 
-				protected override ushort getMajor()
-				{
-					return IBeacon != null ? (ushort)IBeacon.Major : (ushort)0;
-				}
+                protected override double getAccuracy( )
+                {
+                    return IBeacon != null ? IBeacon.Accuracy : 0.00;
+                }
 
-				protected override ushort getMinor()
-				{
-					return IBeacon != null ? (ushort)IBeacon.Minor : (ushort)0;
-				}
-				#endregion MemberAccessors //End Accessor Implementations
+                protected override ushort getMajor( )
+                {
+                    return IBeacon != null ? ( ushort )IBeacon.Major : ( ushort )0;
+                }
 
-				// Platform implementation
-				public IBeacon IBeacon { get; set; }
+                protected override ushort getMinor( )
+                {
+                    return IBeacon != null ? ( ushort )IBeacon.Minor : ( ushort )0;
+                }
 
-				public DroidBeacon(IBeacon iBeacon)
-				{
-					IBeacon = iBeacon;
-				}
-			}
+                #endregion MemberAccessors //End Accessor Implementations
 
-			public class DroidBeaconRegion : BeaconRegion
-			{
-				#region MemberAccessors //Accessor Implementations
-				protected override string getUUID()
-				{
-					return Region != null ? Region.ProximityUuid : string.Empty;
-				}
+                // Platform implementation
+                public IBeacon IBeacon { get; set; }
 
-				//NotifyOnEntry
-				protected override bool getNotifyOnEntry()
-				{
-					return true;
-				}
-				protected override void setNotifyOnEntry(bool value)
-				{
-					if(Region != null)
-					{
-						Console.WriteLine("Warning: NotifyOnEntry being set, but not supported on Android");
-					}
-				}
+                public DroidBeacon( IBeacon iBeacon )
+                {
+                    IBeacon = iBeacon;
+                }
+            }
 
-				//NotifyonExit
-				protected override bool getNotifyOnExit()
-				{
-					return true;
-				}
-				protected override void setNotifyOnExit(bool value)
-				{
-					if(Region != null)
-					{
-						Console.WriteLine("Warning: NotifyOnExit being set, but not supported on Android");
-					}
-				}
+            public class DroidBeaconRegion : BeaconRegion
+            {
+                #region MemberAccessors //Accessor Implementations
 
-				//NotifyEntryStateOnDisplay
-				protected override bool getNotifyEntryStateOnDisplay()
-				{
-					return true;
-				}
-				protected override void setNotifyEntryStateOnDisplay(bool value)
-				{
-					if(Region != null)
-					{
-						Console.WriteLine("Warning: NotifyEntryStateOnDisplay being set, but not supported on Android");
-					}
-				}
-				#endregion //End Accessor Implementations
+                protected override string getUUID( )
+                {
+                    return Region != null ? Region.ProximityUuid : string.Empty;
+                }
 
-				// Platform Implementation
-				public Region Region { get; set; }
+                //NotifyOnEntry
+                protected override bool getNotifyOnEntry( )
+                {
+                    return true;
+                }
 
-				public DroidBeaconRegion(string uuid, string regionTag)
-				{
-					// this constructor is called by the user, so validate uuid
-					if(string.IsNullOrEmpty(uuid) || string.IsNullOrEmpty(regionTag))
-					{
-						throw new ArgumentException("Cannot create a Region with a blank UUID");
-					}
-					Init(uuid, 0, 0, regionTag);
-				}
+                protected override void setNotifyOnEntry( bool value )
+                {
+                    if( Region != null )
+                    {
+                        Console.WriteLine( "Warning: NotifyOnEntry being set, but not supported on Android" );
+                    }
+                }
 
-				public DroidBeaconRegion(Region region)
-				{
-					Region = region;
-				}
+                //NotifyonExit
+                protected override bool getNotifyOnExit( )
+                {
+                    return true;
+                }
 
-				public DroidBeaconRegion(string uuid, ushort major, ushort minor, string regionTag)
-				{
-					// this constructor will only be called by THIS implementation,
-					// so we don't need to validate uuid
-					Init(uuid, major, minor, regionTag);
-				}
+                protected override void setNotifyOnExit( bool value )
+                {
+                    if( Region != null )
+                    {
+                        Console.WriteLine( "Warning: NotifyOnExit being set, but not supported on Android" );
+                    }
+                }
 
-				public void Init(string uuid, ushort major, ushort minor, string regionTag)
-				{
-					//TODO: Support major/minor
+                //NotifyEntryStateOnDisplay
+                protected override bool getNotifyEntryStateOnDisplay( )
+                {
+                    return true;
+                }
 
-					// this should be called by all constructors
-					Region = null;
+                protected override void setNotifyEntryStateOnDisplay( bool value )
+                {
+                    if( Region != null )
+                    {
+                        Console.WriteLine( "Warning: NotifyEntryStateOnDisplay being set, but not supported on Android" );
+                    }
+                }
 
-					if(!string.IsNullOrEmpty(uuid) && !string.IsNullOrEmpty(regionTag))
-					{
-						Region = new Region(regionTag, uuid, null, null);
-					}
-				}
-			}
+                #endregion //End Accessor Implementations
 
-			public class DroidRegionEventArgs : RegionEventArgs
-			{
-				#region MemberAccessors //Accessor Implementations
-				protected override BeaconRegion getRegion ()
-				{
-					return new DroidBeaconRegion(DroidRegion) as BeaconRegion;
-				}
-				#endregion //End Accessor Implementations
+                // Platform Implementation
+                public Region Region { get; set; }
 
-				//Platform Implementation
-				public Region DroidRegion { get; set; }
+                public DroidBeaconRegion( string uuid, string regionTag )
+                {
+                    // this constructor is called by the user, so validate uuid
+                    if( string.IsNullOrEmpty( uuid ) || string.IsNullOrEmpty( regionTag ) )
+                    {
+                        throw new Exception( "Cannot create a Region with a blank UUID" );
+                    }
+                    Init( uuid, 0, 0, regionTag );
+                }
 
-				public DroidRegionEventArgs(BeaconRegion region)
-				{
-					DroidRegion = (region as DroidBeaconRegion).Region;
-				}
-			}
+                public DroidBeaconRegion( Region region )
+                {
+                    Region = region;
+                }
 
-			public class DroidRegionBeaconsRangedEventArgs : RegionBeaconsRangedEventArgs
-			{
-				#region MemberAccessors //Accessor Implementations
-				protected override Beacon [] getBeacons()
-				{
-					// create an array of DroidBeacons and fill it with the Beacons of the event args
-					DroidBeacon [] beacons = new DroidBeacon[IBeacons.Count];
-					int index = 0;
-					foreach(IBeacon ibeacon in IBeacons)
-					{
-						beacons[index++] = new DroidBeacon(ibeacon);
-					}
+                public DroidBeaconRegion( string uuid, ushort major, ushort minor, string regionTag )
+                {
+                    // this constructor will only be called by THIS implementation,
+                    // so we don't need to validate uuid
+                    Init( uuid, major, minor, regionTag );
+                }
 
-					return beacons as Beacon[];
-				}
+                public void Init( string uuid, ushort major, ushort minor, string regionTag )
+                {
+                    //TODO: Support major/minor
 
-				protected override BeaconRegion getRegion ()
-				{
-					return new DroidBeaconRegion(DroidRegion) as BeaconRegion;
-				}
-				#endregion //End Accessor Implementations
+                    // this should be called by all constructors
+                    Region = null;
 
-				// Platform Implementation
-				public ICollection<IBeacon> IBeacons { get; set; }
-				public Region DroidRegion { get; set; }
+                    if( !string.IsNullOrEmpty( uuid ) && !string.IsNullOrEmpty( regionTag ) )
+                    {
+                        Region = new Region( regionTag, uuid, null, null );
+                    }
+                }
+            }
 
-				public DroidRegionBeaconsRangedEventArgs(ICollection<IBeacon> ibeacons, Region region)
-				{
-					IBeacons = ibeacons;
-					DroidRegion = region;
-				}
-			}
+            public class DroidRegionEventArgs : RegionEventArgs
+            {
+                #region MemberAccessors //Accessor Implementations
 
-			public class DroidRegionStateDeterminedEventArgs : RegionStateDeterminedEventArgs
-			{
-				#region MemberAccessors //Accessor Implementations
-				protected override RegionState getRegionState()
-				{
-					return (RegionState)State;
-				}
+                protected override BeaconRegion getRegion( )
+                {
+                    return new DroidBeaconRegion( DroidRegion ) as BeaconRegion;
+                }
 
-				protected override BeaconRegion getRegion()
-				{
-					return BeaconRegion;
-				}
-				#endregion //End Accessor Implementations
+                #endregion //End Accessor Implementations
 
-				public int State { get; set; }
-				public BeaconRegion BeaconRegion { get; set; }
+                //Platform Implementation
+                public Region DroidRegion { get; set; }
 
-				public DroidRegionStateDeterminedEventArgs(int state, Region droidRegion)
-				{
-					State = state;
-					BeaconRegion = new DroidBeaconRegion(droidRegion);
-				}
-			}
+                public DroidRegionEventArgs( BeaconRegion region )
+                {
+                    DroidRegion = ( region as DroidBeaconRegion ).Region;
+                }
+            }
 
-			public class DroidLocationManager : LocationManager, IMonitorNotifier, IRangeNotifier
-			{
-				//Platform Implementation
-				protected IBeaconManager IBeaconManager = null;
-				protected bool IBeaconManagerBound = false;
+            public class DroidRegionBeaconsRangedEventArgs : RegionBeaconsRangedEventArgs
+            {
+                #region MemberAccessors //Accessor Implementations
 
-				// This enables us to queue requests to start/stop monitoring/ranging
-				// in the case that IBeaconManager hasn't been bound by the first call to LocationManager.
-				protected List<BeaconRegion> PendingStartMonitor = new List<BeaconRegion>();
-				protected List<BeaconRegion> PendingStopMonitor = new List<BeaconRegion>();
+                protected override Beacon [] getBeacons( )
+                {
+                    // create an array of DroidBeacons and fill it with the Beacons of the event args
+                    DroidBeacon[] beacons = new DroidBeacon[IBeacons.Count];
+                    int index = 0;
+                    foreach( IBeacon ibeacon in IBeacons )
+                    {
+                        beacons[ index++ ] = new DroidBeacon( ibeacon );
+                    }
 
-				protected List<BeaconRegion> PendingStartRanging = new List<BeaconRegion>();
-				protected List<BeaconRegion> PendingStopRanging = new List<BeaconRegion>();
-				//
+                    return beacons as Beacon[];
+                }
 
-				protected List<BeaconRegion> BeaconRegionsRequestingState = new List<BeaconRegion>();
+                protected override BeaconRegion getRegion( )
+                {
+                    return new DroidBeaconRegion( DroidRegion ) as BeaconRegion;
+                }
 
-				public DroidLocationManager()
-				{
-				}
+                #endregion //End Accessor Implementations
 
-				~DroidLocationManager()
-				{
-				}
+                // Platform Implementation
+                public ICollection<IBeacon> IBeacons { get; set; }
 
-				public void BindIBeaconManager(Activity mainActivity)
-				{
-					IBeaconManager = IBeaconManager.GetInstanceForApplication(mainActivity);
-					IBeaconManager.Bind(mainActivity as IBeaconConsumer);
-				}
+                public Region DroidRegion { get; set; }
 
-				public void UnBindIBeaconManager (Activity mainActivity)
-				{
-					if(IBeaconManager != null)
-					{
-						IBeaconManager.UnBind(mainActivity as IBeaconConsumer);
-					}
-				}
+                public DroidRegionBeaconsRangedEventArgs( ICollection<IBeacon> ibeacons, Region region )
+                {
+                    IBeacons = ibeacons;
+                    DroidRegion = region;
+                }
+            }
 
-				public void EnterForegroundMode(Activity mainActivity)
-				{
-					if(IBeaconManager != null)
-					{
-						IBeaconManager.SetBackgroundMode(mainActivity as IBeaconConsumer, false);
-					}
-				}
+            public class DroidRegionStateDeterminedEventArgs : RegionStateDeterminedEventArgs
+            {
+                #region MemberAccessors //Accessor Implementations
 
-				public void EnterBackgroundMode(Activity mainActivity)
-				{
-					if(IBeaconManager != null)
-					{
-						IBeaconManager.SetBackgroundMode(mainActivity as IBeaconConsumer, true);
-					}
-				}
+                protected override RegionState getRegionState( )
+                {
+                    return ( RegionState )State;
+                }
 
-				//IRangeNotifier
-				public void DidRangeBeaconsInRegion(ICollection<IBeacon> beacons, Region region)
-				{
-					// build our event notifications
-					if(beacons.Count > 0)
-					{
-						DroidRegionBeaconsRangedEventArgs eventArgs = new DroidRegionBeaconsRangedEventArgs(beacons, region);
+                protected override BeaconRegion getRegion( )
+                {
+                    return BeaconRegion;
+                }
 
-						OnRegionBeaconsRangedEvent(this, eventArgs as RegionBeaconsRangedEventArgs);
-					}
-				}
+                #endregion //End Accessor Implementations
 
-				//IMonitorNotifier
-				public void DidDetermineStateForRegion(int p0, Region p1)
-				{
-					BeaconRegion region = BeaconRegionsRequestingState.Find( br => br.UUID == p1.ProximityUuid);
-					if(region != null)
-					{
-						DroidRegionStateDeterminedEventArgs args = new DroidRegionStateDeterminedEventArgs(p0, p1);
+                public int State { get; set; }
 
-						// notify people that care
-						OnDidDetermineStateEvent(this, args);
+                public BeaconRegion BeaconRegion { get; set; }
 
-						BeaconRegionsRequestingState.Remove(region);
-					}
-				}
+                public DroidRegionStateDeterminedEventArgs( int state, Region droidRegion )
+                {
+                    State = state;
+                    BeaconRegion = new DroidBeaconRegion( droidRegion );
+                }
+            }
 
-				public void DidEnterRegion(Region p0)
-				{
-					DroidBeaconRegion region = new DroidBeaconRegion(p0);
-					DroidRegionEventArgs eventArgs = new DroidRegionEventArgs(region);
+            public class DroidLocationManager : LocationManager, IMonitorNotifier, IRangeNotifier
+            {
+                //Platform Implementation
+                protected IBeaconManager IBeaconManager = null;
+                protected bool IBeaconManagerBound = false;
 
-					OnRegionEnteredEvent(this, eventArgs as RegionEventArgs);
-				}
+                // This enables us to queue requests to start/stop monitoring/ranging
+                // in the case that IBeaconManager hasn't been bound by the first call to LocationManager.
+                protected List<BeaconRegion> PendingStartMonitor = new List<BeaconRegion>( );
+                protected List<BeaconRegion> PendingStopMonitor = new List<BeaconRegion>( );
 
-				public void DidExitRegion(Region p0)
-				{
-					DroidBeaconRegion region = new DroidBeaconRegion(p0);
-					DroidRegionEventArgs eventArgs = new DroidRegionEventArgs(region);
+                protected List<BeaconRegion> PendingStartRanging = new List<BeaconRegion>( );
+                protected List<BeaconRegion> PendingStopRanging = new List<BeaconRegion>( );
+                //
 
-					OnRegionExitedEvent(this, eventArgs as RegionEventArgs);
-				}
-				//
+                protected List<BeaconRegion> BeaconRegionsRequestingState = new List<BeaconRegion>( );
 
-				// Handle any pending start/stop requests
-				public void OnIBeaconServiceConnect(IBeaconConsumer consumer)
-				{
-					// become the listener
-					IBeaconManager.SetMonitorNotifier(this);
-					IBeaconManager.SetRangeNotifier(this);
+                public DroidLocationManager( )
+                {
+                }
 
-					// protect against multiple calls
-					if(IBeaconManagerBound == false)
-					{
-						IBeaconManagerBound = true;
+                ~DroidLocationManager()
+                {
+                }
 
-						//Start Monitoring
-						foreach(BeaconRegion region in PendingStartMonitor)
-						{
-							StartMonitoring(region);
-						}
+                public void BindIBeaconManager( Activity mainActivity )
+                {
+                    IBeaconManager = IBeaconManager.GetInstanceForApplication( mainActivity );
+                    IBeaconManager.Bind( mainActivity as IBeaconConsumer );
+                }
 
-						//Stop Monitoring
-						foreach(BeaconRegion region in PendingStopMonitor)
-						{
-							StopMonitoring(region);
-						}
+                public void UnBindIBeaconManager( Activity mainActivity )
+                {
+                    if( IBeaconManager != null )
+                    {
+                        IBeaconManager.UnBind( mainActivity as IBeaconConsumer );
+                    }
+                }
 
-						//Start Ranging
-						foreach(BeaconRegion region in PendingStartRanging)
-						{
-							StartRangingBeacons(region);
-						}
+                public void EnterForegroundMode( Activity mainActivity )
+                {
+                    if( IBeaconManager != null )
+                    {
+                        IBeaconManager.SetBackgroundMode( mainActivity as IBeaconConsumer, false );
+                    }
+                }
 
-						//Stop Ranging
-						foreach(BeaconRegion region in PendingStopRanging)
-						{
-							StopRangingBeacons(region);
-						}
+                public void EnterBackgroundMode( Activity mainActivity )
+                {
+                    if( IBeaconManager != null )
+                    {
+                        IBeaconManager.SetBackgroundMode( mainActivity as IBeaconConsumer, true );
+                    }
+                }
 
-						// clear lists
-						PendingStartMonitor.Clear();
-						PendingStopMonitor.Clear();
-						PendingStartRanging.Clear();
-						PendingStopRanging.Clear();
-					}
-				}
+                //IRangeNotifier
+                public void DidRangeBeaconsInRegion( ICollection<IBeacon> beacons, Region region )
+                {
+                    // build our event notifications
+                    if( beacons.Count > 0 )
+                    {
+                        DroidRegionBeaconsRangedEventArgs eventArgs = new DroidRegionBeaconsRangedEventArgs( beacons, region );
 
-				public override void StartMonitoring(BeaconRegion region)
-				{
-					if(IBeaconManagerBound == true)
-					{
-						DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
-						IBeaconManager.StartMonitoringBeaconsInRegion(droidRegion.Region);
-					}
-					else
-					{
-						// queue it for when we ARE bound
-						PendingStartMonitor.Add(region);
-					}
-				}
+                        OnRegionBeaconsRangedEvent( this, eventArgs as RegionBeaconsRangedEventArgs );
+                    }
+                }
 
-				public override void StopMonitoring(BeaconRegion region)
-				{
-					if(IBeaconManagerBound == true)
-					{
-						DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
-						IBeaconManager.StopMonitoringBeaconsInRegion(droidRegion.Region);
-					}
-					else
-					{
-						// queue it for when we ARE bound
-						PendingStopMonitor.Add(region);
-					}
-				}
+                //IMonitorNotifier
+                public void DidDetermineStateForRegion( int p0, Region p1 )
+                {
+                    BeaconRegion region = BeaconRegionsRequestingState.Find( br => br.UUID == p1.ProximityUuid );
+                    if( region != null )
+                    {
+                        DroidRegionStateDeterminedEventArgs args = new DroidRegionStateDeterminedEventArgs( p0, p1 );
 
-				public override void RequestStateForRegion (BeaconRegion region)
-				{
-					// add to a list the region they requested
-					BeaconRegionsRequestingState.Add(region);
-				}
+                        // notify people that care
+                        OnDidDetermineStateEvent( this, args );
 
-				public override void StartRangingBeacons(BeaconRegion region)
-				{
-					if(IBeaconManagerBound == true)
-					{
-						DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
+                        BeaconRegionsRequestingState.Remove( region );
+                    }
+                }
 
-						Console.WriteLine("START ranging beacons with UUID: " + droidRegion.Region.ProximityUuid);
-						IBeaconManager.StartRangingBeaconsInRegion(droidRegion.Region);
-					}
-					else
-					{
-						// queue it for when we ARE bound
-						PendingStartRanging.Add(region);
-					}
-				}
+                public void DidEnterRegion( Region p0 )
+                {
+                    DroidBeaconRegion region = new DroidBeaconRegion( p0 );
+                    DroidRegionEventArgs eventArgs = new DroidRegionEventArgs( region );
 
-				public override void StopRangingBeacons(BeaconRegion region)
-				{
-					if(IBeaconManagerBound == true)
-					{
-						DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
+                    OnRegionEnteredEvent( this, eventArgs as RegionEventArgs );
+                }
 
-						Console.WriteLine("Stop ranging beacons with UUID: " + droidRegion.Region.ProximityUuid);
-						IBeaconManager.StopRangingBeaconsInRegion(droidRegion.Region);
-					}
-					else
-					{
-						// queue it for when we ARE bound
-						PendingStopRanging.Add(region);
-					}
-				}
+                public void DidExitRegion( Region p0 )
+                {
+                    DroidBeaconRegion region = new DroidBeaconRegion( p0 );
+                    DroidRegionEventArgs eventArgs = new DroidRegionEventArgs( region );
 
-				public override bool IsAvailable()
-				{
-					if(IBeaconManager != null)
-					{
-						return IBeaconManager.CheckAvailability();
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-		}
-	}
+                    OnRegionExitedEvent( this, eventArgs as RegionEventArgs );
+                }
+                //
+
+                // Handle any pending start/stop requests
+                public void OnIBeaconServiceConnect( IBeaconConsumer consumer )
+                {
+                    // become the listener
+                    IBeaconManager.SetMonitorNotifier( this );
+                    IBeaconManager.SetRangeNotifier( this );
+
+                    // protect against multiple calls
+                    if( IBeaconManagerBound == false )
+                    {
+                        IBeaconManagerBound = true;
+
+                        //Start Monitoring
+                        foreach( BeaconRegion region in PendingStartMonitor )
+                        {
+                            StartMonitoring( region );
+                        }
+
+                        //Stop Monitoring
+                        foreach( BeaconRegion region in PendingStopMonitor )
+                        {
+                            StopMonitoring( region );
+                        }
+
+                        //Start Ranging
+                        foreach( BeaconRegion region in PendingStartRanging )
+                        {
+                            StartRangingBeacons( region );
+                        }
+
+                        //Stop Ranging
+                        foreach( BeaconRegion region in PendingStopRanging )
+                        {
+                            StopRangingBeacons( region );
+                        }
+
+                        // clear lists
+                        PendingStartMonitor.Clear( );
+                        PendingStopMonitor.Clear( );
+                        PendingStartRanging.Clear( );
+                        PendingStopRanging.Clear( );
+                    }
+                }
+
+                public override void StartMonitoring( BeaconRegion region )
+                {
+                    if( IBeaconManagerBound == true )
+                    {
+                        DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
+                        IBeaconManager.StartMonitoringBeaconsInRegion( droidRegion.Region );
+                    }
+                    else
+                    {
+                        // queue it for when we ARE bound
+                        PendingStartMonitor.Add( region );
+                    }
+                }
+
+                public override void StopMonitoring( BeaconRegion region )
+                {
+                    if( IBeaconManagerBound == true )
+                    {
+                        DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
+                        IBeaconManager.StopMonitoringBeaconsInRegion( droidRegion.Region );
+                    }
+                    else
+                    {
+                        // queue it for when we ARE bound
+                        PendingStopMonitor.Add( region );
+                    }
+                }
+
+                public override void RequestStateForRegion( BeaconRegion region )
+                {
+                    // add to a list the region they requested
+                    BeaconRegionsRequestingState.Add( region );
+                }
+
+                public override void StartRangingBeacons( BeaconRegion region )
+                {
+                    if( IBeaconManagerBound == true )
+                    {
+                        DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
+
+                        Console.WriteLine( "START ranging beacons with UUID: " + droidRegion.Region.ProximityUuid );
+                        IBeaconManager.StartRangingBeaconsInRegion( droidRegion.Region );
+                    }
+                    else
+                    {
+                        // queue it for when we ARE bound
+                        PendingStartRanging.Add( region );
+                    }
+                }
+
+                public override void StopRangingBeacons( BeaconRegion region )
+                {
+                    if( IBeaconManagerBound == true )
+                    {
+                        DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
+
+                        Console.WriteLine( "Stop ranging beacons with UUID: " + droidRegion.Region.ProximityUuid );
+                        IBeaconManager.StopRangingBeaconsInRegion( droidRegion.Region );
+                    }
+                    else
+                    {
+                        // queue it for when we ARE bound
+                        PendingStopRanging.Add( region );
+                    }
+                }
+
+                public override bool IsAvailable( )
+                {
+                    if( IBeaconManager != null )
+                    {
+                        return IBeaconManager.CheckAvailability( );
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
 }
 #endif
