@@ -7,6 +7,8 @@ namespace RockMobile
     {
         class Util
         {
+            public static float DegToRad = 0.0174532925f;
+
             public static float DotProduct( PointF v1, PointF v2 )
             {
                 return ( (v1.X * v2.X) + (v1.Y * v2.Y) );

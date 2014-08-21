@@ -51,7 +51,7 @@ namespace RockMobile
                 {
                     Typeface fontFace = Typeface.CreateFromAsset( RockMobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
                     TextField.SetTypeface( fontFace, TypefaceStyle.Normal );
-                    TextField.SetTextSize( Android.Util.ComplexUnitType.Pt, fontSize );
+                    TextField.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
 
                     if( mScaleHeightForText )
                     {

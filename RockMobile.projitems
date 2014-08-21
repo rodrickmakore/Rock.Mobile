@@ -42,7 +42,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)PlatformUI\.DS_Store" />
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
   </ItemGroup>
 </Project>

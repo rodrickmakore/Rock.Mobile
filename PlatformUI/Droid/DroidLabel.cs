@@ -33,7 +33,7 @@ namespace RockMobile
                 {
                     Typeface fontFace = Typeface.CreateFromAsset( RockMobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
                     Label.SetTypeface( fontFace, TypefaceStyle.Normal );
-                    Label.SetTextSize( Android.Util.ComplexUnitType.Pt, fontSize );
+                    Label.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
                 } 
                 catch
                 {
