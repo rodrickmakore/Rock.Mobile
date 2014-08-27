@@ -33,7 +33,7 @@ namespace RockMobile
             /// The amount to scale the border by relative to the text width.
             /// Useful if a using gradiants that fade out too early
             /// </summary>
-            static float BORDER_WIDTH_SCALER = 1.25f;
+            static float BORDER_WIDTH_SCALER = 0.99f;
 
             /// <summary>
             /// Dependent on the label's width, determines how large
@@ -55,7 +55,7 @@ namespace RockMobile
 
 
                 // Define a gradiant underline that will be shown underneath the text
-                int [] colors = new int[] { 0, int.MaxValue, int.MaxValue, 0 };
+                int [] colors = new int[] { int.MaxValue, int.MaxValue };
                 GradientDrawable border = new GradientDrawable( GradientDrawable.Orientation.LeftRight, colors);
                 border.SetGradientType( GradientType.LinearGradient );
 
@@ -63,7 +63,7 @@ namespace RockMobile
                 UnderlineView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 UnderlineView.SetBackgroundDrawable( border );
 
-                UnderlineView.LayoutParameters.Height = 5;
+                UnderlineView.LayoutParameters.Height = 2;
             }
 
             protected override void setBounds(System.Drawing.RectangleF bounds)
