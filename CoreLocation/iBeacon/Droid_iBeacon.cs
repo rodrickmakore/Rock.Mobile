@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Android.App;
 using RadiusNetworks.IBeaconAndroid;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace CoreLocation
     {

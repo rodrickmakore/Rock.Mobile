@@ -4,7 +4,8 @@ using System;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Drawing;
-namespace RockMobile
+
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {

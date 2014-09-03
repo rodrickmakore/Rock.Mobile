@@ -3,7 +3,7 @@
 #if __IOS__
 using MonoTouch.Foundation;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace Threading
     {
@@ -23,7 +23,7 @@ namespace RockMobile
 #if __ANDROID__
 using Android.App;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace Threading
     {
@@ -33,7 +33,7 @@ namespace RockMobile
 
             public static void PerformOnUIThread( ThreadTask task )
             {
-                ((Activity)RockMobile.PlatformCommon.Droid.Context).RunOnUiThread( new System.Action( task ) );
+                ((Activity)Rock.Mobile.PlatformCommon.Droid.Context).RunOnUiThread( new System.Action( task ) );
             }
         }
     }

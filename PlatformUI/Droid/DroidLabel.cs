@@ -9,7 +9,7 @@ using Android.Graphics.Drawables.Shapes;
 using Java.IO;
 using Droid;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {
@@ -22,7 +22,7 @@ namespace RockMobile
 
             public DroidLabel( )
             {
-                Label = new TextView( RockMobile.PlatformCommon.Droid.Context );
+                Label = new TextView( Rock.Mobile.PlatformCommon.Droid.Context );
                 Label.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             }
 
@@ -31,7 +31,7 @@ namespace RockMobile
             {
                 try
                 {
-                    Typeface fontFace = Typeface.CreateFromAsset( RockMobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
+                    Typeface fontFace = Typeface.CreateFromAsset( Rock.Mobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
                     Label.SetTypeface( fontFace, TypefaceStyle.Normal );
                     Label.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
                 } 

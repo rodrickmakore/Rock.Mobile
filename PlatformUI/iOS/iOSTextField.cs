@@ -5,9 +5,9 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.CoreGraphics;
 using MonoTouch.CoreText;
-using RockMobile.PlatformUI.iOSNative;
+using Rock.Mobile.PlatformUI.iOSNative;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {

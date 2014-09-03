@@ -8,7 +8,7 @@ using Android.Views.InputMethods;
 using Android.App;
 
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {
@@ -29,14 +29,14 @@ namespace RockMobile
 
             public DroidTextField( )
             {
-                TextField = new EditText( RockMobile.PlatformCommon.Droid.Context );
+                TextField = new EditText( Rock.Mobile.PlatformCommon.Droid.Context );
                 TextField.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 TextField.SetScrollContainer( true );
                 TextField.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
                 TextField.SetHorizontallyScrolling( false );
 
                 // create a dummy view that can take focus to de-select the text field
-                DummyView = new View( RockMobile.PlatformCommon.Droid.Context );
+                DummyView = new View( Rock.Mobile.PlatformCommon.Droid.Context );
                 DummyView.Focusable = true;
                 DummyView.FocusableInTouchMode = true;
 
@@ -49,7 +49,7 @@ namespace RockMobile
             {
                 try
                 {
-                    Typeface fontFace = Typeface.CreateFromAsset( RockMobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
+                    Typeface fontFace = Typeface.CreateFromAsset( Rock.Mobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
                     TextField.SetTypeface( fontFace, TypefaceStyle.Normal );
                     TextField.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
 
@@ -273,10 +273,10 @@ namespace RockMobile
             public override void ResignFirstResponder( )
             {
                 // only allow this text edit to hide the keyboard if it's the text field with focus.
-                Activity activity = ( Activity )RockMobile.PlatformCommon.Droid.Context;
+                Activity activity = ( Activity )Rock.Mobile.PlatformCommon.Droid.Context;
                 if( activity.CurrentFocus != null && ( activity.CurrentFocus as EditText ) == TextField )
                 {
-                    InputMethodManager imm = ( InputMethodManager )RockMobile.PlatformCommon.Droid.Context.GetSystemService( Android.Content.Context.InputMethodService );
+                    InputMethodManager imm = ( InputMethodManager )Rock.Mobile.PlatformCommon.Droid.Context.GetSystemService( Android.Content.Context.InputMethodService );
 
                     imm.HideSoftInputFromWindow( TextField.WindowToken, 0 );
 

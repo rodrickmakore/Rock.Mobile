@@ -5,7 +5,7 @@ using Android.Graphics;
 using Android.Animation;
 using Java.IO;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {

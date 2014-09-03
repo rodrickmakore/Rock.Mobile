@@ -6,7 +6,7 @@ using MonoTouch.Foundation;
 using MonoTouch.CoreGraphics;
 using MonoTouch.CoreText;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {

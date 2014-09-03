@@ -3,7 +3,7 @@ using System;
 using MonoTouch.CoreLocation;
 using MonoTouch.Foundation;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace CoreLocation
     {

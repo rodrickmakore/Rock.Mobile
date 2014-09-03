@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace Math
     {

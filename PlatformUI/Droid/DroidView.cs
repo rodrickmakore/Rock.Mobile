@@ -9,7 +9,7 @@ using Android.Graphics.Drawables.Shapes;
 using Java.IO;
 using Droid;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {
@@ -22,7 +22,7 @@ namespace RockMobile
 
             public DroidView( )
             {
-                View = new View( RockMobile.PlatformCommon.Droid.Context );
+                View = new View( Rock.Mobile.PlatformCommon.Droid.Context );
                 View.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             }
 

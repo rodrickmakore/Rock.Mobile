@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace CoreLocation
     {

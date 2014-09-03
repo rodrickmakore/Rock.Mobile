@@ -8,7 +8,7 @@ using MonoTouch.CoreText;
 // require common base classes, and should be DYE-RECTLY referenced by iOS code.
 using MonoTouch.UIKit;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformCommon
     {

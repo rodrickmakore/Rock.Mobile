@@ -5,10 +5,10 @@ using Android.Views;
 using Droid;
 using Android.Graphics.Drawables;
 using Android.Widget;
-using RockMobile.PlatformUI.DroidNative;
+using Rock.Mobile.PlatformUI.DroidNative;
 using System.IO;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformUI
     {
@@ -48,10 +48,10 @@ namespace RockMobile
 
             public DroidRevealLabel( )
             {
-                Label = new FadeTextView( RockMobile.PlatformCommon.Droid.Context ) as TextView;
+                Label = new FadeTextView( Rock.Mobile.PlatformCommon.Droid.Context ) as TextView;
                 Label.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
 
-                ((FadeTextView)Label).CreateAlphaMask( RockMobile.PlatformCommon.Droid.Context, "spot_mask.png" );
+                ((FadeTextView)Label).CreateAlphaMask( Rock.Mobile.PlatformCommon.Droid.Context, "spot_mask.png" );
 
 
                 // Define a gradiant underline that will be shown underneath the text
@@ -59,7 +59,7 @@ namespace RockMobile
                 GradientDrawable border = new GradientDrawable( GradientDrawable.Orientation.LeftRight, colors);
                 border.SetGradientType( GradientType.LinearGradient );
 
-                UnderlineView = new View( RockMobile.PlatformCommon.Droid.Context );
+                UnderlineView = new View( Rock.Mobile.PlatformCommon.Droid.Context );
                 UnderlineView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 UnderlineView.SetBackgroundDrawable( border );
 

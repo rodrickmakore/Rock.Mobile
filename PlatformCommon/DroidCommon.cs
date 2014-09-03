@@ -4,7 +4,7 @@ using System;
 // This file is where you can put anything SPECIFIC to Android that doesn't 
 // require common base classes, and should be DYE-RECTLY referenced by Android code.
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace PlatformCommon
     {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RockMobile
+namespace Rock.Mobile
 {
     namespace Network
     {
