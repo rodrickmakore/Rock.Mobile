@@ -15,7 +15,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Threading\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformCommon\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformUI\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Network\RockApi\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
@@ -41,8 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\RockApi\RockApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\RockApi\RockMobileUser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

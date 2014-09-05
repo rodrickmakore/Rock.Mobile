@@ -8,6 +8,32 @@ namespace Rock.Mobile
 {
     namespace Network
     {
+        public class Util
+        {
+            /// <summary>
+            /// Convenience method when you just need to know if a return was in the 200 range.
+            /// </summary>
+            /// <returns><c>true</c>, if in success range was statused, <c>false</c> otherwise.</returns>
+            /// <param name="code">Code.</param>
+            public static bool StatusInSuccessRange( HttpStatusCode code )
+            {
+                switch( code )
+                {
+                    case HttpStatusCode.Accepted:
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.NonAuthoritativeInformation:
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.PartialContent:
+                    case HttpStatusCode.ResetContent:
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
         //TODO: Either make this not a singleton, or manage a queue ourselves
 
         public class HttpWebRequest
