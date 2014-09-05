@@ -8,21 +8,59 @@ namespace Rock.Mobile
 {
     namespace Network
     {
+        /// <summary>
+        /// Rock API contains methods for making REST calls to Rock.
+        /// This should only be used directly if an object doesn't
+        /// that does what is needed. Ex: RockMobileUser should be used
+        /// in place of directly calling Profile end points when needing
+        /// to manage the primary user's account.
+        /// </summary>
         public sealed class RockApi
         {
-            // don't wait longer than 15 seconds
-            const int RequestTimeoutMS = 15000;
-
-            const string BaseUrl = "http://rock.ccvonline.com/api";
-            const string NETWORK_OBJECTS_FILENAME = "NetworkObjects.dat";
-
-            CookieContainer CookieContainer { get; set; }
-
-            public delegate void RequestResult(System.Net.HttpStatusCode statusCode, string statusDescription);
-            public delegate void RequestResult<TModel>(System.Net.HttpStatusCode statusCode, string statusDescription, TModel model);
-
+            /// <summary>
+            /// The instance of RockAPI
+            /// </summary>
             static RockApi _Instance = new RockApi();
             public static RockApi  Instance { get { return _Instance; } }
+
+            /// <summary>
+            /// The timeout after which the REST call attempt is given up.
+            /// </summary>
+            const int RequestTimeoutMS = 15000;
+
+            const string NETWORK_OBJECTS_FILENAME = "NetworkObjects.dat";
+            const string BaseUrl = "http://rock.ccvonline.com/api";
+
+            /// <summary>
+            /// End point for logging in
+            /// </summary>
+            const string AuthLoginEndPoint = "Auth/Login";
+
+            /// <summary>
+            /// End point for retrieving a Person object
+            /// </summary>
+            const string GetProfileEndPoint = "People/GetByUserName/";
+
+            /// <summary>
+            /// End point for updating a Person object
+            /// </summary>
+            const string PutProfileEndPoint = "People/";
+
+            /// <summary>
+            /// Stores the cookies received from Rock
+            /// </summary>
+            /// <value>The cookie container.</value>
+            CookieContainer CookieContainer { get; set; }
+
+            /// <summary>
+            /// Request Response delegate that does not require a returned object
+            /// </summary>
+            public delegate void RequestResult(System.Net.HttpStatusCode statusCode, string statusDescription);
+
+            /// <summary>
+            /// Request response delegate that does require a returned object
+            /// </summary>
+            public delegate void RequestResult<TModel>(System.Net.HttpStatusCode statusCode, string statusDescription, TModel model);
 
             RockApi( )
             {
@@ -32,29 +70,13 @@ namespace Rock.Mobile
             public void Login( string username, string password, RequestResult resultHandler )
             {
                 RestRequest request = new RestRequest( Method.POST );
-                request.Resource = "Auth/Login";
+                request.Resource = AuthLoginEndPoint;
 
                 request.AddParameter( "Username", username );
                 request.AddParameter( "Password", password );
                 request.AddParameter( "Persisted", true );
 
-                //request.Timeout = RequestTimeoutMS;
-
                 ExecuteAsync( request, resultHandler);
-
-                // make the request
-                /*RestClient restClient = new RestClient( );
-                restClient.BaseUrl = BaseUrl;
-                restClient.CookieContainer = CookieContainer;
-
-                restClient.ExecuteAsync( request, response =>
-                    {
-                        Rock.Mobile.Threading.UIThreading.PerformOnUIThread( delegate 
-                            { 
-                                // notify our caller so they can do whatever it is they wanna do
-                                resultHandler( response.StatusCode, response.StatusDescription );
-                            });
-                    });*/
             }
 
             public void Logout()
@@ -67,7 +89,7 @@ namespace Rock.Mobile
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = new RestRequest( Method.GET );
-                request.Resource = "People/GetByUserName/";
+                request.Resource = GetProfileEndPoint;
                 request.Resource += string.IsNullOrEmpty( userName ) == true ? MobileUser.Instance.Username : userName;
 
                 ExecuteAsync<Rock.Client.Person>( request, resultHandler);
@@ -77,7 +99,7 @@ namespace Rock.Mobile
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = new RestRequest( Method.PUT );
-                request.Resource = "People/";
+                request.Resource = PutProfileEndPoint;
                 request.Resource += person.Id;
 
                 request.RequestFormat = DataFormat.Json;
@@ -143,6 +165,8 @@ namespace Rock.Mobile
 
                     // store the mobile user
                     writer.WriteLine( MobileUser.Instance.Serialize( ) );
+
+                    //todo: add more objects
                 }
             }
 
@@ -169,6 +193,7 @@ namespace Rock.Mobile
                         // load the mobile user
                         MobileUser.Instance.Deserialize( reader.ReadLine() );
 
+                        //todo: add more objects
                         //jsonObj = reader.ReadLine();
                     }
                 }

@@ -11,6 +11,9 @@ namespace Rock.Mobile
         /// </summary>
         public sealed class MobileUser
         {
+            /// <summary>
+            /// Instance for MobileUser. We only allow single logins, so force a static instance.
+            /// </summary>
             private static MobileUser _Instance = new MobileUser();
             public static MobileUser Instance { get { return _Instance; } }
 
@@ -37,7 +40,14 @@ namespace Rock.Mobile
             /// </summary>
             /// <value>The person.</value>
             public Person Person;
-            public string PersonJson { get; set; }
+
+            /// <summary>
+            /// A json version of the person at the last point it was sync'd with the server.
+            /// This allows us to update Person and save it, and in the case of a server sync failing,
+            /// know that we need to try again.
+            /// </summary>
+            /// <value>The person json.</value>
+            public string LastSyncdPersonJson { get; set; }
 
             private MobileUser( )
             {
@@ -84,7 +94,7 @@ namespace Rock.Mobile
             {
                 // clear the person and take a blank copy
                 Person = new Person();
-                PersonJson = JsonConvert.SerializeObject( Person );
+                LastSyncdPersonJson = JsonConvert.SerializeObject( Person );
 
                 LoggedIn = false;
 
@@ -105,7 +115,7 @@ namespace Rock.Mobile
                         {
                             // on retrieval, convert this version for dirty compares later
                             Person = model;
-                            PersonJson = JsonConvert.SerializeObject( Person );
+                            LastSyncdPersonJson = JsonConvert.SerializeObject( Person );
 
                             // save!
                             RockApi.Instance.SaveObjectsToDevice( );
@@ -126,7 +136,7 @@ namespace Rock.Mobile
                         if( statusCode == System.Net.HttpStatusCode.NoContent )
                         {
                             // if successful, update our json so we have a match and don't try to update again later.
-                            PersonJson = JsonConvert.SerializeObject( Person );
+                            LastSyncdPersonJson = JsonConvert.SerializeObject( Person );
                         }
 
                         // whether we succeeded in updating with the server or not, save to disk.
@@ -145,7 +155,7 @@ namespace Rock.Mobile
                 // created at a point when we know we were sync'd with the server
                 // no longer matches our object, we should update it.
                 string currPersonJson = JsonConvert.SerializeObject( Person );
-                if( string.Compare( PersonJson, currPersonJson ) != 0 )
+                if( string.Compare( LastSyncdPersonJson, currPersonJson ) != 0 )
                 {
                     UpdateProfile( null );
                 }
