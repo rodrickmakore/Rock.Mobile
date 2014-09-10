@@ -40,6 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidNative\BorderedRectViews.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

@@ -39,17 +39,36 @@ namespace Rock.Mobile
             {
                 set { setBackgroundColor( value ); }
             }
-
             protected abstract void setBackgroundColor( uint backgroundColor );
+
+            public uint BorderColor
+            {
+                set { setBorderColor( value ); }
+            }
+            protected abstract void setBorderColor( uint borderColor );
+
+            public float BorderWidth
+            {
+                get { return getBorderWidth( ); }
+                set { setBorderWidth( value ); }
+            }
+            protected abstract float getBorderWidth( );
+            protected abstract void setBorderWidth( float width );
+
+            public float CornerRadius
+            {
+                get { return getCornerRadius( ); }
+                set { setCornerRadius( value ); }
+            }
+            protected abstract float getCornerRadius( );
+            protected abstract void setCornerRadius( float width );
 
             public float Opacity
             {
                 get { return getOpacity( ); }
                 set { setOpacity( value ); }
             }
-
             protected abstract float getOpacity( );
-
             protected abstract void setOpacity( float opacity );
 
             public float ZPosition
@@ -57,9 +76,7 @@ namespace Rock.Mobile
                 get { return getZPosition( ); }
                 set { setZPosition( value ); }
             }
-
             protected abstract float getZPosition( );
-
             protected abstract void setZPosition( float zPosition );
 
             public RectangleF Bounds
@@ -67,9 +84,7 @@ namespace Rock.Mobile
                 get { return getBounds( ); }
                 set { setBounds( value ); }
             }
-
             protected abstract RectangleF getBounds( );
-
             protected abstract void setBounds( RectangleF bounds );
 
             public RectangleF Frame
@@ -77,9 +92,7 @@ namespace Rock.Mobile
                 get { return getFrame( ); }
                 set { setFrame( value ); }
             }
-
             protected abstract RectangleF getFrame( );
-
             protected abstract void setFrame( RectangleF frame );
 
             public PointF Position
@@ -87,9 +100,7 @@ namespace Rock.Mobile
                 get { return getPosition( ); }
                 set { setPosition( value ); }
             }
-
             protected abstract PointF getPosition( );
-
             protected abstract void setPosition( PointF position );
 
             public bool Hidden

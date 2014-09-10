@@ -8,6 +8,8 @@ using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Java.IO;
 using Droid;
+using Rock.Mobile.PlatformUI.DroidNative;
+using Android.Util;
 
 namespace Rock.Mobile
 {
@@ -18,11 +20,11 @@ namespace Rock.Mobile
         /// </summary>
         public class DroidLabel : PlatformLabel
         {
-            protected TextView Label { get; set; }
+            protected BorderedRectTextView Label { get; set; }
 
             public DroidLabel( )
             {
-                Label = new TextView( Rock.Mobile.PlatformCommon.Droid.Context );
+                Label = new BorderedRectTextView( Rock.Mobile.PlatformCommon.Droid.Context );
                 Label.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             }
 
@@ -44,6 +46,29 @@ namespace Rock.Mobile
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 Label.SetBackgroundColor( GetUIColor( backgroundColor ) );
+            }
+
+            protected override void setBorderColor( uint borderColor )
+            {
+                Label.SetBorderColor( GetUIColor( borderColor ) );
+            }
+
+            protected override float getBorderWidth()
+            {
+                return Label.BorderWidth;
+            }
+            protected override void setBorderWidth( float width )
+            {
+                Label.BorderWidth = width;
+            }
+
+            protected override float getCornerRadius()
+            {
+                return Label.Radius;
+            }
+            protected override void setCornerRadius( float radius )
+            {
+                Label.Radius = radius;
             }
 
             protected override float getOpacity( )
@@ -222,12 +247,10 @@ namespace Rock.Mobile
                 // measure the label given the current width/height/text
                 Label.Measure( widthMeasureSpec, heightMeasureSpec );
 
-                // update its width
                 Label.LayoutParameters.Width = Label.MeasuredWidth;
-                Label.SetMaxWidth( Label.LayoutParameters.Width );
-
-                // set the height which will include the wrapped lines
                 Label.LayoutParameters.Height = Label.MeasuredHeight;
+
+                Label.SetMaxWidth( Label.LayoutParameters.Width );
             }
 
             public override float GetFade()

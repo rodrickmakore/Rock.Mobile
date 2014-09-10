@@ -28,6 +28,29 @@ namespace Rock.Mobile
                 View.Layer.BackgroundColor = GetUIColor( backgroundColor ).CGColor;
             }
 
+            protected override void setBorderColor( uint borderColor )
+            {
+                View.Layer.BorderColor = GetUIColor( borderColor ).CGColor;
+            }
+
+            protected override float getBorderWidth()
+            {
+                return View.Layer.BorderWidth;
+            }
+            protected override void setBorderWidth( float width )
+            {
+                View.Layer.BorderWidth = width;
+            }
+
+            protected override float getCornerRadius()
+            {
+                return View.Layer.CornerRadius;
+            }
+            protected override void setCornerRadius( float radius )
+            {
+                View.Layer.CornerRadius = radius;
+            }
+
             protected override float getOpacity( )
             {
                 return View.Layer.Opacity;

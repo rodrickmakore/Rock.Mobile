@@ -25,6 +25,7 @@ namespace Rock.Mobile
                 TextField.TextAlignment = UITextAlignment.Left;
 
                 TextField.Editable = true;
+                TextField.ClipsToBounds = true;
             }
 
             // Properties
@@ -38,6 +39,29 @@ namespace Rock.Mobile
                 {
                     throw new Exception( string.Format( "Failed to load font: {0}", fontName ) );
                 }
+            }
+
+            protected override void setBorderColor( uint borderColor )
+            {
+                TextField.Layer.BorderColor = GetUIColor( borderColor ).CGColor;
+            }
+
+            protected override float getBorderWidth()
+            {
+                return TextField.Layer.BorderWidth;
+            }
+            protected override void setBorderWidth( float width )
+            {
+                TextField.Layer.BorderWidth = width;
+            }
+
+            protected override float getCornerRadius()
+            {
+                return TextField.Layer.CornerRadius;
+            }
+            protected override void setCornerRadius( float radius )
+            {
+                TextField.Layer.CornerRadius = radius;
             }
 
             protected override void setBackgroundColor( uint backgroundColor )

@@ -6,6 +6,10 @@ using Android.Graphics;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.App;
+using Android.Graphics.Drawables;
+using Android.Graphics.Drawables.Shapes;
+using Rock.Mobile.PlatformUI.DroidNative;
+using Android.Util;
 
 
 namespace Rock.Mobile
@@ -17,7 +21,7 @@ namespace Rock.Mobile
         /// </summary>
         public class DroidTextField : PlatformTextField
         {
-            EditText TextField { get; set; }
+            BorderedRectEditText TextField { get; set; }
 
             /// <summary>
             /// A dummy view that absorbs focus when the text field isn't being edited.
@@ -29,7 +33,7 @@ namespace Rock.Mobile
 
             public DroidTextField( )
             {
-                TextField = new EditText( Rock.Mobile.PlatformCommon.Droid.Context );
+                TextField = new BorderedRectEditText( Rock.Mobile.PlatformCommon.Droid.Context );
                 TextField.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 TextField.SetScrollContainer( true );
                 TextField.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
@@ -67,6 +71,29 @@ namespace Rock.Mobile
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 TextField.SetBackgroundColor( GetUIColor( backgroundColor ) );
+            }
+
+            protected override void setBorderColor( uint borderColor )
+            {
+                TextField.SetBorderColor( GetUIColor( borderColor ) );
+            }
+
+            protected override float getBorderWidth()
+            {
+                return TextField.BorderWidth;
+            }
+            protected override void setBorderWidth( float width )
+            {
+                TextField.BorderWidth = width;
+            }
+
+            protected override float getCornerRadius()
+            {
+                return TextField.Radius;
+            }
+            protected override void setCornerRadius( float radius )
+            {
+                TextField.Radius = radius;
             }
 
             protected override float getOpacity( )

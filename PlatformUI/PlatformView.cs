@@ -6,7 +6,7 @@ namespace Rock.Mobile
     namespace PlatformUI
     {
         /// <summary>
-        /// The base Platform Label that provides an interface to platform specific text labels.
+        /// The base Platform View that provides an interface to platform specific views.
         /// </summary>
         public abstract class PlatformView : PlatformBaseUI
         {

@@ -8,6 +8,7 @@ using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Java.IO;
 using Droid;
+using Rock.Mobile.PlatformUI.DroidNative;
 
 namespace Rock.Mobile
 {
@@ -18,11 +19,11 @@ namespace Rock.Mobile
         /// </summary>
         public class DroidView : PlatformView
         {
-            protected View View { get; set; }
+            protected BorderedRectView View { get; set; }
 
             public DroidView( )
             {
-                View = new View( Rock.Mobile.PlatformCommon.Droid.Context );
+                View = new BorderedRectView( Rock.Mobile.PlatformCommon.Droid.Context );
                 View.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             }
 
@@ -30,6 +31,29 @@ namespace Rock.Mobile
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 View.SetBackgroundColor( GetUIColor( backgroundColor ) );
+            }
+
+            protected override void setBorderColor( uint borderColor )
+            {
+                View.SetBorderColor( GetUIColor( borderColor ) );
+            }
+
+            protected override float getBorderWidth()
+            {
+                return View.BorderWidth;
+            }
+            protected override void setBorderWidth( float width )
+            {
+                View.BorderWidth = width;
+            }
+
+            protected override float getCornerRadius()
+            {
+                return View.Radius;
+            }
+            protected override void setCornerRadius( float radius )
+            {
+                View.Radius = radius;
             }
 
             protected override float getOpacity( )

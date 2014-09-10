@@ -24,6 +24,7 @@ namespace Rock.Mobile
                 Label.TextAlignment = UITextAlignment.Left;
                 Label.LineBreakMode = UILineBreakMode.WordWrap;
                 Label.Lines = 0;
+                Label.ClipsToBounds = true;
             }
 
             // Properties
@@ -42,6 +43,29 @@ namespace Rock.Mobile
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 Label.Layer.BackgroundColor = GetUIColor( backgroundColor ).CGColor;
+            }
+
+            protected override void setBorderColor( uint borderColor )
+            {
+                Label.Layer.BorderColor = GetUIColor( borderColor ).CGColor;
+            }
+
+            protected override float getBorderWidth()
+            {
+                return Label.Layer.BorderWidth;
+            }
+            protected override void setBorderWidth( float width )
+            {
+                Label.Layer.BorderWidth = width;
+            }
+
+            protected override float getCornerRadius()
+            {
+                return Label.Layer.CornerRadius;
+            }
+            protected override void setCornerRadius( float radius )
+            {
+                Label.Layer.CornerRadius = radius;
             }
 
             protected override float getOpacity( )

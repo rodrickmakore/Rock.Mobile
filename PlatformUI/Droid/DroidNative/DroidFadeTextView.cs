@@ -14,7 +14,7 @@ namespace Rock.Mobile
             /// <summary>
             /// A subclassed TextView that allows fading in the text
             /// </summary>
-            public class FadeTextView : TextView, Android.Animation.ValueAnimator.IAnimatorUpdateListener
+            public class FadeTextView : BorderedRectTextView, Android.Animation.ValueAnimator.IAnimatorUpdateListener
             {
                 /// <summary>
                 /// An alpha-only version of the RGBAMask. This is what we'll actually use to mask.
