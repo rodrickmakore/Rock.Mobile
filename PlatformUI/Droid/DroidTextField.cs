@@ -10,12 +10,38 @@ using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Rock.Mobile.PlatformUI.DroidNative;
 using Android.Util;
-
+using Android.Text;
+using Java.Lang;
 
 namespace Rock.Mobile
 {
     namespace PlatformUI
     {
+        /// <summary>
+        /// Subclassed length filter to allow us to prevent the textField
+        /// from growing larger than our limit.
+        /// </summary>
+        public class HeightFilter : InputFilterLengthFilter
+        {
+            public DroidTextField Parent { get; set; }
+
+            public HeightFilter( int max ) : base (max)
+            {
+            }
+
+            public override Java.Lang.ICharSequence FilterFormatted(Java.Lang.ICharSequence source, int start, int end, ISpanned dest, int dstart, int dend)
+            {
+                if( Parent.AllowInput( source ) )
+                {
+                    return base.FilterFormatted(source, start, end, dest, dstart, dend);
+                }
+                else
+                {
+                    return new Java.Lang.String("");
+                }
+            }
+        }
+
         /// <summary>
         /// Android implementation of a text field.
         /// </summary>
@@ -30,8 +56,20 @@ namespace Rock.Mobile
             View DummyView { get; set; }
 
             bool mScaleHeightForText = false;
-
             float mDynamicTextMaxHeight = float.MaxValue;
+
+            public bool AllowInput( Java.Lang.ICharSequence source )
+            {
+                // allow it as long as we're within the height limit
+                if( TextField.Height < mDynamicTextMaxHeight || source.Length( ) == 0 )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
             public DroidTextField( )
             {
@@ -40,6 +78,7 @@ namespace Rock.Mobile
                 TextField.SetScrollContainer( true );
                 TextField.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
                 TextField.SetHorizontallyScrolling( false );
+                TextField.SetFilters( new IInputFilter[] { new HeightFilter(int.MaxValue) { Parent = this } } );
 
                 // create a dummy view that can take focus to de-select the text field
                 DummyView = new View( Rock.Mobile.PlatformCommon.Droid.Context );
@@ -66,7 +105,7 @@ namespace Rock.Mobile
                 } 
                 catch
                 {
-                    throw new Exception( string.Format( "Unable to load font: {0}", fontName ) );
+                    throw new System.Exception( string.Format( "Unable to load font: {0}", fontName ) );
                 }
             }
 
@@ -246,6 +285,12 @@ namespace Rock.Mobile
             protected override void setScaleHeightForText( bool scale )
             {
                 mScaleHeightForText = scale;
+
+                // if scaling is turned on, restore the content wrapping
+                if( scale == true )
+                {
+                    TextField.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                }
             }
 
             protected override bool getScaleHeightForText( )
@@ -269,7 +314,7 @@ namespace Rock.Mobile
                 RelativeLayout view = masterView as RelativeLayout;
                 if( view == null )
                 {
-                    throw new Exception( "Object passed to Android AddAsSubview must be a RelativeLayout." );
+                    throw new System.Exception( "Object passed to Android AddAsSubview must be a RelativeLayout." );
                 }
 
                 view.AddView( TextField );
@@ -282,7 +327,7 @@ namespace Rock.Mobile
                 RelativeLayout view = masterView as RelativeLayout;
                 if( view == null )
                 {
-                    throw new Exception( "Object passed to Android RemoveAsSubview must be a RelativeLayout." );
+                    throw new System.Exception( "Object passed to Android RemoveAsSubview must be a RelativeLayout." );
                 }
 
                 view.RemoveView( TextField );
