@@ -53,6 +53,14 @@ namespace Rock.Mobile
             protected abstract bool getScaleHeightForText( );
             protected abstract void setScaleHeightForText( bool scale );
 
+            public float DynamicTextMaxHeight
+            {
+                get { return getDynamicTextMaxHeight( ); }
+                set { setDynamicTextMaxHeight( value ); }
+            }
+            protected abstract float getDynamicTextMaxHeight( );
+            protected abstract void setDynamicTextMaxHeight( float height );
+
             public abstract void ResignFirstResponder( );
         }
     }

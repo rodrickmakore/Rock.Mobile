@@ -31,6 +31,8 @@ namespace Rock.Mobile
 
             bool mScaleHeightForText = false;
 
+            float mDynamicTextMaxHeight = float.MaxValue;
+
             public DroidTextField( )
             {
                 TextField = new BorderedRectEditText( Rock.Mobile.PlatformCommon.Droid.Context );
@@ -249,6 +251,16 @@ namespace Rock.Mobile
             protected override bool getScaleHeightForText( )
             {
                 return mScaleHeightForText;
+            }
+
+            protected override void setDynamicTextMaxHeight( float height )
+            {
+                mDynamicTextMaxHeight = height;
+            }
+
+            protected override float getDynamicTextMaxHeight( )
+            {
+                return mDynamicTextMaxHeight;
             }
 
             public override void AddAsSubview( object masterView )

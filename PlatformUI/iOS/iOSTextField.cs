@@ -184,6 +184,16 @@ namespace Rock.Mobile
                 TextField.ResignFirstResponder( );
             }
 
+            protected override void setDynamicTextMaxHeight( float height )
+            {
+                TextField.DynamicTextMaxHeight = height;
+            }
+
+            protected override float getDynamicTextMaxHeight( )
+            {
+                return TextField.DynamicTextMaxHeight;
+            }
+
             public override void AddAsSubview( object masterView )
             {
                 // we know that masterView will be an iOS View.

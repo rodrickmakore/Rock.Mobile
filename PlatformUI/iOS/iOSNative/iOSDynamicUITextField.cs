@@ -14,10 +14,27 @@ namespace Rock.Mobile
             // setup a delegate to manage text editing notifications
             public class TextViewDelegate : UITextViewDelegate
             {
+                public float DynamicTextMaxHeight { get; set; }
+
                 public override bool ShouldBeginEditing(UITextView textView)
                 {
                     NSNotificationCenter.DefaultCenter.PostNotificationName( "TextFieldDidBeginEditing", NSValue.FromRectangleF( textView.Frame ) );
                     return true;
+                }
+
+                public override bool ShouldChangeText(UITextView textView, NSRange range, string text)
+                {
+                    // don't allow lengths past the height limit imposed.
+                    if( text.Length > 0 && textView.Frame.Height > DynamicTextMaxHeight )
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+
+                public override void Changed(UITextView textView)
+                {
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( "TextFieldChanged", NSValue.FromRectangleF( textView.Frame ) );
                 }
             }
 
@@ -37,6 +54,23 @@ namespace Rock.Mobile
                 /// </summary>
                 /// <value><c>true</c> if scale height for text; otherwise, <c>false</c>.</value>
                 public bool ScaleHeightForText { get; set; }
+
+                /// <summary>
+                /// Limits the height of the dynamic text box
+                /// </summary>
+                /// <value>The height of the dynamic text max.</value>
+                public float DynamicTextMaxHeight 
+                { 
+                    get 
+                    { 
+                        return ((TextViewDelegate)Delegate).DynamicTextMaxHeight; 
+                    } 
+
+                    set 
+                    {
+                        ((TextViewDelegate)Delegate).DynamicTextMaxHeight = value;
+                    }
+                }
 
                 public DynamicUITextView( ) : base( )
                 {
