@@ -96,6 +96,16 @@ namespace Rock.Mobile
                 public BorderedRectPaintDrawable( ) : base( )
                 {
                     BorderPaint = new Paint( );
+
+                    // create a shape with the new radius
+                    Shape = new RoundRectShape( new float[] { 0, 
+                        0, 
+                        0, 
+                        0, 
+                        0, 
+                        0, 
+                        0, 
+                        0 }, null, null );
                 }
 
                 protected override void OnDraw( Shape shape, Canvas canvas, Paint paint )
@@ -179,8 +189,13 @@ namespace Rock.Mobile
                 {
                     base.Measure( widthMeasureSpec, heightMeasureSpec );
 
-                    // now adjust for the border
-                    float borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                    // if there's no text, we don't want to provide any border. There's no text TO border.
+                    float borderSize = 0;
+                    if( string.IsNullOrEmpty( Text ) != true )
+                    {
+                        // now adjust for the border
+                        borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                    }
 
                     MeasuredWidth = base.MeasuredWidth + (int)(borderSize * 2);
                     MeasuredHeight = base.MeasuredHeight + (int)(borderSize * 2);
