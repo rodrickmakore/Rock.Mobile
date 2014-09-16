@@ -20,6 +20,11 @@ namespace Rock.Mobile
                     ( byte )( ( color & 0x0000FF00 ) >> 8 ), 
                     ( byte )( ( color & 0x000000FF ) ) );
             }
+
+            public static float UnitToPx( float unit )
+            {
+                return Android.Util.TypedValue.ApplyDimension(Android.Util.ComplexUnitType.Dip, unit, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+            }
             #endif
 
             #if __IOS__
@@ -31,6 +36,11 @@ namespace Rock.Mobile
                 ( float )( ( color & 0x00FF0000 ) >> 16 ) / 255, 
                 ( float )( ( color & 0x0000FF00 ) >> 8 ) / 255, 
                 ( float )( ( color & 0x000000FF ) ) / 255 );
+            }
+
+            public static float UnitToPx( float unit )
+            {
+                return unit;
             }
             #endif
 
