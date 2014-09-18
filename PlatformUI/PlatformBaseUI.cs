@@ -25,6 +25,16 @@ namespace Rock.Mobile
             {
                 return Android.Util.TypedValue.ApplyDimension(Android.Util.ComplexUnitType.Dip, unit, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
             }
+
+            /// <summary>
+            /// This should be called once at startup to allow the device to init anything
+            /// that can be done before actually creating / rendering UI.
+            /// </summary>
+            public static void Init( )
+            {
+                // Preload the alpha mask image.
+                Rock.Mobile.PlatformUI.DroidNative.FadeTextView.CreateAlphaMask( Rock.Mobile.PlatformCommon.Droid.Context, "spot_mask.png" );
+            }
             #endif
 
             #if __IOS__
@@ -41,6 +51,14 @@ namespace Rock.Mobile
             public static float UnitToPx( float unit )
             {
                 return unit;
+            }
+
+            /// <summary>
+            /// This should be called once at startup to allow the device to init anything
+            /// that can be done before actually creating / rendering UI.
+            /// </summary>
+            public static void Init( )
+            {
             }
             #endif
 

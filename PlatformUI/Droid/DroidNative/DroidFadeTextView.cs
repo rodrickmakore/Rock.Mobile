@@ -20,7 +20,7 @@ namespace Rock.Mobile
                 /// An alpha-only version of the RGBAMask. This is what we'll actually use to mask.
                 /// </summary>
                 /// <value>The alpha mask.</value>
-                Bitmap AlphaMask { get; set; }
+                static Bitmap AlphaMask { get; set; }
 
                 /// <summary>
                 /// The text to display rendered to an offscreen bmp
@@ -113,7 +113,7 @@ namespace Rock.Mobile
                     Invalidate();
                 }
 
-                public void CreateAlphaMask( Android.Content.Context context, string fileName )
+                public static void CreateAlphaMask( Android.Content.Context context, string fileName )
                 {
                     // load the stream from assets
                     System.IO.Stream assetStream = context.Assets.Open( fileName );

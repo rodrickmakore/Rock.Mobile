@@ -94,7 +94,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    Typeface fontFace = Typeface.CreateFromAsset( Rock.Mobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" );
+                    Typeface fontFace = DroidFontManager.Instance.GetFont( fontName );
                     TextField.SetTypeface( fontFace, TypefaceStyle.Normal );
                     TextField.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
 

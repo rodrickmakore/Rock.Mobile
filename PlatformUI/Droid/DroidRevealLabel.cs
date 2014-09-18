@@ -52,8 +52,6 @@ namespace Rock.Mobile
                 Label = new FadeTextView( Rock.Mobile.PlatformCommon.Droid.Context ) as BorderedRectTextView;
                 Label.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
 
-                ((FadeTextView)Label).CreateAlphaMask( Rock.Mobile.PlatformCommon.Droid.Context, "spot_mask.png" );
-
                 // Define a gradiant underline that will be shown underneath the text
                 int [] colors = new int[] { int.MaxValue, int.MaxValue };
                 GradientDrawable border = new GradientDrawable( GradientDrawable.Orientation.LeftRight, colors);
