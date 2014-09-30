@@ -16,6 +16,12 @@ namespace Rock.Mobile
             {
                 public float DynamicTextMaxHeight { get; set; }
 
+                public TextViewDelegate( ) : base( )
+                {
+                    // default to WAY over the limit
+                    DynamicTextMaxHeight = float.MaxValue;
+                }
+
                 public override bool ShouldBeginEditing(UITextView textView)
                 {
                     NSNotificationCenter.DefaultCenter.PostNotificationName( "TextFieldDidBeginEditing", NSValue.FromRectangleF( textView.Frame ) );

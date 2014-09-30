@@ -14,7 +14,7 @@ namespace Rock.Mobile
             /// <summary>
             /// A subclassed TextView that allows fading in the text
             /// </summary>
-            public class FadeTextView : BorderedRectTextView, Android.Animation.ValueAnimator.IAnimatorUpdateListener
+            public class FadeTextView : BorderedRectTextView, Android.Animation.ValueAnimator.IAnimatorUpdateListener, Android.Animation.ValueAnimator.IAnimatorListener
             {
                 /// <summary>
                 /// An alpha-only version of the RGBAMask. This is what we'll actually use to mask.
@@ -83,6 +83,13 @@ namespace Rock.Mobile
                     }
                 }
 
+                /// <summary>
+                /// True when an animation is happening. Ensures we don't start an animation
+                /// while one is in progress.
+                /// </summary>
+                /// <value><c>true</c> if animating; otherwise, <c>false</c>.</value>
+                bool Animating { get; set; }
+
                 public FadeTextView( Android.Content.Context context ) : base( context )
                 {
                     MaskScale = 1.0f;
@@ -93,15 +100,21 @@ namespace Rock.Mobile
 
                 public void AnimateMaskScale( float targetScale, long duration )
                 {
-                    float clampedValue = System.Math.Max(targetScale, .01f);
+                    if( Animating == false )
+                    {
+                        float clampedValue = System.Math.Max(targetScale, .01f);
 
-                    // setup an animation from our current mask scale to the new one.
-                    ValueAnimator animator = ValueAnimator.OfFloat( _MaskScale, clampedValue);
+                        // setup an animation from our current mask scale to the new one.
+                        ValueAnimator animator = ValueAnimator.OfFloat( _MaskScale, clampedValue);
 
-                    animator.AddUpdateListener( this );
-                    animator.SetDuration( duration );
+                        animator.AddUpdateListener( this );
+                        animator.AddListener( this );
+                        animator.SetDuration( duration );
 
-                    animator.Start();
+                        animator.Start();
+
+                        Animating = true;
+                    }
                 }
 
                 public void OnAnimationUpdate(ValueAnimator animation)
@@ -111,6 +124,23 @@ namespace Rock.Mobile
 
                     // force the view to be dirty so we get a redraw call.
                     Invalidate();
+                }
+
+                public void OnAnimationStart(Animator animation)
+                {
+                }
+
+                public void OnAnimationEnd(Animator animation)
+                {
+                    Animating = false;
+                }
+
+                public void OnAnimationRepeat(Animator animation)
+                {
+                }
+
+                public void OnAnimationCancel(Animator animation)
+                {
                 }
 
                 public static void CreateAlphaMask( Android.Content.Context context, string fileName )
