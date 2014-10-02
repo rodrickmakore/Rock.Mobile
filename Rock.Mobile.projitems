@@ -16,6 +16,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)PlatformCommon\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformUI\" />
     <Folder Include="$(MSBuildThisFileDirectory)Profiler\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformMedia\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
@@ -43,6 +44,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidNative\BorderedRectViews.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Profiler\Profiler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\PlatformCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\iOSCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\DroidCamera.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
