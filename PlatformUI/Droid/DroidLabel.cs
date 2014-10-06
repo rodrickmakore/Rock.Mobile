@@ -9,6 +9,7 @@ using Android.Graphics.Drawables.Shapes;
 using Java.IO;
 using Droid;
 using Rock.Mobile.PlatformUI.DroidNative;
+using Rock.Mobile.PlatformCommon;
 using Android.Util;
 using System.Collections.Generic;
 
@@ -16,47 +17,6 @@ namespace Rock.Mobile
 {
     namespace PlatformUI
     {
-        /// <summary>
-        /// Simple font manager so we lookup that stores fonts as we create them.
-        /// That way we aren't creating new fonts for every singe label. It saves memory
-        /// and speeds up our load times a lot.s
-        /// </summary>
-        public class DroidFontManager
-        {
-            static DroidFontManager _Instance = new DroidFontManager( );
-            public static DroidFontManager Instance { get { return _Instance; } }
-
-            class FontFace
-            {
-                public Typeface Font { get; set; }
-                public string Name { get; set; }
-            }
-
-            List<FontFace> FontList { get; set; }
-
-            public DroidFontManager( )
-            {
-                FontList = new List<FontFace>( );
-            }
-
-            public Typeface GetFont( string fontName )
-            {
-                FontFace fontFace = FontList.Find( f => f.Name == fontName );
-                if( fontFace == null )
-                {
-                    fontFace = new FontFace()
-                        {
-                            Name = fontName,
-                            Font = Typeface.CreateFromAsset( Rock.Mobile.PlatformCommon.Droid.Context.Assets, "Fonts/" + fontName + ".ttf" )
-                        };
-
-                    FontList.Add( fontFace );
-                }
-
-                return fontFace.Font;
-            }
-        }
-
         /// <summary>
         /// Android implementation of a text label.
         /// </summary>

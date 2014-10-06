@@ -9,6 +9,7 @@ using Android.App;
 using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Rock.Mobile.PlatformUI.DroidNative;
+using Rock.Mobile.PlatformCommon;
 using Android.Util;
 using Android.Text;
 using Java.Lang;
