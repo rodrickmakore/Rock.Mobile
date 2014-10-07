@@ -43,7 +43,6 @@ namespace Rock.Mobile
 
                 // create our camera controller
                 UIImagePickerController cameraController = new UIImagePickerController( );
-                cameraController.AllowsEditing = true;
                 cameraController.Delegate = new UIImagePickerControllerDelegate( );
                 cameraController.SourceType = UIImagePickerControllerSourceType.Camera;
 
@@ -64,9 +63,9 @@ namespace Rock.Mobile
                             // note: the edited image is saved "correctly", so we don't have to rotate.
 
                             // rotate the image 0 degrees since we consider portrait to be the default position.
-                            /*CIImage ciImage = new CIImage( e.EditedImage.CGImage );
+                            CIImage ciImage = new CIImage( e.OriginalImage.CGImage );
 
-                            // create our transform and apply it to the iamge
+                            // create our transform and apply it to the image
                             CGAffineTransform transform = CGAffineTransform.MakeIdentity( );
                             transform.Rotate( -90 * Rock.Mobile.Math.Util.DegToRad );
                             CIImage rotatedImage = ciImage.ImageByApplyingTransform( transform );
@@ -76,9 +75,9 @@ namespace Rock.Mobile
                             CGImage rotatedCGImage = ciContext.CreateCGImage( rotatedImage, rotatedImage.Extent );
 
                             // put the image in the destination, converting it to jpeg.
-                            cgImageDest.AddImage( rotatedCGImage, null );*/
+                            cgImageDest.AddImage( rotatedCGImage, null );
 
-                            cgImageDest.AddImage( e.EditedImage.CGImage, null );
+                            //cgImageDest.AddImage( e.EditedImage.CGImage, null );
 
                             // close and dispose.
                             if( cgImageDest.Close( ) )
