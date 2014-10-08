@@ -47,6 +47,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\PlatformCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\iOSCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\DroidCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\DroidImagePicker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\PlatformImagePicker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\iOSImagePicker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

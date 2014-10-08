@@ -96,7 +96,7 @@ namespace Rock.Mobile
                 // when picking is cancelled.
                 cameraController.Canceled += (object sender, EventArgs e) => 
                     {
-                        CameraFinishedCallback( false, null, cameraController );
+                        CameraFinishedCallback( true, null, cameraController );
                     };
 
                 controller.PresentViewController( cameraController, true, null );
