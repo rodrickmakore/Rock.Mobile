@@ -32,6 +32,10 @@ namespace Rock.Mobile
             Samples = new List<Sample>( );
         }
 
+        /// <summary>
+        /// Starts a specified sample.
+        /// </summary>
+        /// <param name="name">Name.</param>
         public void Start( string name )
         {
             Samples.Add( 

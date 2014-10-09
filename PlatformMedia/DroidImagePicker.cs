@@ -90,10 +90,10 @@ namespace Rock.Mobile
             public override void PickImage( object context, ImagePickEvent callback )
             {
                 // ensure the context passed in is valid.
-                Activity activity = Rock.Mobile.PlatformCommon.Droid.Context as Activity;
+                Activity activity = context as Activity;
                 if( activity == null )
                 {
-                    throw new Exception( "Rock.Mobile.PlatformCommon.Droid.Context must be of type Activity." );
+                    throw new Exception( "context must be of type Activity." );
                 }
 
                 ImagePickEventDelegate = callback;
