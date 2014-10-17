@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\DroidImagePicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\PlatformImagePicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\iOSImagePicker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformCommon\iOSCarousel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
