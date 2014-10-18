@@ -154,6 +154,11 @@ namespace Rock.Mobile
 
                 view.RemoveView( View );
             }
+
+            protected override object getPlatformNativeObject( )
+            {
+                return View;
+            }
         }
     }
 }

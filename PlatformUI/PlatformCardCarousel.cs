@@ -1,42 +1,41 @@
-﻿#if __IOS__
-using System;
-using MonoTouch.CoreAnimation;
-using MonoTouch.UIKit;
+﻿using System;
 using System.Drawing;
-using MonoTouch.Foundation;
 
 namespace Rock.Mobile
 {
-    namespace PlatformCommon
+    namespace PlatformUI
     {
         /// <summary>
         /// Reusable "carousel" that gives the illusion of an infinitely long list.
         /// All you have to do is create it, and set views for its 5 "cards". Each
         /// "card" should be the same dimensions, as these are the repeating items.
         /// </summary>
-        public class iOSCardCarousel
+        public abstract class PlatformCardCarousel
         {
-            class CaourselAnimDelegate : CAAnimationDelegate
+            public static PlatformCardCarousel Create( float cardWidth, float cardHeight, RectangleF boundsInParent, ViewingIndexChanged changedDelegate )
             {
-                public iOSCardCarousel Parent { get; set; }
+                #if __IOS__
+                return new iOSCardCarousel( cardWidth, cardHeight, boundsInParent, changedDelegate );
+                #endif
 
-                public override void AnimationStarted(CAAnimation anim)
-                {
-
-                }
-
-                public override void AnimationStopped(CAAnimation anim, bool finished)
-                {
-                    Parent.AnimationStopped( anim, finished );
-                }
+                #if __ANDROID__
+                return new DroidCardCarousel( cardWidth, cardHeight, boundsInParent, changedDelegate );
+                #endif
             }
 
+            public enum PanGestureState
+            {
+                Began,
+                Changed,
+                Ended
+            };
+
             // Create 5 cards so that we're guaranteed to always have cards visible on screen
-            public UIView SubLeftCard = null;
-            public UIView LeftCard = null;
-            public UIView CenterCard = null;
-            public UIView RightCard = null;
-            public UIView PostRightCard = null;
+            public PlatformView SubLeftCard = null;
+            public PlatformView LeftCard = null;
+            public PlatformView CenterCard = null;
+            public PlatformView RightCard = null;
+            public PlatformView PostRightCard = null;
 
             // the default positions for each card
             PointF SubLeftPos { get; set; }
@@ -44,11 +43,6 @@ namespace Rock.Mobile
             PointF CenterPos { get; set; }
             PointF RightPos { get; set; }
             PointF PostRightPos { get; set; }
-
-            /// <summary>
-            /// Tracks the last position of panning so delta can be applied
-            /// </summary>
-            PointF PanLastPos { get; set; }
 
             /// <summary>
             /// Direction we're currently panning. Important for syncing the card positions
@@ -64,9 +58,8 @@ namespace Rock.Mobile
             /// True when an animation to restore card positions is playing.
             /// Needed so we know when to allow "fast" panning.
             /// </summary>
-            bool Animating = false;
+            protected bool Animating = false;
 
-            UIView ParentView { get; set; }
             RectangleF BoundsInParent { get; set; }
             float CardWidth { get; set; }
             float CardHeight { get; set; }
@@ -76,9 +69,8 @@ namespace Rock.Mobile
             public delegate void ViewingIndexChanged( int viewingIndex );
             ViewingIndexChanged ViewingIndexChangedDelegate;
 
-            public iOSCardCarousel( float cardWidth, float cardHeight, UIView parentView, RectangleF boundsInParent, ViewingIndexChanged changedDelegate )
+            protected PlatformCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, ViewingIndexChanged changedDelegate )
             {
-                ParentView = parentView;
                 BoundsInParent = boundsInParent;
                 CardWidth = cardWidth;
                 CardHeight = cardHeight;
@@ -86,7 +78,10 @@ namespace Rock.Mobile
                 ViewingIndexChangedDelegate = changedDelegate;
             }
 
-            public void ViewDidLoad()
+            /// <summary>
+            /// This should be called when UI is ready, like in ViewDidLoad or OnCreateView()
+            /// </summary>
+            public virtual void Init( object parentView )
             {
                 if( SubLeftCard == null ||
                     LeftCard == null ||
@@ -94,7 +89,7 @@ namespace Rock.Mobile
                     RightCard == null ||
                     PostRightCard == null )
                 {
-                    throw new Exception( "Card Views must be set before ViewDidLoad()" );
+                    throw new Exception( "Card Views must be set before Init()" );
                 }
 
                 // the center position should be center on screen
@@ -109,24 +104,11 @@ namespace Rock.Mobile
                 PostRightPos = new PointF( RightPos.X + BoundsInParent.Width, BoundsInParent.Y );
 
                 // default the initial position of the cards
-                SubLeftCard.Layer.Position = SubLeftPos;
-                LeftCard.Layer.Position = LeftPos;
-                CenterCard.Layer.Position = CenterPos;
-                RightCard.Layer.Position = RightPos;
-                PostRightCard.Layer.Position = PostRightPos;
-
-                // setup our pan gesture
-                UIPanGestureRecognizer panGesture = new UIPanGestureRecognizer( OnPanGesture );
-                panGesture.MinimumNumberOfTouches = 1;
-                panGesture.MaximumNumberOfTouches = 1;
-
-                // add the gesture and all cards to our view
-                ParentView.AddGestureRecognizer( panGesture );
-                ParentView.AddSubview( SubLeftCard );
-                ParentView.AddSubview( LeftCard );
-                ParentView.AddSubview( CenterCard );
-                ParentView.AddSubview( RightCard );
-                ParentView.AddSubview( PostRightCard );
+                SubLeftCard.Position = SubLeftPos;
+                LeftCard.Position = LeftPos;
+                CenterCard.Position = CenterPos;
+                RightCard.Position = RightPos;
+                PostRightCard.Position = PostRightPos;
             }
 
             public void ViewWillAppear(bool animated)
@@ -134,22 +116,20 @@ namespace Rock.Mobile
                 ViewingIndex = 0;
             }
 
-            void OnPanGesture(UIPanGestureRecognizer obj) 
+            public void OnPanGesture(PanGestureState state, PointF currVelocity, PointF deltaPan) 
             {
-                switch( obj.State )
+                switch( state )
                 {
-                    case UIGestureRecognizerState.Began:
+                    case PanGestureState.Began:
                     {
                         // when panning begins, clear our pan values
-                        PanLastPos = new PointF( 0, 0 );
                         PanDir = 0;
                         break;
                     }
 
-                    case UIGestureRecognizerState.Changed:
+                    case PanGestureState.Changed:
                     {
                         // use the velocity to determine the direction of the pan
-                        PointF currVelocity = obj.VelocityInView( ParentView );
                         if( currVelocity.X < 0 )
                         {
                             PanDir = -1;
@@ -160,11 +140,7 @@ namespace Rock.Mobile
                         }
 
                         // Update the positions of the cards
-                        PointF absPan = obj.TranslationInView( ParentView );
-                        PointF delta = new PointF( absPan.X - PanLastPos.X, 0 );
-                        PanLastPos = absPan;
-
-                        TryPanCards( delta );
+                        TryPanCards( deltaPan );
 
                         // sync the positions, which will adjust cards as they scroll so the center
                         // remains in the center (it's a fake infinite list)
@@ -175,7 +151,7 @@ namespace Rock.Mobile
                         break;
                     }
 
-                    case UIGestureRecognizerState.Ended:
+                    case PanGestureState.Ended:
                     {
                         // when panning is complete, restore the cards to their natural positions
                         AnimateCardsToNeutral( );
@@ -190,22 +166,22 @@ namespace Rock.Mobile
                 // we're at the edge of the list.
                 if( ViewingIndex - 2 < 0 )
                 {
-                    SubLeftCard.Layer.Position = SubLeftPos;
+                    SubLeftCard.Position = SubLeftPos;
                 }
 
                 if( ViewingIndex - 1 < 0 )
                 {
-                    LeftCard.Layer.Position = LeftPos;
+                    LeftCard.Position = LeftPos;
                 }
 
                 if( ViewingIndex + 1 >= NumItems )
                 {
-                    RightCard.Layer.Position = RightPos;
+                    RightCard.Position = RightPos;
                 }
 
                 if( ViewingIndex + 2 >= NumItems )
                 {
-                    PostRightCard.Layer.Position = PostRightPos;
+                    PostRightCard.Position = PostRightPos;
                 }
             }
 
@@ -214,24 +190,24 @@ namespace Rock.Mobile
                 // adjust all the cards by the amount panned (this should be a delta value)
                 if( ViewingIndex - 2 >= 0 )
                 {
-                    SubLeftCard.Layer.Position = new PointF( SubLeftCard.Layer.Position.X + panPos.X, LeftPos.Y );
+                    SubLeftCard.Position = new PointF( SubLeftCard.Position.X + panPos.X, LeftPos.Y );
                 }
 
                 if( ViewingIndex - 1 >= 0 )
                 {
-                    LeftCard.Layer.Position = new PointF( LeftCard.Layer.Position.X + panPos.X, LeftPos.Y );
+                    LeftCard.Position = new PointF( LeftCard.Position.X + panPos.X, LeftPos.Y );
                 }
 
-                CenterCard.Layer.Position = new PointF( CenterCard.Layer.Position.X + panPos.X, CenterPos.Y );
+                CenterCard.Position = new PointF( CenterCard.Position.X + panPos.X, CenterPos.Y );
 
                 if( ViewingIndex + 1 < NumItems )
                 {
-                    RightCard.Layer.Position = new PointF( RightCard.Layer.Position.X + panPos.X, RightPos.Y );
+                    RightCard.Position = new PointF( RightCard.Position.X + panPos.X, RightPos.Y );
                 }
 
                 if( ViewingIndex + 2 < NumItems )
                 {
-                    PostRightCard.Layer.Position = new PointF( PostRightCard.Layer.Position.X + panPos.X, RightPos.Y );
+                    PostRightCard.Position = new PointF( PostRightCard.Position.X + panPos.X, RightPos.Y );
                 }
             }
 
@@ -239,34 +215,14 @@ namespace Rock.Mobile
             /// Only called if the user didn't pan. Used primarly to detect
             /// the user tapping DURING an animation so we can pause the card movement.
             /// </summary>
-            public void TouchesBegan(NSSet touches, UIEvent evt)
-            {
-                // when touch begins, remove all animations
-                SubLeftCard.Layer.RemoveAllAnimations();
-                LeftCard.Layer.RemoveAllAnimations();
-                CenterCard.Layer.RemoveAllAnimations();
-                RightCard.Layer.RemoveAllAnimations();
-                PostRightCard.Layer.RemoveAllAnimations();
-
-                // and commit the animated positions as the actual card positions.
-                SubLeftCard.Layer.Position = SubLeftCard.Layer.PresentationLayer.Position;
-                LeftCard.Layer.Position = LeftCard.Layer.PresentationLayer.Position;
-                CenterCard.Layer.Position = CenterCard.Layer.PresentationLayer.Position;
-                RightCard.Layer.Position = RightCard.Layer.PresentationLayer.Position;
-                PostRightCard.Layer.Position = PostRightCard.Layer.PresentationLayer.Position;
-
-                // this has the effect of freezing & stopping the animation in motion.
-                // OnAnimationEnded will be called, but finished will be false, so
-                // we'll know it was stopped manually
-                Console.WriteLine( "Touches Began" );
-            }
+            public abstract void TouchesBegan( );
 
             /// <summary>
             /// Only called if the user didn't pan. Used primarly to detect
             /// which direction to resume the cards if the user touched and
             /// released without panning.
             /// </summary>
-            public void TouchesEnded(NSSet touches, UIEvent evt)
+            public virtual void TouchesEnded( )
             {
                 // Attempt to restore the cards to their natural position. This
                 // will NOT be called if the user invoked the pan gesture. (which is a good thing)
@@ -278,45 +234,7 @@ namespace Rock.Mobile
             /// <summary>
             /// Animates a card from startPos to endPos over time
             /// </summary>
-            void AnimateCard( UIView cardView, string animName, PointF startPos, PointF endPos, float duration, iOSCardCarousel parentDelegate )
-            {
-                CABasicAnimation cardAnim = CABasicAnimation.FromKeyPath( "position" );
-
-                cardAnim.From = NSValue.FromPointF( startPos );
-                cardAnim.To = NSValue.FromPointF( endPos );
-
-                cardAnim.Duration = duration;
-                cardAnim.TimingFunction = CAMediaTimingFunction.FromName( CAMediaTimingFunction.EaseInEaseOut );
-
-                // these ensure we maintain the card position when finished
-                cardAnim.FillMode = CAFillMode.Forwards;
-                cardAnim.RemovedOnCompletion = false;
-
-                // if a delegate was provided, give it to the card
-                if( parentDelegate != null )
-                {
-                    cardAnim.Delegate = new CaourselAnimDelegate() { Parent = this };
-                }
-
-                // 
-                cardView.Layer.AddAnimation( cardAnim, animName );
-            }
-
-            /// <summary>
-            /// Called when card movement is complete.
-            /// </summary>
-            /// <param name="anim">Animation.</param>
-            /// <param name="finished">If set to <c>true</c> finished.</param>
-            void AnimationStopped( CAAnimation anim, bool finished )
-            {
-                // the only thing we realy want to do is update the carousel so
-                // that the cards are once again L C R and the prayer indices are -1, 0, 1
-                if( finished == true )
-                {
-                    Animating = false;
-                    Console.WriteLine( "Animation Stopped" );
-                }
-            }
+            protected abstract void AnimateCard( object platformObject, string animName, PointF startPos, PointF endPos, float duration, PlatformCardCarousel parentDelegate );
 
             /// <summary>
             /// This turns the cards into a "carousel" that will push cards forward and pull
@@ -336,7 +254,7 @@ namespace Rock.Mobile
                 // The real world effect is that if the user flicks cards,
                 // they will quickly and easily move. If the user pans on the cards,
                 // it will be harder to get them to switch.
-                float tolerance = (Animating == true) ? 400 : 260;
+                float tolerance = (Animating == true) ? Rock.Mobile.PlatformUI.PlatformBaseUI.UnitToPx( 400.0f ) : Rock.Mobile.PlatformUI.PlatformBaseUI.UnitToPx( 260.0f );
 
                 // if we're panning LEFT, that means the right hand card might be in range to sync
                 if( System.Math.Abs(deltaRightX) < tolerance && PanDir == -1)
@@ -349,11 +267,11 @@ namespace Rock.Mobile
                         ViewingIndexChangedDelegate( ViewingIndex );
 
                         // reset the card positions, creating the illusion that the cards really moved
-                        SubLeftCard.Layer.Position = new PointF( deltaRightX + SubLeftPos.X, LeftPos.Y );
-                        LeftCard.Layer.Position = new PointF( deltaRightX + LeftPos.X, LeftPos.Y );
-                        CenterCard.Layer.Position = new PointF( deltaRightX + CenterPos.X, CenterPos.Y );
-                        RightCard.Layer.Position = new PointF( deltaRightX + RightPos.X, RightPos.Y );
-                        PostRightCard.Layer.Position = new PointF( deltaRightX + PostRightPos.X, RightPos.Y );
+                        SubLeftCard.Position = new PointF( deltaRightX + SubLeftPos.X, LeftPos.Y );
+                        LeftCard.Position = new PointF( deltaRightX + LeftPos.X, LeftPos.Y );
+                        CenterCard.Position = new PointF( deltaRightX + CenterPos.X, CenterPos.Y );
+                        RightCard.Position = new PointF( deltaRightX + RightPos.X, RightPos.Y );
+                        PostRightCard.Position = new PointF( deltaRightX + PostRightPos.X, RightPos.Y );
                     }
                 }
                 // if we're panning RIGHT, that means the left hand card might be in range to sync
@@ -367,11 +285,11 @@ namespace Rock.Mobile
                         ViewingIndexChangedDelegate( ViewingIndex );
 
                         // reset the card positions, creating the illusion that the cards really moved
-                        SubLeftCard.Layer.Position = new PointF( deltaLeftX + SubLeftPos.X, LeftPos.Y );
-                        LeftCard.Layer.Position = new PointF( deltaLeftX + LeftPos.X, LeftPos.Y );
-                        CenterCard.Layer.Position = new PointF( deltaLeftX + CenterPos.X, CenterPos.Y );
-                        RightCard.Layer.Position = new PointF( deltaLeftX + RightPos.X, RightPos.Y );
-                        PostRightCard.Layer.Position = new PointF( deltaLeftX + PostRightPos.X, RightPos.Y );
+                        SubLeftCard.Position = new PointF( deltaLeftX + SubLeftPos.X, LeftPos.Y );
+                        LeftCard.Position = new PointF( deltaLeftX + LeftPos.X, LeftPos.Y );
+                        CenterCard.Position = new PointF( deltaLeftX + CenterPos.X, CenterPos.Y );
+                        RightCard.Position = new PointF( deltaLeftX + RightPos.X, RightPos.Y );
+                        PostRightCard.Position = new PointF( deltaLeftX + PostRightPos.X, RightPos.Y );
                     }
                 }
             }
@@ -380,23 +298,22 @@ namespace Rock.Mobile
             /// Helper to get the distance from the center
             /// </summary>
             /// <returns>The dist from center.</returns>
-            float CardDistFromCenter( UIView card )
+            float CardDistFromCenter( PlatformView card )
             {
                 float cardHalfWidth = CardWidth / 2;
-                return ( card.Layer.Position.X + cardHalfWidth ) - (CenterPos.X + cardHalfWidth);
+                return ( card.Position.X + cardHalfWidth ) - (CenterPos.X + cardHalfWidth);
             }
 
             void AnimateCardsToNeutral( )
             {
                 // this will animate each card to its neutral resting point
                 Animating = true;
-                AnimateCard( SubLeftCard, "SubLeftCard", SubLeftCard.Layer.Position, SubLeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
-                AnimateCard( LeftCard, "LeftCard", LeftCard.Layer.Position, LeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
-                AnimateCard( CenterCard, "CenterCard", CenterCard.Layer.Position, CenterPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
-                AnimateCard( RightCard, "RightCard", RightCard.Layer.Position, RightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
-                AnimateCard( PostRightCard, "PostRightCard", PostRightCard.Layer.Position, PostRightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
+                AnimateCard( SubLeftCard.PlatformNativeObject, "SubLeftCard", SubLeftCard.Position, SubLeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
+                AnimateCard( LeftCard.PlatformNativeObject, "LeftCard", LeftCard.Position, LeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
+                AnimateCard( CenterCard.PlatformNativeObject, "CenterCard", CenterCard.Position, CenterPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
+                AnimateCard( RightCard.PlatformNativeObject, "RightCard", RightCard.Position, RightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
+                AnimateCard( PostRightCard.PlatformNativeObject, "PostRightCard", PostRightCard.Position, PostRightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
             }
         }
     }
 }
-#endif

@@ -128,6 +128,11 @@ namespace Rock.Mobile
                 //obj is only for Android, so we don't use it.
                 View.RemoveFromSuperview( );
             }
+
+            protected override object getPlatformNativeObject( )
+            {
+                return View;
+            }
         }
     }
 }

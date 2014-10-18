@@ -139,8 +139,16 @@ namespace Rock.Mobile
             protected abstract bool getHidden( );
             protected abstract void setHidden( bool hidden );
 
+            /// <summary>
+            /// Adds _THIS_ object AS a subView of the masterView.
+            /// Don't confuse this with adding a subView TO this object.
+            /// </summary>
             public abstract void AddAsSubview( object masterView );
 
+            /// <summary>
+            /// Removes _THIS_ object AS a subView of the masterView.
+            /// Don't confuse this with removing a subView FROM this object.
+            /// </summary>
             public abstract void RemoveAsSubview( object masterView );
         }
     }

@@ -39,7 +39,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSRevealLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSTextField.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidNative\BorderedRectViews.cs" />
@@ -50,7 +49,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\DroidImagePicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\PlatformImagePicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\iOSImagePicker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformCommon\iOSCarousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSCardCarousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformCardCarousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidCardCarousel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

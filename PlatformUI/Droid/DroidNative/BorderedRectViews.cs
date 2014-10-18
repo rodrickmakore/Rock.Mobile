@@ -270,7 +270,7 @@ namespace Rock.Mobile
                 }
             }
 
-            public class BorderedRectView : View
+            public class BorderedRectView : RelativeLayout
             {
                 BorderedRectPaintDrawable BorderedPaintDrawable { get; set; }
 

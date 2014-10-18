@@ -20,6 +20,19 @@ namespace Rock.Mobile
                 return new DroidView( );
                 #endif
             }
+
+            /// <summary>
+            /// If we want to use PlatformUI broadly, one concession
+            /// that needs to be made is the ability to get the 
+            /// native view so that features that aren't implemented can
+            /// be performed in native code.
+            /// </summary>
+            /// <value>The platform native object.</value>
+            public object PlatformNativeObject
+            {
+                get { return getPlatformNativeObject( ); }
+            }
+            protected abstract object getPlatformNativeObject( );
         }
     }
 }
