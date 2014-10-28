@@ -228,7 +228,7 @@ namespace Rock.Mobile
                 // will NOT be called if the user invoked the pan gesture. (which is a good thing)
                 AnimateCardsToNeutral( );
 
-                Console.WriteLine( "Touches Ended" );
+                //Console.WriteLine( "Touches Ended" );
             }
 
             /// <summary>
@@ -247,21 +247,23 @@ namespace Rock.Mobile
                 float deltaLeftX = CardDistFromCenter( LeftCard );
                 float deltaRightX = CardDistFromCenter( RightCard );
 
-                Console.WriteLine( "Right Delta: {0} Left Delta {1}", deltaRightX, deltaLeftX );
-
                 // if animating is true, we want the tolerance to be MUCH higher,
                 // allowing easier flicking to the next card.
                 // The real world effect is that if the user flicks cards,
                 // they will quickly and easily move. If the user pans on the cards,
                 // it will be harder to get them to switch.
-                float tolerance = (Animating == true) ? Rock.Mobile.PlatformUI.PlatformBaseUI.UnitToPx( 400.0f ) : Rock.Mobile.PlatformUI.PlatformBaseUI.UnitToPx( 260.0f );
+                float fastPixelTolerance = (float)BoundsInParent.Width * 1.25f;
+                float slowPixelTolerance = (float)BoundsInParent.Width * .81f;
+                float tolerance = ( Animating == true ) ? fastPixelTolerance : slowPixelTolerance;
+
+                //Console.WriteLine( "Right Delta: {0} Left Delta {1} Tolerance {2} Anim {3}", deltaRightX, deltaLeftX, tolerance, Animating );
 
                 // if we're panning LEFT, that means the right hand card might be in range to sync
                 if( System.Math.Abs(deltaRightX) < tolerance && PanDir == -1)
                 {
                     if( ViewingIndex + 1 < NumItems )
                     {
-                        Console.WriteLine( "Syncing Card Positions Right" );
+                        //Console.WriteLine( "Syncing Card Positions Right" );
 
                         ViewingIndex = ViewingIndex + 1;
                         ViewingIndexChangedDelegate( ViewingIndex );
@@ -279,7 +281,7 @@ namespace Rock.Mobile
                 {
                     if( ViewingIndex - 1 >= 0 )
                     {
-                        Console.WriteLine( "Syncing Card Positions Left" );
+                        //Console.WriteLine( "Syncing Card Positions Left" );
 
                         ViewingIndex = ViewingIndex - 1;
                         ViewingIndexChangedDelegate( ViewingIndex );

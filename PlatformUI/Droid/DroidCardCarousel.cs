@@ -18,38 +18,6 @@ namespace Rock.Mobile
         public class DroidCardCarousel : PlatformCardCarousel
         {
             /// <summary>
-            /// Manages forwarding gestures to the carousel
-            /// </summary>
-            public class CarouselGestureDetector : GestureDetector.SimpleOnGestureListener
-            {
-                public DroidCardCarousel Parent { get; set; }
-
-                public CarouselGestureDetector( DroidCardCarousel parent )
-                {
-                    Parent = parent;
-                }
-
-                public override bool OnDown(MotionEvent e)
-                {
-                    // Unlike iOS, THIS will handle TouchesBegan rather than the user of the carousel
-                    Parent.TouchesBegan( );
-                    return true;
-                }
-
-                public override bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-                {
-                    Parent.OnFling( e1, e2, velocityX, velocityY );
-                    return base.OnFling(e1, e2, velocityX, velocityY);
-                }
-
-                public override bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
-                {
-                    Parent.OnScroll( e1, e2, distanceX, distanceY );
-                    return base.OnScroll(e1, e2, distanceX, distanceY);
-                }
-            }
-
-            /// <summary>
             /// Forwards the finished animation notification
             /// </summary>
             public class CarouselAnimationListener : Android.Animation.AnimatorListenerAdapter, Android.Animation.ValueAnimator.IAnimatorUpdateListener
@@ -85,7 +53,7 @@ namespace Rock.Mobile
 
             public override void TouchesBegan( )
             {
-                Console.WriteLine( "OnDown" );
+                //Console.WriteLine( "TouchesBegan (OnDown)" );
 
                 foreach(CardValueAnimator animator in ActiveAnimators )
                 {
@@ -100,32 +68,37 @@ namespace Rock.Mobile
             {
                 if( IsPanning == true )
                 {
-                    Console.WriteLine( "Was panning. Don't call base.TouchesEnded" );
+                    //Console.WriteLine( "Was panning. Don't call base.TouchesEnded" );
                     IsPanning = false;
                     base.OnPanGesture( PanGestureState.Ended, new PointF( 0, 0 ), new PointF( 0, 0 ) );
                 }
                 else
                 {
-                    Console.WriteLine( "TouchesEnded" );
+                    //Console.WriteLine( "TouchesEnded" );
                     base.TouchesEnded();
                 }
             }
 
-            public void OnFling( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY )
+            public bool OnFling( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY )
             {
+                //Console.WriteLine( "OnFling: distanceX {0}", velocityX );
+
                 IsPanning = true;
+                return false;
             }
 
-            public void OnScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY )
+            public bool OnScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY )
             {
+                Console.WriteLine( "OnScroll: distanceX {0}", distanceX );
+
                 // flip X so it's consistent with ios, where right is positive.
                 distanceX = -distanceX;
                 IsPanning = true;
 
                 base.OnPanGesture( PanGestureState.Changed, new PointF( distanceX < 0 ? -1 : 1, 0 ), new PointF( distanceX, distanceY ) );
-            }
 
-            public GestureDetector GestureDetector { get; set; }
+                return false;
+            }
 
             public DroidCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, ViewingIndexChanged changedDelegate ) : base( cardWidth, cardHeight, boundsInParent, changedDelegate )
             {
@@ -143,8 +116,6 @@ namespace Rock.Mobile
                 CenterCard.AddAsSubview( droidParentView );
                 RightCard.AddAsSubview( droidParentView );
                 PostRightCard.AddAsSubview( droidParentView );
-
-                GestureDetector = new GestureDetector( Rock.Mobile.PlatformCommon.Droid.Context, new CarouselGestureDetector( this ) );
             }
 
             /// <summary>
@@ -182,7 +153,7 @@ namespace Rock.Mobile
             public void OnAnimationEnd(Animator animation)
             {
                 Animating = false;
-                Console.WriteLine( "Animation Stopped" );
+                //Console.WriteLine( "Animation Stopped" );
             }
         }
     }
