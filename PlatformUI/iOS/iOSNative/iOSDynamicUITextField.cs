@@ -55,6 +55,12 @@ namespace Rock.Mobile
                 protected UILabel PlaceholderLabel = new UILabel( );
 
                 /// <summary>
+                /// The height of a single line, used for padding the box while the user edits.
+                /// </summary>
+                /// <value>The height of the single line.</value>
+                protected float SingleLineHeight { get; set; }
+
+                /// <summary>
                 /// When true, the height is always set to whatever is needed to display all the text.
                 /// Any passed in height is ignored.
                 /// </summary>
@@ -127,6 +133,7 @@ namespace Rock.Mobile
                             // update our content size AND placeholder
                             ContentSize = base.Bounds.Size;
                             PlaceholderLabel.Bounds = base.Bounds;
+                            SingleLineHeight = size.Height;
                         }
                     }
                 }
@@ -274,7 +281,7 @@ namespace Rock.Mobile
                             base.Bounds = new RectangleF( base.Bounds.X, 
                                                           base.Bounds.Y, 
                                                           base.Bounds.Width,
-                                                          ContentSize.Height );
+                                                          ContentSize.Height + SingleLineHeight );
                         }
 
                         // reveal the placeholder only when text is gone.
