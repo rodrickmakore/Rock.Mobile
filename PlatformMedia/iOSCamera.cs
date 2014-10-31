@@ -15,6 +15,28 @@ namespace Rock.Mobile
     {
         class iOSCamera : PlatformCamera
         {
+            class CameraController : UIImagePickerController
+            {
+                public override bool ShouldAutorotate()
+                {
+                    if ( UIDeviceOrientation.Portrait == UIDevice.CurrentDevice.Orientation )
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+
+                public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations( )
+                {
+                    return UIInterfaceOrientationMask.Portrait;
+                }
+
+                public override UIInterfaceOrientation PreferredInterfaceOrientationForPresentation( )
+                {
+                    return UIInterfaceOrientation.Portrait;
+                }
+            }
+
             protected CaptureImageEvent CaptureImageEventDelegate { get; set; }
 
             public override bool IsAvailable( )
@@ -42,7 +64,7 @@ namespace Rock.Mobile
 
 
                 // create our camera controller
-                UIImagePickerController cameraController = new UIImagePickerController( );
+                CameraController cameraController = new CameraController( );
                 cameraController.Delegate = new UIImagePickerControllerDelegate( );
                 cameraController.SourceType = UIImagePickerControllerSourceType.Camera;
 
@@ -65,9 +87,38 @@ namespace Rock.Mobile
                             // rotate the image 0 degrees since we consider portrait to be the default position.
                             CIImage ciImage = new CIImage( e.OriginalImage.CGImage );
 
+                            float rotationDegrees = 0.00f;
+                            switch ( e.OriginalImage.Orientation )
+                            {
+                                case UIImageOrientation.Up:
+                                {
+                                    // don't do anything. The image space and the user space are 1:1
+                                    break;
+                                }
+                                case UIImageOrientation.Left:
+                                {
+                                    // the image space is rotated 90 degrees from user space,
+                                    // so do a CCW 90 degree rotation
+                                    rotationDegrees = 90.0f;
+                                    break;
+                                }
+                                case UIImageOrientation.Right:
+                                {
+                                    // the image space is rotated -90 degrees from user space,
+                                    // so do a CW 90 degree rotation
+                                    rotationDegrees = -90.0f;
+                                    break;
+                                }
+                                case UIImageOrientation.Down:
+                                {
+                                    rotationDegrees = 180;
+                                    break;
+                                }
+                            }
+
                             // create our transform and apply it to the image
                             CGAffineTransform transform = CGAffineTransform.MakeIdentity( );
-                            transform.Rotate( -90 * Rock.Mobile.Math.Util.DegToRad );
+                            transform.Rotate( rotationDegrees * Rock.Mobile.Math.Util.DegToRad );
                             CIImage rotatedImage = ciImage.ImageByApplyingTransform( transform );
 
                             // create a context and render it back out to a CGImage.
@@ -77,7 +128,6 @@ namespace Rock.Mobile
                             // put the image in the destination, converting it to jpeg.
                             cgImageDest.AddImage( rotatedCGImage, null );
 
-                            //cgImageDest.AddImage( e.EditedImage.CGImage, null );
 
                             // close and dispose.
                             if( cgImageDest.Close( ) )
