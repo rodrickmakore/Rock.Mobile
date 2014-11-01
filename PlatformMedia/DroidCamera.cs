@@ -11,6 +11,7 @@ using Android.App;
 
 using Uri = Android.Net.Uri;
 using Environment = Android.OS.Environment;
+using Android.OS;
 
 namespace Rock.Mobile
 {
@@ -29,25 +30,57 @@ namespace Rock.Mobile
             {
                 base.OnCreate( savedInstanceState );
 
-                // retrieve the desired location
+                bool didStartCamera = false;
+                if( savedInstanceState != null )
+                {
+                    // grab the last active element
+                    didStartCamera = savedInstanceState.GetBoolean( "DidStartCamera" );
+                    ImageFile = savedInstanceState.GetString( "ImageFile" );
+                }
 
-                File imageFile = (Java.IO.File) this.Intent.Extras.Get( "ImageDest" );
+                // make sure the camera hasn't already been started, which will happen if
+                // the orientation of the device is changed while looking at the camera's preview
+                // image.
+                if ( didStartCamera == false )
+                {
+                    // retrieve the desired location
+                    File imageFile = (Java.IO.File)this.Intent.Extras.Get( "ImageDest" );
 
-                // create our intent and launch the camera
-                Intent intent = new Intent( MediaStore.ActionImageCapture );
+                    // create our intent and launch the camera
+                    Intent intent = new Intent( MediaStore.ActionImageCapture );
 
-                // notify the intent where the captured image should go.
-                intent.PutExtra( MediaStore.ExtraOutput, Uri.FromFile( imageFile ) );
+                    // notify the intent where the captured image should go.
+                    intent.PutExtra( MediaStore.ExtraOutput, Uri.FromFile( imageFile ) );
 
-                // store it as an aboslute string
-                ImageFile = imageFile.AbsolutePath;
+                    // store it as an aboslute string
+                    ImageFile = imageFile.AbsolutePath;
 
-                StartActivityForResult( intent, 0 );
+                    StartActivityForResult( intent, 0 );
+                }
+            }
+
+            protected override void OnSaveInstanceState( Bundle outState )
+            {
+                base.OnSaveInstanceState( outState );
+
+                // store the last activity we were in
+                outState.PutBoolean( "DidStartCamera", true );
+                outState.PutString( "ImageFile", ImageFile );
             }
 
             protected override void OnResume( )
             {
                 base.OnResume( );
+            }
+
+            protected override void OnStop()
+            {
+                base.OnStop();
+            }
+
+            protected override void OnDestroy()
+            {
+                base.OnDestroy();
             }
 
             protected override void OnActivityResult( int requestCode, Result resultCode, Intent data )
@@ -103,17 +136,12 @@ namespace Rock.Mobile
 
             public void CameraResult( Result resultCode, string imageFile )
             {
-                if( resultCode == Result.Ok )
+                switch ( resultCode )
                 {
-                    // notify our caller it went ok and provide the image
-                    CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, imageFile ) );
+                    case Result.Ok: CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, imageFile ) ); break;
+                    case Result.Canceled: CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, null ) ); break;
+                    default: CaptureImageEventDelegate( this, new CaptureImageEventArgs( false, null ) ); break;
                 }
-                else
-                {
-                    // or provide nothing if it didn't work
-                    CaptureImageEventDelegate( this, new CaptureImageEventArgs( false, null ) );
-                }
-
             }
         }
     }
