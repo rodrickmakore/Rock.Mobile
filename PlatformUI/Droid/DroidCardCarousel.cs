@@ -89,7 +89,7 @@ namespace Rock.Mobile
 
             public bool OnScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY )
             {
-                Console.WriteLine( "OnScroll: distanceX {0}", distanceX );
+                //Console.WriteLine( "OnScroll: distanceX {0}", distanceX );
 
                 // flip X so it's consistent with ios, where right is positive.
                 distanceX = -distanceX;

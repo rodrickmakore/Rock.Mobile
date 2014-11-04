@@ -310,11 +310,11 @@ namespace Rock.Mobile
             {
                 // this will animate each card to its neutral resting point
                 Animating = true;
-                AnimateCard( SubLeftCard.PlatformNativeObject, "SubLeftCard", SubLeftCard.Position, SubLeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
-                AnimateCard( LeftCard.PlatformNativeObject, "LeftCard", LeftCard.Position, LeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
+                AnimateCard( SubLeftCard.PlatformNativeObject, "SubLeftCard", SubLeftCard.Position, SubLeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
+                AnimateCard( LeftCard.PlatformNativeObject, "LeftCard", LeftCard.Position, LeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
                 AnimateCard( CenterCard.PlatformNativeObject, "CenterCard", CenterCard.Position, CenterPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
-                AnimateCard( RightCard.PlatformNativeObject, "RightCard", RightCard.Position, RightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
-                AnimateCard( PostRightCard.PlatformNativeObject, "PostRightCard", PostRightCard.Position, PostRightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, null );
+                AnimateCard( RightCard.PlatformNativeObject, "RightCard", RightCard.Position, RightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
+                AnimateCard( PostRightCard.PlatformNativeObject, "PostRightCard", PostRightCard.Position, PostRightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
             }
         }
     }

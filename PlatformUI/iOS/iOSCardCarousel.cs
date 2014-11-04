@@ -19,6 +19,7 @@ namespace Rock.Mobile
             class CaourselAnimDelegate : CAAnimationDelegate
             {
                 public iOSCardCarousel Parent { get; set; }
+                public UIView Card { get; set; }
 
                 public override void AnimationStarted(CAAnimation anim)
                 {
@@ -27,7 +28,7 @@ namespace Rock.Mobile
 
                 public override void AnimationStopped(CAAnimation anim, bool finished)
                 {
-                    Parent.AnimationStopped( anim, finished );
+                    Parent.AnimationStopped( anim, Card, finished );
                 }
             }
 
@@ -70,7 +71,7 @@ namespace Rock.Mobile
                 PointF deltaPan = new PointF( 0, 0 );
 
                 PlatformCardCarousel.PanGestureState state = PlatformCardCarousel.PanGestureState.Began;
-                switch( obj.State )
+                switch ( obj.State )
                 {
                     case UIGestureRecognizerState.Began:
                     {
@@ -112,13 +113,6 @@ namespace Rock.Mobile
                 UIView rightCardView = RightCard.PlatformNativeObject as UIView;
                 UIView postRightCardView = PostRightCard.PlatformNativeObject as UIView;
 
-                // stop all animations
-                subLeftCardView.Layer.RemoveAllAnimations( );
-                leftCardView.Layer.RemoveAllAnimations( );
-                centerCardView.Layer.RemoveAllAnimations( );
-                rightCardView.Layer.RemoveAllAnimations( );
-                postRightCardView.Layer.RemoveAllAnimations( );
-
                 // and commit the animated positions as the actual card positions.
                 subLeftCardView.Layer.Position = subLeftCardView.Layer.PresentationLayer.Position;
                 leftCardView.Layer.Position = leftCardView.Layer.PresentationLayer.Position;
@@ -126,9 +120,21 @@ namespace Rock.Mobile
                 rightCardView.Layer.Position = rightCardView.Layer.PresentationLayer.Position;
                 postRightCardView.Layer.Position = postRightCardView.Layer.PresentationLayer.Position;
 
+                // stop all animations
+                subLeftCardView.Layer.RemoveAllAnimations( );
+                leftCardView.Layer.RemoveAllAnimations( );
+                centerCardView.Layer.RemoveAllAnimations( );
+                rightCardView.Layer.RemoveAllAnimations( );
+                postRightCardView.Layer.RemoveAllAnimations( );
+
                 // this has the effect of freezing & stopping the animation in motion.
                 // OnAnimationEnded will be called, but finished will be false, so
                 // we'll know it was stopped manually
+            }
+
+            public override void TouchesEnded()
+            {
+                base.TouchesEnded();
             }
 
             /// <summary>
@@ -136,27 +142,32 @@ namespace Rock.Mobile
             /// </summary>
             protected override void AnimateCard( object platformObject, string animName, PointF startPos, PointF endPos, float duration, PlatformCardCarousel parentDelegate )
             {
+                // make sure we're not already running an animation
                 UIView cardView = platformObject as UIView;
-                CABasicAnimation cardAnim = CABasicAnimation.FromKeyPath( "position" );
-
-                cardAnim.From = NSValue.FromPointF( startPos );
-                cardAnim.To = NSValue.FromPointF( endPos );
-
-                cardAnim.Duration = duration;
-                cardAnim.TimingFunction = CAMediaTimingFunction.FromName( CAMediaTimingFunction.EaseInEaseOut );
-
-                // these ensure we maintain the card position when finished
-                cardAnim.FillMode = CAFillMode.Forwards;
-                cardAnim.RemovedOnCompletion = false;
-
-                // if a delegate was provided, give it to the card
-                if( parentDelegate != null )
+                if ( cardView.Layer.AnimationForKey( animName ) == null )
                 {
-                    cardAnim.Delegate = new CaourselAnimDelegate() { Parent = this };
-                }
+                    CABasicAnimation cardAnim = CABasicAnimation.FromKeyPath( "position" );
 
-                // 
-                cardView.Layer.AddAnimation( cardAnim, animName );
+                    cardAnim.From = NSValue.FromPointF( startPos );
+                    cardAnim.To = NSValue.FromPointF( endPos );
+
+                    cardAnim.Duration = duration;
+                    cardAnim.TimingFunction = CAMediaTimingFunction.FromName( CAMediaTimingFunction.EaseInEaseOut );
+
+                    // these ensure we maintain the card position when finished
+                    cardAnim.FillMode = CAFillMode.Forwards;
+                    cardAnim.RemovedOnCompletion = false;
+
+
+                    // if a delegate was provided, give it to the card
+                    if ( parentDelegate != null )
+                    {
+                        cardAnim.Delegate = new CaourselAnimDelegate() { Parent = this, Card = cardView };
+                    }
+
+                    // 
+                    cardView.Layer.AddAnimation( cardAnim, animName );
+                }
             }
 
             /// <summary>
@@ -164,14 +175,14 @@ namespace Rock.Mobile
             /// </summary>
             /// <param name="anim">Animation.</param>
             /// <param name="finished">If set to <c>true</c> finished.</param>
-            void AnimationStopped( CAAnimation anim, bool finished )
+            void AnimationStopped( CAAnimation anim, UIView cardView, bool finished )
             {
                 // all we need to do is flag Animating as false (if it FINISHED)
                 // so we know how to control panning.
                 if( finished == true )
                 {
                     Animating = false;
-                    Console.WriteLine( "Animation Stopped" );
+                    //Console.WriteLine( "Animation Stopped" );
                 }
             }
         }
