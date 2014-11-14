@@ -64,7 +64,16 @@ namespace Rock.Mobile
             float CardWidth { get; set; }
             float CardHeight { get; set; }
 
-            public int NumItems { get; set; }
+            int _Numitems;
+            public int NumItems 
+            { 
+                get { return _Numitems; } 
+                set
+                {
+                    _Numitems = value;
+                    ClampCards( );
+                }
+            }
 
             public delegate void ViewingIndexChanged( int viewingIndex );
             ViewingIndexChanged ViewingIndexChangedDelegate;
@@ -77,6 +86,8 @@ namespace Rock.Mobile
 
                 ViewingIndexChangedDelegate = changedDelegate;
             }
+
+            float CardXSpacing { get; set; }
 
             /// <summary>
             /// This should be called when UI is ready, like in ViewDidLoad or OnCreateView()
@@ -96,12 +107,13 @@ namespace Rock.Mobile
                 CenterPos = new PointF( ((BoundsInParent.Width - CardWidth) / 2), BoundsInParent.Y );
 
                 // left should be exactly one screen width to the left, and right one screen width to the right
-                LeftPos = new PointF( CenterPos.X - BoundsInParent.Width, BoundsInParent.Y );
-                RightPos = new PointF( CenterPos.X + BoundsInParent.Width, BoundsInParent.Y );
+                CardXSpacing = BoundsInParent.Width * .88f;
+                LeftPos = new PointF( CenterPos.X - CardXSpacing, BoundsInParent.Y );
+                RightPos = new PointF( CenterPos.X + CardXSpacing, BoundsInParent.Y );
 
                 // sub left and post right should be two screens to the left / right of center
-                SubLeftPos = new PointF( LeftPos.X - BoundsInParent.Width, BoundsInParent.Y );
-                PostRightPos = new PointF( RightPos.X + BoundsInParent.Width, BoundsInParent.Y );
+                SubLeftPos = new PointF( LeftPos.X - CardXSpacing, BoundsInParent.Y );
+                PostRightPos = new PointF( RightPos.X + CardXSpacing, BoundsInParent.Y );
 
                 // default the initial position of the cards
                 SubLeftCard.Position = SubLeftPos;
@@ -109,6 +121,13 @@ namespace Rock.Mobile
                 CenterCard.Position = CenterPos;
                 RightCard.Position = RightPos;
                 PostRightCard.Position = PostRightPos;
+
+                // defualt all the cards to hidden and wait for numItems to be set
+                SubLeftCard.Hidden = true;
+                LeftCard.Hidden = true;
+
+                RightCard.Hidden = true;
+                PostRightCard.Hidden = true;
             }
 
             public void ViewWillAppear(bool animated)
@@ -164,24 +183,44 @@ namespace Rock.Mobile
             {
                 // don't allow the left or right cards to move if 
                 // we're at the edge of the list.
-                if( ViewingIndex - 2 < 0 )
+                if ( ViewingIndex - 2 < 0 )
                 {
+                    SubLeftCard.Hidden = true;
                     SubLeftCard.Position = SubLeftPos;
                 }
-
-                if( ViewingIndex - 1 < 0 )
+                else
                 {
+                    SubLeftCard.Hidden = false;
+                }
+
+                if ( ViewingIndex - 1 < 0 )
+                {
+                    LeftCard.Hidden = true;
                     LeftCard.Position = LeftPos;
                 }
-
-                if( ViewingIndex + 1 >= NumItems )
+                else
                 {
-                    RightCard.Position = RightPos;
+                    LeftCard.Hidden = false;
                 }
 
-                if( ViewingIndex + 2 >= NumItems )
+                if ( ViewingIndex + 1 >= NumItems )
                 {
+                    RightCard.Hidden = true;
+                    RightCard.Position = RightPos;
+                }
+                else
+                {
+                    RightCard.Hidden = false;
+                }
+
+                if ( ViewingIndex + 2 >= NumItems )
+                {
+                    PostRightCard.Hidden = true;
                     PostRightCard.Position = PostRightPos;
+                }
+                else
+                {
+                    PostRightCard.Hidden = false;
                 }
             }
 
@@ -252,8 +291,8 @@ namespace Rock.Mobile
                 // The real world effect is that if the user flicks cards,
                 // they will quickly and easily move. If the user pans on the cards,
                 // it will be harder to get them to switch.
-                float fastPixelTolerance = (float)BoundsInParent.Width * 1.25f;
-                float slowPixelTolerance = (float)BoundsInParent.Width * .81f;
+                float fastPixelTolerance = (float)CardXSpacing * 1.25f;
+                float slowPixelTolerance = (float)CardXSpacing * .81f;
                 float tolerance = ( Animating == true ) ? fastPixelTolerance : slowPixelTolerance;
 
                 //Console.WriteLine( "Right Delta: {0} Left Delta {1} Tolerance {2} Anim {3}", deltaRightX, deltaLeftX, tolerance, Animating );

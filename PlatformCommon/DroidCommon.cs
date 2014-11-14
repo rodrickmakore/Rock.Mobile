@@ -6,11 +6,39 @@ using System;
 using Android.Graphics;
 using Java.IO;
 using System.Collections.Generic;
+using Android.Widget;
+using Android.Content;
 
 namespace Rock.Mobile
 {
     namespace PlatformCommon
     {
+        /// <summary>
+        /// Subclass ImageView so we can override OnMeasure and scale up the image 
+        /// maintaining aspect ratio
+        /// </summary>
+        class DroidScaledImageView : ImageView
+        {
+            public DroidScaledImageView( Context context ) : base( context )
+            {
+            }
+
+            protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+            {
+                if ( Drawable != null )
+                {
+                    int width = MeasureSpec.GetSize( widthMeasureSpec );
+                    int height = (int)System.Math.Ceiling( width * ( (float)Drawable.IntrinsicHeight / (float)Drawable.IntrinsicWidth ) );
+
+                    SetMeasuredDimension( width, height );
+                }
+                else
+                {
+                    base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+                }
+            }
+        }
+
         /// <summary>
         /// Simple font manager so we lookup that stores fonts as we create them.
         /// That way we aren't creating new fonts for every singe label. It saves memory
