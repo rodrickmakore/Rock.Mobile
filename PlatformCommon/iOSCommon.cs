@@ -12,7 +12,7 @@ namespace Rock.Mobile
 {
     namespace PlatformCommon
     {
-        public class iOS
+        public class iOSCommon
         {
             public static UIFont LoadFontDynamic( String name, float fontSize )
             {

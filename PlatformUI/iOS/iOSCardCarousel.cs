@@ -39,7 +39,7 @@ namespace Rock.Mobile
 
             UIView ParentView { get; set; }
 
-            public iOSCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, ViewingIndexChanged changedDelegate ) : base( cardWidth, cardHeight, boundsInParent, changedDelegate )
+            public iOSCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration, ViewingIndexChanged changedDelegate ) : base( cardWidth, cardHeight, boundsInParent, animationDuration, changedDelegate )
             {
             }
 

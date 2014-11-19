@@ -17,7 +17,7 @@ namespace Rock.Mobile
         /// Subclass ImageView so we can override OnMeasure and scale up the image 
         /// maintaining aspect ratio
         /// </summary>
-        class DroidScaledImageView : ImageView
+        public class DroidScaledImageView : ImageView
         {
             public DroidScaledImageView( Context context ) : base( context )
             {

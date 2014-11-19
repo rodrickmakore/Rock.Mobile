@@ -12,14 +12,14 @@ namespace Rock.Mobile
         /// </summary>
         public abstract class PlatformCardCarousel
         {
-            public static PlatformCardCarousel Create( float cardWidth, float cardHeight, RectangleF boundsInParent, ViewingIndexChanged changedDelegate )
+            public static PlatformCardCarousel Create( float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration, ViewingIndexChanged changedDelegate )
             {
                 #if __IOS__
-                return new iOSCardCarousel( cardWidth, cardHeight, boundsInParent, changedDelegate );
+                return new iOSCardCarousel( cardWidth, cardHeight, boundsInParent, animationDuration, changedDelegate );
                 #endif
 
                 #if __ANDROID__
-                return new DroidCardCarousel( cardWidth, cardHeight, boundsInParent, changedDelegate );
+                return new DroidCardCarousel( cardWidth, cardHeight, boundsInParent, animationDuration, changedDelegate );
                 #endif
             }
 
@@ -29,6 +29,8 @@ namespace Rock.Mobile
                 Changed,
                 Ended
             };
+
+            float AnimationDuration { get; set; }
 
             // Create 5 cards so that we're guaranteed to always have cards visible on screen
             public PlatformView SubLeftCard = null;
@@ -78,8 +80,9 @@ namespace Rock.Mobile
             public delegate void ViewingIndexChanged( int viewingIndex );
             ViewingIndexChanged ViewingIndexChangedDelegate;
 
-            protected PlatformCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, ViewingIndexChanged changedDelegate )
+            protected PlatformCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration, ViewingIndexChanged changedDelegate )
             {
+                AnimationDuration = animationDuration;
                 BoundsInParent = boundsInParent;
                 CardWidth = cardWidth;
                 CardHeight = cardHeight;
@@ -349,11 +352,11 @@ namespace Rock.Mobile
             {
                 // this will animate each card to its neutral resting point
                 Animating = true;
-                AnimateCard( SubLeftCard.PlatformNativeObject, "SubLeftCard", SubLeftCard.Position, SubLeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
-                AnimateCard( LeftCard.PlatformNativeObject, "LeftCard", LeftCard.Position, LeftPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
-                AnimateCard( CenterCard.PlatformNativeObject, "CenterCard", CenterCard.Position, CenterPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
-                AnimateCard( RightCard.PlatformNativeObject, "RightCard", RightCard.Position, RightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
-                AnimateCard( PostRightCard.PlatformNativeObject, "PostRightCard", PostRightCard.Position, PostRightPos, CCVApp.Shared.Config.Prayer.Card_AnimationDuration, this );
+                AnimateCard( SubLeftCard.PlatformNativeObject, "SubLeftCard", SubLeftCard.Position, SubLeftPos, AnimationDuration, this );
+                AnimateCard( LeftCard.PlatformNativeObject, "LeftCard", LeftCard.Position, LeftPos, AnimationDuration, this );
+                AnimateCard( CenterCard.PlatformNativeObject, "CenterCard", CenterCard.Position, CenterPos, AnimationDuration, this );
+                AnimateCard( RightCard.PlatformNativeObject, "RightCard", RightCard.Position, RightPos, AnimationDuration, this );
+                AnimateCard( PostRightCard.PlatformNativeObject, "PostRightCard", PostRightCard.Position, PostRightPos, AnimationDuration, this );
             }
         }
     }

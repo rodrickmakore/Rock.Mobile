@@ -25,7 +25,7 @@ namespace Rock.Mobile
                     context.AddRect( new RectangleF( 0, 0, Frame.Width, 1 ) );
                     context.Clip();
 
-                    UIColor color = Rock.Mobile.PlatformUI.PlatformBaseUI.GetUIColor( 0x777777FF );
+                    UIColor color = PlatformBaseUI.GetUIColor( 0x777777FF );
 
                     // probably should change this to not being a gradient
                     CGGradient gradiant = new CGGradient( CGColorSpace.CreateDeviceRGB(), new CGColor[] { color.CGColor, color.CGColor });

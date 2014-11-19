@@ -33,7 +33,7 @@ namespace Rock.Mobile
             public static void Init( )
             {
                 // Preload the alpha mask image.
-                Rock.Mobile.PlatformUI.DroidNative.FadeTextView.CreateAlphaMask( Rock.Mobile.PlatformCommon.Droid.Context, "spot_mask.png" );
+                DroidNative.FadeTextView.CreateAlphaMask( Rock.Mobile.PlatformCommon.Droid.Context, "spot_mask.png" );
             }
             #endif
 

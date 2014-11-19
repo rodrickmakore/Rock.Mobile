@@ -5,6 +5,7 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.CoreGraphics;
 using MonoTouch.CoreText;
+using Rock.Mobile.PlatformCommon;
 using Rock.Mobile.PlatformUI.iOSNative;
 
 namespace Rock.Mobile
@@ -33,7 +34,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    TextField.Font = PlatformCommon.iOS.LoadFontDynamic(fontName, fontSize);
+                    TextField.Font = iOSCommon.LoadFontDynamic(fontName, fontSize);
                 } 
                 catch
                 {
