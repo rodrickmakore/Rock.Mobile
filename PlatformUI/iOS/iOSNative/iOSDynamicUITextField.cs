@@ -4,6 +4,7 @@ using System;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Drawing;
+using Rock.Mobile.PlatformCommon;
 
 namespace Rock.Mobile
 {
@@ -24,7 +25,7 @@ namespace Rock.Mobile
 
                 public override bool ShouldBeginEditing(UITextView textView)
                 {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( "TextFieldDidBeginEditing", NSValue.FromRectangleF( textView.Frame ) );
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromRectangleF( textView.Frame ) );
                     return true;
                 }
 
@@ -40,7 +41,7 @@ namespace Rock.Mobile
 
                 public override void Changed(UITextView textView)
                 {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( "TextFieldChanged", NSValue.FromRectangleF( textView.Frame ) );
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromRectangleF( textView.Frame ) );
                 }
             }
 
@@ -93,7 +94,7 @@ namespace Rock.Mobile
 
                     // initialize our placeholder label. Its z pos should ALWAYS be just in front of us.
                     PlaceholderLabel.Layer.AnchorPoint = new PointF( 0, 0 );
-                    PlaceholderLabel.Layer.ZPosition = Layer.ZPosition + 1;
+                    PlaceholderLabel.Layer.ZPosition = Layer.ZPosition;
                     PlaceholderLabel.BackgroundColor = UIColor.Clear;
                 }
 
