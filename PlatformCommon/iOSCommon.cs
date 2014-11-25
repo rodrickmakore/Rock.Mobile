@@ -227,7 +227,8 @@ namespace Rock.Mobile
                     float scrollAmount = (Edit_VisibleAreaWithKeyboardBot - Edit_TappedTextFieldFrame.Bottom);
 
                     // clamp to the legal amount we can scroll "down"
-                    scrollAmount = System.Math.Min( scrollAmount, ParentScrollView.ContentOffset.Y );
+                    // Don't factor in a negative ContentOffset. That could only happen if the view isn't actually going to scroll because all content fits on it.
+                    scrollAmount = System.Math.Min( scrollAmount, System.Math.Max( 0, ParentScrollView.ContentOffset.Y ) ); 
 
                     // Now determine the amount of "up" scroll remaining
                     float maxScrollAmount = ParentScrollView.ContentSize.Height - ParentScrollView.Bounds.Height;
