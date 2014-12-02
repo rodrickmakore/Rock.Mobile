@@ -8,11 +8,71 @@ using Java.IO;
 using System.Collections.Generic;
 using Android.Widget;
 using Android.Content;
+using Android.Views;
+using Rock.Mobile.PlatformUI;
 
 namespace Rock.Mobile
 {
     namespace PlatformCommon
     {
+        public class CircleView : View
+        {
+            public PointF Position { get; set; }
+            public float Radius { get; set; }
+
+            float _StrokeWidth;
+            public float StrokeWidth
+            {
+                get
+                {
+                    return _StrokeWidth;
+                }
+                set
+                {
+                    _StrokeWidth = value;
+                    UpdatePaint( );
+                }
+            }
+
+            Color _Color;
+            public Color Color
+            {
+                get
+                {
+                    return _Color;
+                }
+                set
+                {
+                    _Color = value;
+                    UpdatePaint( );
+                }
+            }
+
+            Paint Paint { get; set; }
+
+            void UpdatePaint( )
+            {
+                Paint.SetStyle( Android.Graphics.Paint.Style.Stroke );
+                Paint.Color = Color;
+                Paint.StrokeWidth = PlatformBaseUI.UnitToPx( StrokeWidth );
+            }
+
+            public CircleView( Android.Content.Context c ) : base( c )
+            {
+                Paint = new Paint();
+                Position = new PointF( 0, 0 );
+
+                UpdatePaint( );
+            }
+
+            protected override void OnDraw(Canvas canvas)
+            {
+                base.OnDraw( canvas );
+
+                canvas.DrawCircle( PlatformBaseUI.UnitToPx( Position.X ), PlatformBaseUI.UnitToPx( Position.Y ), PlatformBaseUI.UnitToPx( Radius ), Paint );
+            }
+        }
+
         /// <summary>
         /// Subclass ImageView so we can override OnMeasure and scale up the image 
         /// maintaining aspect ratio
