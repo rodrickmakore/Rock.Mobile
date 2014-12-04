@@ -27,6 +27,11 @@ namespace Rock.Mobile
                 ActivityIndicator.Layer.Position = new PointF( ( frame.Width - ActivityIndicator.Bounds.Width ) / 2, ( frame.Height - ActivityIndicator.Bounds.Height ) / 2 );
 
                 AddSubview( ActivityIndicator );
+
+                BackgroundColor = UIColor.Black;
+
+                Layer.Opacity = 0.00f;
+                ActivityIndicator.Hidden = true;
             }
 
             public delegate void OnAnimComplete( );

@@ -77,6 +77,18 @@ namespace Rock.Mobile
                 }
             }
 
+            public bool Hidden
+            {
+                set
+                {
+                    SubLeftCard.Hidden = value;
+                    LeftCard.Hidden = value;
+                    CenterCard.Hidden = value;
+                    RightCard.Hidden = value;
+                    PostRightCard.Hidden = value;
+                }
+            }
+
             public delegate void ViewingIndexChanged( int viewingIndex );
             ViewingIndexChanged ViewingIndexChangedDelegate;
 
