@@ -17,7 +17,6 @@ namespace Rock.Mobile
     {
         public class CircleView : View
         {
-            public PointF Position { get; set; }
             public float Radius { get; set; }
 
             float _StrokeWidth;
@@ -48,11 +47,25 @@ namespace Rock.Mobile
                 }
             }
 
+            Android.Graphics.Paint.Style _Style;
+            public Android.Graphics.Paint.Style Style
+            {
+                get
+                {
+                    return _Style;
+                }
+                set
+                {
+                    _Style = value;
+                    UpdatePaint( );
+                }
+            }
+
             Paint Paint { get; set; }
 
             void UpdatePaint( )
             {
-                Paint.SetStyle( Android.Graphics.Paint.Style.Stroke );
+                Paint.SetStyle( Style );
                 Paint.Color = Color;
                 Paint.StrokeWidth = PlatformBaseUI.UnitToPx( StrokeWidth );
             }
@@ -60,7 +73,9 @@ namespace Rock.Mobile
             public CircleView( Android.Content.Context c ) : base( c )
             {
                 Paint = new Paint();
-                Position = new PointF( 0, 0 );
+
+                // default the style to stroke only
+                Style = Android.Graphics.Paint.Style.Stroke;
 
                 UpdatePaint( );
             }
@@ -69,7 +84,12 @@ namespace Rock.Mobile
             {
                 base.OnDraw( canvas );
 
-                canvas.DrawCircle( PlatformBaseUI.UnitToPx( Position.X ), PlatformBaseUI.UnitToPx( Position.Y ), PlatformBaseUI.UnitToPx( Radius ), Paint );
+                // center the drawing area
+                float xPos = canvas.Width / 2;
+                float yPos = canvas.Height / 2;
+
+                // and render
+                canvas.DrawCircle( xPos, yPos, PlatformBaseUI.UnitToPx( Radius ), Paint );
             }
         }
 

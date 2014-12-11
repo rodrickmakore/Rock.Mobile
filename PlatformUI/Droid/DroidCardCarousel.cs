@@ -153,6 +153,7 @@ namespace Rock.Mobile
             public void OnAnimationEnd(Animator animation)
             {
                 Animating = false;
+
                 //Console.WriteLine( "Animation Stopped" );
             }
         }

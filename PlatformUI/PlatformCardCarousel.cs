@@ -150,12 +150,18 @@ namespace Rock.Mobile
                 ViewingIndex = 0;
             }
 
+            //int numSamples { get; set; }
+            //PointF mAvgPan = new PointF( );
+
             public void OnPanGesture(PanGestureState state, PointF currVelocity, PointF deltaPan) 
             {
                 switch( state )
                 {
                     case PanGestureState.Began:
                     {
+                        //numSamples = 1;
+                        //mAvgPan = deltaPan;
+
                         // when panning begins, clear our pan values
                         PanDir = 0;
                         break;
@@ -163,6 +169,15 @@ namespace Rock.Mobile
 
                     case PanGestureState.Changed:
                     {
+                        //PointF filteredPan = new PointF();
+
+                        /*numSamples++;
+                        mAvgPan.X += deltaPan.X;
+                        mAvgPan.Y += deltaPan.Y;
+
+                        filteredPan.X = mAvgPan.X / numSamples;
+                        filteredPan.Y = mAvgPan.Y / numSamples;*/
+
                         // use the velocity to determine the direction of the pan
                         if( currVelocity.X < 0 )
                         {
@@ -172,6 +187,8 @@ namespace Rock.Mobile
                         {
                             PanDir = 1;
                         }
+
+                        //Console.WriteLine( "Delta Pan: {0}, {1}", deltaPan, filteredPan );
 
                         // Update the positions of the cards
                         TryPanCards( deltaPan );
@@ -189,6 +206,9 @@ namespace Rock.Mobile
                     {
                         // when panning is complete, restore the cards to their natural positions
                         AnimateCardsToNeutral( );
+
+                        //numSamples = 0;
+                        //mAvgPan = PointF.Empty;
                         break;
                     }
                 }
@@ -295,7 +315,7 @@ namespace Rock.Mobile
             /// prayers back, or pull cards back and push cards forward, giving the illusion
             /// of endlessly panning thru cards.
             /// </summary>
-            void SyncCardPositionsForPan( )
+            protected void SyncCardPositionsForPan( )
             {
                 // see if the center of either the left or right card crosses the threshold for switching
                 float deltaLeftX = CardDistFromCenter( LeftCard );
@@ -317,7 +337,11 @@ namespace Rock.Mobile
                 {
                     if( ViewingIndex + 1 < NumItems )
                     {
+                        Rock.Mobile.Profiler.Instance.Start( "Sync Card Pos" );
+
                         //Console.WriteLine( "Syncing Card Positions Right" );
+
+                        //Console.WriteLine( "Before CenterCard: {0}, RightCard: {1}", CenterCard.Position, RightCard.Position );
 
                         ViewingIndex = ViewingIndex + 1;
                         ViewingIndexChangedDelegate( ViewingIndex );
@@ -328,6 +352,12 @@ namespace Rock.Mobile
                         CenterCard.Position = new PointF( deltaRightX + CenterPos.X, CenterPos.Y );
                         RightCard.Position = new PointF( deltaRightX + RightPos.X, RightPos.Y );
                         PostRightCard.Position = new PointF( deltaRightX + PostRightPos.X, RightPos.Y );
+                        //Rock.Mobile.Profiler.Instance.Stop( "Update Positions?" );
+
+                        Rock.Mobile.Profiler.Instance.Stop( "Sync Card Pos" );
+
+                        //Console.WriteLine( "After CenterCard: {0}, RightCard: {1}", CenterCard.Position, RightCard.Position );
+
                     }
                 }
                 // if we're panning RIGHT, that means the left hand card might be in range to sync
@@ -335,7 +365,11 @@ namespace Rock.Mobile
                 {
                     if( ViewingIndex - 1 >= 0 )
                     {
+                        Rock.Mobile.Profiler.Instance.Start( "Sync Card Pos" );
+
                         //Console.WriteLine( "Syncing Card Positions Left" );
+
+                        //Console.WriteLine( "Before CenterCard: {0}, LeftCard: {1}", CenterCard.Position, LeftCard.Position );
 
                         ViewingIndex = ViewingIndex - 1;
                         ViewingIndexChangedDelegate( ViewingIndex );
@@ -346,6 +380,10 @@ namespace Rock.Mobile
                         CenterCard.Position = new PointF( deltaLeftX + CenterPos.X, CenterPos.Y );
                         RightCard.Position = new PointF( deltaLeftX + RightPos.X, RightPos.Y );
                         PostRightCard.Position = new PointF( deltaLeftX + PostRightPos.X, RightPos.Y );
+
+                        Rock.Mobile.Profiler.Instance.Stop( "Sync Card Pos" );
+
+                        //Console.WriteLine( "After CenterCard: {0}, LeftCard: {1}", CenterCard.Position, LeftCard.Position );
                     }
                 }
             }
@@ -364,6 +402,7 @@ namespace Rock.Mobile
             {
                 // this will animate each card to its neutral resting point
                 Animating = true;
+
                 AnimateCard( SubLeftCard.PlatformNativeObject, "SubLeftCard", SubLeftCard.Position, SubLeftPos, AnimationDuration, this );
                 AnimateCard( LeftCard.PlatformNativeObject, "LeftCard", LeftCard.Position, LeftPos, AnimationDuration, this );
                 AnimateCard( CenterCard.PlatformNativeObject, "CenterCard", CenterCard.Position, CenterPos, AnimationDuration, this );
