@@ -13,6 +13,7 @@ using Rock.Mobile.PlatformCommon;
 using Android.Util;
 using Android.Text;
 using Java.Lang;
+using Java.Lang.Reflect;
 
 namespace Rock.Mobile
 {
@@ -72,6 +73,8 @@ namespace Rock.Mobile
                 }
             }
 
+            static Field CursorResource { get; set; }
+
             public DroidTextField( )
             {
                 TextField = new BorderedRectEditText( Rock.Mobile.PlatformCommon.Droid.Context );
@@ -88,6 +91,13 @@ namespace Rock.Mobile
 
                 // let the dummy request focus so that the edit field doesn't get it and bring up the keyboard.
                 DummyView.RequestFocus();
+
+                // use reflection to get a reference to the textField's cursor resource
+                if ( CursorResource == null )
+                {
+                    CursorResource = Java.Lang.Class.ForName( "android.widget.TextView" ).GetDeclaredField( "mCursorDrawableRes" );
+                    CursorResource.Accessible = true;
+                }
             }
 
             // Properties
@@ -113,6 +123,20 @@ namespace Rock.Mobile
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 TextField.SetBackgroundColor( GetUIColor( backgroundColor ) );
+
+                // normalize the color so we can determine what color to use for the cursor
+                float normalizedColor = (float) backgroundColor / (float)0xFFFFFFFF;
+
+                // background is closer to white, use a dark cursor
+                if ( normalizedColor > .50f )
+                {
+                    CursorResource.Set( TextField, Droid.Resource.Drawable.dark_cursor );
+                }
+                else
+                {
+                    // background is closer to black, use a light cursor
+                    CursorResource.Set( TextField, Droid.Resource.Drawable.light_cursor );
+                }
             }
 
             protected override void setBorderColor( uint borderColor )

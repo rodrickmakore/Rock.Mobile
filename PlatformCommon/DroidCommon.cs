@@ -165,7 +165,7 @@ namespace Rock.Mobile
             // beeee sure to set this for android!
             public static Android.Content.Context Context = null;
 
-            public static Bitmap ApplyMaskToBitmap( Bitmap image, Bitmap mask )
+            public static Bitmap ApplyMaskToBitmap( Bitmap image, Bitmap mask, int x, int y )
             {
                 // create a bitmap that will be our result
                 Bitmap result = Bitmap.CreateBitmap( image.Width, image.Height, Bitmap.Config.Argb8888 );
@@ -181,7 +181,7 @@ namespace Rock.Mobile
                     using( Paint paint = new Paint( PaintFlags.AntiAlias ) )
                     {
                         paint.SetXfermode( new PorterDuffXfermode( PorterDuff.Mode.DstOut ) );
-                        canvas.DrawBitmap( mask, 0, 0, paint );
+                        canvas.DrawBitmap( mask, x, y, paint );
                     }
                 }
 

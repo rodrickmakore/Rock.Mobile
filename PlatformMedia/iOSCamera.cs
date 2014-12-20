@@ -140,9 +140,12 @@ namespace Rock.Mobile
                     transform.Rotate( rotationDegrees * Rock.Mobile.Math.Util.DegToRad );
                     CIImage rotatedImage = ciImage.ImageByApplyingTransform( transform );
 
-                    // create a context and render it back out to a CGImage.
+                    // create a context and render it back out to a CGImage. (Cast to ints so we account for any floating point error)
                     CIContext ciContext = CIContext.FromOptions( null );
-                    CGImage rotatedCGImage = ciContext.CreateCGImage( rotatedImage, rotatedImage.Extent );
+                    CGImage rotatedCGImage = ciContext.CreateCGImage( rotatedImage, new System.Drawing.RectangleF( (int)rotatedImage.Extent.X, 
+                                                                                                                   (int)rotatedImage.Extent.Y, 
+                                                                                                                   (int)rotatedImage.Extent.Width, 
+                                                                                                                   (int)rotatedImage.Extent.Height ) );
 
                     // put the image in the destination, converting it to jpeg.
                     cgImageDest.AddImage( rotatedCGImage, null );
