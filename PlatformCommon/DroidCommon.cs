@@ -23,7 +23,7 @@ namespace Rock.Mobile
             /// <value>The masked cutout.</value>
             Bitmap Layer { get; set; }
 
-            Bitmap AlphaMask { get; set; }
+            System.Drawing.SizeF AlphaMask { get; set; }
 
             /// <summary>
             /// The opacity of the layered region
@@ -66,35 +66,26 @@ namespace Rock.Mobile
                 Layer = Bitmap.CreateBitmap( layerWidth, layerHeight, Bitmap.Config.Alpha8 );
                 Layer.EraseColor( Color.Black );
 
-                // now create the mask portion
-                AlphaMask = Bitmap.CreateBitmap( maskWidth, maskHeight, Bitmap.Config.Alpha8 );
-                AlphaMask.EraseColor( Color.Black );
+                // now define the mask portion
+                AlphaMask = new System.Drawing.SizeF( maskWidth, maskHeight );
             }
 
             protected override void OnDraw(Canvas canvas)
             {
-                // create a canvas containing the layer, which we'll render the mask into
-                using ( Canvas renderCanvas = new Canvas( Layer ) )
-                {
-                    // render the mask into the layer, which effectively "cuts out" the masked portion
-                    // putting a hole in the layer.
-                    using ( Paint paint = new Paint( PaintFlags.AntiAlias ) )
-                    {
-                        // fill the layer with black 
-                        renderCanvas.DrawColor( Color.Black );
-
-                        // render the new masked portion
-                        paint.SetXfermode( new PorterDuffXfermode( PorterDuff.Mode.DstOut ) );
-                        renderCanvas.DrawBitmap( AlphaMask, Position.X, Position.Y, paint );
-                    }
-                }
+                // Note: The reason we do it like this, so simply, is that there's a huge performanceh it to rendering into our own canvas. I'm not sure why,
+                // because i haven't taken the time to R&D it, but I think it has something to do with the canvas they provide being GPU based and mine being on the CPU, or
+                // at least causing the GPU texture to have to be flushed and re-DMA'd.
 
                 // Source is what this MaskLayer contains and will draw into canvas.
                 // Destination is the buffer IN canvas
-                using( Paint paint = new Paint( PaintFlags.AntiAlias ) )
+                using( Paint paint = new Paint( ) )
                 {
                     paint.Alpha = _Opacity;
-                    paint.SetXfermode( new PorterDuffXfermode( PorterDuff.Mode.DstOut ) );
+
+                    // set a clipping region that excludes the alpha mask region
+                    canvas.ClipRect( new Rect( (int)Position.X, (int)Position.Y, (int)Position.X + (int)AlphaMask.Width, (int)Position.Y + (int)AlphaMask.Height ), Region.Op.Xor );
+
+                    // and render the full image into the canvas (which will have the effect of masking only the area we care about
                     canvas.DrawBitmap( Layer, 0, 0, paint );
                 }
             }
