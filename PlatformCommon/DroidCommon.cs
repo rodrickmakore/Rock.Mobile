@@ -15,6 +15,91 @@ namespace Rock.Mobile
 {
     namespace PlatformCommon
     {
+        class MaskLayer : View
+        {
+            /// <summary>
+            /// Represents the bitmap that contains the fullscreen mask with a cutout for the "masked" portion
+            /// </summary>
+            /// <value>The masked cutout.</value>
+            Bitmap Layer { get; set; }
+
+            Bitmap AlphaMask { get; set; }
+
+            /// <summary>
+            /// The opacity of the layered region
+            /// </summary>
+            /// <value>The opacity.</value>
+            int _Opacity;
+            public float Opacity
+            { 
+                get
+                {
+                    return (float)  _Opacity / 255.0f;
+                }
+
+                set
+                {
+                    _Opacity = (int)( value * 255.0f );
+                }
+            }
+
+            PointF _Position;
+            public PointF Position
+            {
+                get
+                {
+                    return _Position;
+                }
+                set
+                {
+                    _Position = value;
+                    Invalidate( );
+                }
+            }
+
+            public MaskLayer( int layerWidth, int layerHeight, int maskWidth, int maskHeight, Context context ) : base( context )
+            {
+                Position = new PointF( );
+                Opacity = 1.00f;
+
+                // first create the full layer
+                Layer = Bitmap.CreateBitmap( layerWidth, layerHeight, Bitmap.Config.Alpha8 );
+                Layer.EraseColor( Color.Black );
+
+                // now create the mask portion
+                AlphaMask = Bitmap.CreateBitmap( maskWidth, maskHeight, Bitmap.Config.Alpha8 );
+                AlphaMask.EraseColor( Color.Black );
+            }
+
+            protected override void OnDraw(Canvas canvas)
+            {
+                // create a canvas containing the layer, which we'll render the mask into
+                using ( Canvas renderCanvas = new Canvas( Layer ) )
+                {
+                    // render the mask into the layer, which effectively "cuts out" the masked portion
+                    // putting a hole in the layer.
+                    using ( Paint paint = new Paint( PaintFlags.AntiAlias ) )
+                    {
+                        // fill the layer with black 
+                        renderCanvas.DrawColor( Color.Black );
+
+                        // render the new masked portion
+                        paint.SetXfermode( new PorterDuffXfermode( PorterDuff.Mode.DstOut ) );
+                        renderCanvas.DrawBitmap( AlphaMask, Position.X, Position.Y, paint );
+                    }
+                }
+
+                // Source is what this MaskLayer contains and will draw into canvas.
+                // Destination is the buffer IN canvas
+                using( Paint paint = new Paint( PaintFlags.AntiAlias ) )
+                {
+                    paint.Alpha = _Opacity;
+                    paint.SetXfermode( new PorterDuffXfermode( PorterDuff.Mode.DstOut ) );
+                    canvas.DrawBitmap( Layer, 0, 0, paint );
+                }
+            }
+        }
+
         public class CircleView : View
         {
             public float Radius { get; set; }
