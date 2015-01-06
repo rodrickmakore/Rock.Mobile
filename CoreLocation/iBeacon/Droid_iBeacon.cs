@@ -1,4 +1,4 @@
-﻿#if __ANDROID__
+﻿#if __ANDROID_18__
 using System;
 using System.Collections.Generic;
 
@@ -446,6 +446,72 @@ namespace Rock.Mobile
                     {
                         return false;
                     }
+                }
+            }
+        }
+    }
+}
+#elif __ANDROID__
+using System;
+using System.Collections.Generic;
+
+using Android.App;
+
+namespace Rock.Mobile
+{
+    namespace CoreLocation
+    {
+        namespace iBeacon
+        {
+            public class DroidLocationManager : LocationManager
+            {
+                public DroidLocationManager( )
+                {
+                }
+
+                ~DroidLocationManager()
+                {
+                }
+
+                public override void StartMonitoring( BeaconRegion region )
+                {
+                }
+
+                public override void StopMonitoring( BeaconRegion region )
+                {
+                }
+
+                public override void RequestStateForRegion( BeaconRegion region )
+                {
+                }
+
+                public override void StartRangingBeacons( BeaconRegion region )
+                {
+                }
+
+                public override void StopRangingBeacons( BeaconRegion region )
+                {
+                }
+
+                public void BindIBeaconManager( Activity mainActivity )
+                {
+                }
+
+                public void UnBindIBeaconManager( Activity mainActivity )
+                {
+                }
+
+                public void EnterForegroundMode( Activity mainActivity )
+                {
+                }
+
+                public void EnterBackgroundMode( Activity mainActivity )
+                {
+                }
+
+                public override bool IsAvailable( )
+                {
+                    return false;
                 }
             }
         }

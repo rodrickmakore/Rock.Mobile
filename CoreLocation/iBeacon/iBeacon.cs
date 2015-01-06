@@ -126,8 +126,10 @@ namespace Rock.Mobile
 					return new iOSBeaconRegion(uuid, regionTag);
                     #endif
 
-                    #if __ANDROID__
+                    #if __ANDROID_18__
                     return new DroidBeaconRegion( uuid, regionTag );
+                    #elif __ANDROID__
+                    return null;
                     #endif
                 }
             }
