@@ -103,7 +103,7 @@ namespace Rock.Mobile
             {
                 // is there an activity that can get pictures (which is true only if there's a camera)
                 Intent intent = new Intent( MediaStore.ActionImageCapture );
-                IList<ResolveInfo> availableActivities = Rock.Mobile.PlatformCommon.Droid.Context.PackageManager.QueryIntentActivities( intent, PackageInfoFlags.MatchDefaultOnly );
+                IList<ResolveInfo> availableActivities = Rock.Mobile.PlatformSpecific.Android.Core.Context.PackageManager.QueryIntentActivities( intent, PackageInfoFlags.MatchDefaultOnly );
 
                 return availableActivities != null && availableActivities.Count > 0;
             }
@@ -112,10 +112,10 @@ namespace Rock.Mobile
             public override void CaptureImage( object imageDest, object context, CaptureImageEvent callback )
             {
                 // ensure the context passed in is valid.
-                Activity activity = Rock.Mobile.PlatformCommon.Droid.Context as Activity;
+                Activity activity = Rock.Mobile.PlatformSpecific.Android.Core.Context as Activity;
                 if( activity == null )
                 {
-                    throw new Exception( "Rock.Mobile.PlatformCommon.Droid.Context must be of type Activity." );
+                    throw new Exception( "Rock.Mobile.PlatformSpecific.Android.Core.Context must be of type Activity." );
                 }
 
                 // store the location they want the file to be in.

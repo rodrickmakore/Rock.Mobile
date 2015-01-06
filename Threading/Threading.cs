@@ -3,18 +3,15 @@
 #if __IOS__
 using MonoTouch.Foundation;
 
-namespace Rock.Mobile
+namespace Rock.Mobile.Threading
 {
-    namespace Threading
+    public class Util
     {
-        public class UIThreading
-        {
-            public delegate void ThreadTask( );
+        public delegate void ThreadTask( );
 
-            public static void PerformOnUIThread( ThreadTask task )
-            {
-                new NSObject().InvokeOnMainThread( new NSAction( task ) );
-            }
+        public static void PerformOnUIThread( ThreadTask task )
+        {
+            new NSObject().InvokeOnMainThread( new NSAction( task ) );
         }
     }
 }
@@ -22,19 +19,17 @@ namespace Rock.Mobile
 
 #if __ANDROID__
 using Android.App;
+using Droid;
 
-namespace Rock.Mobile
+namespace Rock.Mobile.Threading
 {
-    namespace Threading
+    public class Util
     {
-        public class UIThreading
-        {
-            public delegate void ThreadTask( );
+        public delegate void ThreadTask( );
 
-            public static void PerformOnUIThread( ThreadTask task )
-            {
-                ((Activity)Rock.Mobile.PlatformCommon.Droid.Context).RunOnUiThread( new System.Action( task ) );
-            }
+        public static void PerformOnUIThread( ThreadTask task )
+        {
+            ((Activity)Rock.Mobile.PlatformSpecific.Android.Core.Context).RunOnUiThread( new System.Action( task ) );
         }
     }
 }

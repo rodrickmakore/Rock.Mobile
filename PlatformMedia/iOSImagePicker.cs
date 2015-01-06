@@ -62,7 +62,7 @@ namespace Rock.Mobile
             protected void FinishedCallback( bool result, UIImage image, UIImagePickerController imageController )
             {
                 // notify the callback on the UI thread
-                Rock.Mobile.Threading.UIThreading.PerformOnUIThread( delegate
+                Rock.Mobile.Threading.Util.PerformOnUIThread( delegate
                     {
                         imageController.DismissViewController( true, null );
                         ImagePickEventDelegate( this, new ImagePickEventArgs( result, image ) );

@@ -173,7 +173,7 @@ namespace Rock.Mobile
             protected void CameraFinishedCallback( bool result, string imagePath )
             {
                 // notify the callback on the UI thread
-                Rock.Mobile.Threading.UIThreading.PerformOnUIThread( delegate
+                Rock.Mobile.Threading.Util.PerformOnUIThread( delegate
                     {
                         CameraController.Instance.DismissViewController( true, delegate { } );
                         CaptureImageEventDelegate( this, new CaptureImageEventArgs( result, imagePath ) );

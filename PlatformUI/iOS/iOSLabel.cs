@@ -5,7 +5,6 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.CoreGraphics;
 using MonoTouch.CoreText;
-using Rock.Mobile.PlatformCommon;
 
 namespace Rock.Mobile
 {
@@ -33,7 +32,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    Label.Font = iOSCommon.LoadFontDynamic(fontName, fontSize);
+                    Label.Font = Rock.Mobile.PlatformSpecific.iOS.Graphics.FontManager.GetFont(fontName, fontSize);
                 } 
                 catch
                 {
@@ -43,12 +42,12 @@ namespace Rock.Mobile
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                Label.Layer.BackgroundColor = GetUIColor( backgroundColor ).CGColor;
+                Label.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
             protected override void setBorderColor( uint borderColor )
             {
-                Label.Layer.BorderColor = GetUIColor( borderColor ).CGColor;
+                Label.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
             protected override float getBorderWidth()
@@ -121,7 +120,7 @@ namespace Rock.Mobile
 
             protected override void setTextColor( uint color )
             {
-                Label.TextColor = GetUIColor( color );
+                Label.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
             }
 
             protected override string getText( )

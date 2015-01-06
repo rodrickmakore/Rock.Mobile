@@ -13,10 +13,13 @@
     <Folder Include="$(MSBuildThisFileDirectory)Network\" />
     <Folder Include="$(MSBuildThisFileDirectory)Math\" />
     <Folder Include="$(MSBuildThisFileDirectory)Threading\" />
-    <Folder Include="$(MSBuildThisFileDirectory)PlatformCommon\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformUI\" />
     <Folder Include="$(MSBuildThisFileDirectory)Profiler\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformMedia\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformSpecific\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformGraphics\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
@@ -25,8 +28,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\HttpWebRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\Threading.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformCommon\DroidCommon.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformCommon\iOSCommon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformBaseUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformTextField.cs" />
@@ -52,6 +53,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSCardCarousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformCardCarousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidCardCarousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\Graphics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\Animation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformGraphics\Util.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\System.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Util.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\UI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Graphics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

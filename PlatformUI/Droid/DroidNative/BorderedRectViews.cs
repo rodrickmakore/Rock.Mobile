@@ -48,7 +48,7 @@ namespace Rock.Mobile
                     set
                     {
                         _BorderWidthDP = value;
-                        _BorderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, value, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                        _BorderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, value, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
                     }
                 }
 
@@ -79,7 +79,7 @@ namespace Rock.Mobile
                         _RadiusDP = value;
 
                         // convert to pixels
-                        _Radius = TypedValue.ApplyDimension(ComplexUnitType.Dip, value, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                        _Radius = TypedValue.ApplyDimension(ComplexUnitType.Dip, value, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
 
                         // create a shape with the new radius
                         Shape = new RoundRectShape( new float[] { _Radius, 
@@ -174,7 +174,7 @@ namespace Rock.Mobile
                     BorderedRectPaintDrawable paintDrawable = Background as BorderedRectPaintDrawable;
                     if( paintDrawable != null )
                     {
-                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
                         canvas.Translate( borderWidth, borderWidth );
                     }
 
@@ -194,7 +194,7 @@ namespace Rock.Mobile
                     if( string.IsNullOrEmpty( Text ) != true )
                     {
                         // now adjust for the border
-                        borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                        borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
                     }
 
                     MeasuredWidth = base.MeasuredWidth + (int)(borderSize * 2);
@@ -247,7 +247,7 @@ namespace Rock.Mobile
                     BorderedRectPaintDrawable paintDrawable = Background as BorderedRectPaintDrawable;
                     if( paintDrawable != null )
                     {
-                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
                         canvas.Translate( borderWidth, borderWidth );
                     }
 
@@ -263,7 +263,7 @@ namespace Rock.Mobile
                     base.Measure( widthMeasureSpec, heightMeasureSpec );
 
                     // now adjust for the border
-                    float borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                    float borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
 
                     MeasuredWidth = base.MeasuredWidth + (int)(borderSize * 2);
                     MeasuredHeight = base.MeasuredHeight + (int)(borderSize * 2);
@@ -314,7 +314,7 @@ namespace Rock.Mobile
                     BorderedRectPaintDrawable paintDrawable = Background as BorderedRectPaintDrawable;
                     if( paintDrawable != null )
                     {
-                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
+                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
                         canvas.Translate( borderWidth, borderWidth );
                     }
 

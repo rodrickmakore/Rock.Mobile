@@ -75,7 +75,7 @@ namespace Rock.Mobile
                     restClient.ExecuteAsync( request, response => 
                         {
                             // exception or not, notify the caller of the desponse
-                            Rock.Mobile.Threading.UIThreading.PerformOnUIThread( delegate 
+                            Rock.Mobile.Threading.Util.PerformOnUIThread( delegate 
                                 { 
                                     resultHandler( response != null ? response.StatusCode : HttpStatusCode.RequestTimeout, 
                                         response != null ? response.StatusDescription : "Client has no connection.", 
@@ -88,7 +88,7 @@ namespace Rock.Mobile
                     restClient.ExecuteAsync<TModel>( request, response => 
                         {
                             // exception or not, notify the caller of the desponse
-                            Rock.Mobile.Threading.UIThreading.PerformOnUIThread( delegate 
+                            Rock.Mobile.Threading.Util.PerformOnUIThread( delegate 
                                 { 
                                     resultHandler( response != null ? response.StatusCode : HttpStatusCode.RequestTimeout, 
                                         response != null ? response.StatusDescription : "Client has no connection.", 

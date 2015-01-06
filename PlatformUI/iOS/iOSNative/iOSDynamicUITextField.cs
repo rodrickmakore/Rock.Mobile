@@ -4,7 +4,6 @@ using System;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Drawing;
-using Rock.Mobile.PlatformCommon;
 
 namespace Rock.Mobile
 {
@@ -25,7 +24,7 @@ namespace Rock.Mobile
 
                 public override bool ShouldBeginEditing(UITextView textView)
                 {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromRectangleF( textView.Frame ) );
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromRectangleF( textView.Frame ) );
                     return true;
                 }
 
@@ -41,7 +40,7 @@ namespace Rock.Mobile
 
                 public override void Changed(UITextView textView)
                 {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromRectangleF( textView.Frame ) );
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromRectangleF( textView.Frame ) );
                 }
             }
 

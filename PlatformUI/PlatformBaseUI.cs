@@ -11,21 +11,6 @@ namespace Rock.Mobile
         public abstract class PlatformBaseUI
         {
             #if __ANDROID__
-            public static Android.Graphics.Color GetUIColor( uint color )
-            {
-                // break out the colors as 255 components for android
-                return new Android.Graphics.Color(
-                    ( byte )( ( color & 0xFF000000 ) >> 24 ),
-                    ( byte )( ( color & 0x00FF0000 ) >> 16 ), 
-                    ( byte )( ( color & 0x0000FF00 ) >> 8 ), 
-                    ( byte )( ( color & 0x000000FF ) ) );
-            }
-
-            public static float UnitToPx( float unit )
-            {
-                return Android.Util.TypedValue.ApplyDimension(Android.Util.ComplexUnitType.Dip, unit, Rock.Mobile.PlatformCommon.Droid.Context.Resources.DisplayMetrics);
-            }
-
             /// <summary>
             /// This should be called once at startup to allow the device to init anything
             /// that can be done before actually creating / rendering UI.
@@ -33,26 +18,11 @@ namespace Rock.Mobile
             public static void Init( )
             {
                 // Preload the alpha mask image.
-                DroidNative.FadeTextView.CreateAlphaMask( Rock.Mobile.PlatformCommon.Droid.Context, "spot_mask.png" );
+                DroidNative.FadeTextView.CreateAlphaMask( Rock.Mobile.PlatformSpecific.Android.Core.Context, "spot_mask.png" );
             }
             #endif
 
             #if __IOS__
-            public static MonoTouch.UIKit.UIColor GetUIColor( uint color )
-            {
-                // break out the colors and convert to 0-1 for iOS
-                return new MonoTouch.UIKit.UIColor(
-                ( float )( ( color & 0xFF000000 ) >> 24 ) / 255,
-                ( float )( ( color & 0x00FF0000 ) >> 16 ) / 255, 
-                ( float )( ( color & 0x0000FF00 ) >> 8 ) / 255, 
-                ( float )( ( color & 0x000000FF ) ) / 255 );
-            }
-
-            public static float UnitToPx( float unit )
-            {
-                return unit;
-            }
-
             /// <summary>
             /// This should be called once at startup to allow the device to init anything
             /// that can be done before actually creating / rendering UI.
@@ -62,24 +32,7 @@ namespace Rock.Mobile
             }
             #endif
 
-            public static uint ScaleRGBAColor( uint color, uint scale, bool scaleAlpha )
-            {
-                uint r = ( color & 0xFF000000) >> 24;
-                uint g = ( color & 0x00FF0000) >> 16;
-                uint b = ( color & 0x0000FF00) >> 8;
-                uint a = ( color & 0x000000FF);
 
-                r /= scale;
-                g /= scale;
-                b /= scale;
-
-                if ( scaleAlpha )
-                {
-                    a /= scale;
-                }
-
-                return r << 24 | g << 16 | b << 8 | a;
-            }
 
             // Properties
             public uint BackgroundColor

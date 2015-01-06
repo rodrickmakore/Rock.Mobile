@@ -25,12 +25,12 @@ namespace Rock.Mobile
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                View.Layer.BackgroundColor = GetUIColor( backgroundColor ).CGColor;
+                View.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
             protected override void setBorderColor( uint borderColor )
             {
-                View.Layer.BorderColor = GetUIColor( borderColor ).CGColor;
+                View.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
             protected override float getBorderWidth()

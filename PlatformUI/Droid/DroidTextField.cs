@@ -9,7 +9,6 @@ using Android.App;
 using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Rock.Mobile.PlatformUI.DroidNative;
-using Rock.Mobile.PlatformCommon;
 using Android.Util;
 using Android.Text;
 using Java.Lang;
@@ -77,7 +76,7 @@ namespace Rock.Mobile
 
             public DroidTextField( )
             {
-                TextField = new BorderedRectEditText( Rock.Mobile.PlatformCommon.Droid.Context );
+                TextField = new BorderedRectEditText( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 TextField.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 TextField.SetScrollContainer( true );
                 TextField.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
@@ -85,7 +84,7 @@ namespace Rock.Mobile
                 TextField.SetFilters( new IInputFilter[] { new HeightFilter(int.MaxValue) { Parent = this } } );
 
                 // create a dummy view that can take focus to de-select the text field
-                DummyView = new View( Rock.Mobile.PlatformCommon.Droid.Context );
+                DummyView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 DummyView.Focusable = true;
                 DummyView.FocusableInTouchMode = true;
 
@@ -105,7 +104,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    Typeface fontFace = DroidFontManager.Instance.GetFont( fontName );
+                    Typeface fontFace = Rock.Mobile.PlatformSpecific.Android.Graphics.FontManager.Instance.GetFont( fontName );
                     TextField.SetTypeface( fontFace, TypefaceStyle.Normal );
                     TextField.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
 
@@ -122,7 +121,7 @@ namespace Rock.Mobile
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                TextField.SetBackgroundColor( GetUIColor( backgroundColor ) );
+                TextField.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
 
                 // normalize the color so we can determine what color to use for the cursor
                 float normalizedColor = (float) backgroundColor / (float)0xFFFFFFFF;
@@ -141,7 +140,7 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
-                TextField.SetBorderColor( GetUIColor( borderColor ) );
+                TextField.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
             }
 
             protected override float getBorderWidth()
@@ -244,7 +243,7 @@ namespace Rock.Mobile
 
             protected override void setTextColor( uint color )
             {
-                TextField.SetTextColor( GetUIColor( color ) );
+                TextField.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
             }
 
             protected override string getText( )
@@ -259,7 +258,7 @@ namespace Rock.Mobile
 
             protected override void setPlaceholderTextColor( uint color )
             {
-                TextField.SetHintTextColor( GetUIColor( color ) );
+                TextField.SetHintTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
             }
 
             protected override string getPlaceholder( )
@@ -382,10 +381,10 @@ namespace Rock.Mobile
             public override void ResignFirstResponder( )
             {
                 // only allow this text edit to hide the keyboard if it's the text field with focus.
-                Activity activity = ( Activity )Rock.Mobile.PlatformCommon.Droid.Context;
+                Activity activity = ( Activity )Rock.Mobile.PlatformSpecific.Android.Core.Context;
                 if( activity.CurrentFocus != null && ( activity.CurrentFocus as EditText ) == TextField )
                 {
-                    InputMethodManager imm = ( InputMethodManager )Rock.Mobile.PlatformCommon.Droid.Context.GetSystemService( Android.Content.Context.InputMethodService );
+                    InputMethodManager imm = ( InputMethodManager )Rock.Mobile.PlatformSpecific.Android.Core.Context.GetSystemService( Android.Content.Context.InputMethodService );
 
                     imm.HideSoftInputFromWindow( TextField.WindowToken, 0 );
 

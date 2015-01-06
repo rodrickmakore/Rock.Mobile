@@ -49,7 +49,7 @@ namespace Rock.Mobile
 
             public DroidRevealLabel( )
             {
-                Label = new FadeTextView( Rock.Mobile.PlatformCommon.Droid.Context ) as BorderedRectTextView;
+                Label = new FadeTextView( Rock.Mobile.PlatformSpecific.Android.Core.Context ) as BorderedRectTextView;
                 Label.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
 
                 // Define a gradiant underline that will be shown underneath the text
@@ -57,7 +57,7 @@ namespace Rock.Mobile
                 GradientDrawable border = new GradientDrawable( GradientDrawable.Orientation.LeftRight, colors);
                 border.SetGradientType( GradientType.LinearGradient );
 
-                UnderlineView = new View( Rock.Mobile.PlatformCommon.Droid.Context );
+                UnderlineView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 UnderlineView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 UnderlineView.SetBackgroundDrawable( border );
 

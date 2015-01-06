@@ -23,19 +23,19 @@ namespace Rock.Mobile
 
             public DroidView( )
             {
-                View = new BorderedRectView( Rock.Mobile.PlatformCommon.Droid.Context );
+                View = new BorderedRectView( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 View.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             }
 
             // Properties
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                View.SetBackgroundColor( GetUIColor( backgroundColor ) );
+                View.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
             }
 
             protected override void setBorderColor( uint borderColor )
             {
-                View.SetBorderColor( GetUIColor( borderColor ) );
+                View.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
             }
 
             protected override float getBorderWidth()

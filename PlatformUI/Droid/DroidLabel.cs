@@ -9,7 +9,6 @@ using Android.Graphics.Drawables.Shapes;
 using Java.IO;
 using Droid;
 using Rock.Mobile.PlatformUI.DroidNative;
-using Rock.Mobile.PlatformCommon;
 using Android.Util;
 using System.Collections.Generic;
 
@@ -26,7 +25,7 @@ namespace Rock.Mobile
 
             public DroidLabel( )
             {
-                Label = new BorderedRectTextView( Rock.Mobile.PlatformCommon.Droid.Context );
+                Label = new BorderedRectTextView( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 Label.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             }
 
@@ -35,7 +34,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    Typeface fontFace = DroidFontManager.Instance.GetFont( fontName );
+                    Typeface fontFace = Rock.Mobile.PlatformSpecific.Android.Graphics.FontManager.Instance.GetFont( fontName );
                     Label.SetTypeface( fontFace, TypefaceStyle.Normal );
                     Label.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
                 } 
@@ -47,12 +46,12 @@ namespace Rock.Mobile
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                Label.SetBackgroundColor( GetUIColor( backgroundColor ) );
+                Label.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
             }
 
             protected override void setBorderColor( uint borderColor )
             {
-                Label.SetBorderColor( GetUIColor( borderColor ) );
+                Label.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
             }
 
             protected override float getBorderWidth()
@@ -141,7 +140,7 @@ namespace Rock.Mobile
 
             protected override void setTextColor( uint color )
             {
-                Label.SetTextColor( GetUIColor( color ) );
+                Label.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
             }
 
             protected override string getText( )

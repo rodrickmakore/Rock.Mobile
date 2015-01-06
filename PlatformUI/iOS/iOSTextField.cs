@@ -5,7 +5,6 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using MonoTouch.CoreGraphics;
 using MonoTouch.CoreText;
-using Rock.Mobile.PlatformCommon;
 using Rock.Mobile.PlatformUI.iOSNative;
 
 namespace Rock.Mobile
@@ -34,7 +33,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    TextField.Font = iOSCommon.LoadFontDynamic(fontName, fontSize);
+                    TextField.Font = Rock.Mobile.PlatformSpecific.iOS.Graphics.FontManager.GetFont(fontName, fontSize);
                 } 
                 catch
                 {
@@ -44,7 +43,7 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
-                TextField.Layer.BorderColor = GetUIColor( borderColor ).CGColor;
+                TextField.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
             protected override float getBorderWidth()
@@ -67,7 +66,7 @@ namespace Rock.Mobile
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                TextField.Layer.BackgroundColor = GetUIColor( backgroundColor ).CGColor;
+                TextField.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
             protected override float getOpacity( )
@@ -132,12 +131,12 @@ namespace Rock.Mobile
 
             protected override void setTextColor( uint color )
             {
-                TextField.TextColor = GetUIColor( color );
+                TextField.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
             }
 
             protected override void setPlaceholderTextColor( uint color )
             {
-                TextField.PlaceholderTextColor = GetUIColor( color );
+                TextField.PlaceholderTextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
             }
 
             protected override string getText( )
