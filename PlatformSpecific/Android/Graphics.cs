@@ -96,7 +96,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.Graphics
         /// <value>The masked cutout.</value>
         Bitmap Layer { get; set; }
 
-        global::System.Drawing.SizeF AlphaMask { get; set; }
+        System.Drawing.SizeF AlphaMask { get; set; }
 
         /// <summary>
         /// The opacity of the layered region

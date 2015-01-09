@@ -4,6 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using RestSharp;
+using Newtonsoft.Json;
+using RestSharp.Deserializers;
 
 namespace Rock.Mobile
 {
@@ -63,6 +65,9 @@ namespace Rock.Mobile
                 restClient.BaseUrl = requestUrl;
                 restClient.CookieContainer = CookieContainer;
 
+                // replace the existing json deserializer with Json.Net
+                restClient.AddHandler("application/json", new JsonDeserializer( ) );
+
                 // set the request format
                 //request.RequestFormat = Format;
 
@@ -96,6 +101,42 @@ namespace Rock.Mobile
                                 });
                         });
                 }
+            }
+        }
+
+        /// <summary>
+        /// Implements a RestSharp Json deserializer that uses Json.Net,
+        /// which has better compatibility with things like ICollection
+        /// </summary>
+        class JsonDeserializer : IDeserializer
+        {
+            //
+            // Properties
+            //
+            public string DateFormat
+            {
+                get;
+                set;
+            }
+
+            public string Namespace
+            {
+                get;
+                set;
+            }
+
+            public string RootElement
+            {
+                get;
+                set;
+            }
+
+            //
+            // Methods
+            //
+            public T Deserialize<T>( IRestResponse response )
+            {
+                return (T)JsonConvert.DeserializeObject<T>( response.Content );
             }
         }
 
