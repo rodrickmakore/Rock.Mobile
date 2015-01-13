@@ -40,7 +40,10 @@ namespace Rock.Mobile
                 ExecuteAsync<object>( requestUrl, request, delegate(HttpStatusCode statusCode, string statusDescription, object model) 
                     {
                         // call the provided handler and drop the dummy object
-                        resultHandler( statusCode, statusDescription );
+                        if ( resultHandler != null )
+                        {
+                            resultHandler( statusCode, statusDescription );
+                        }
                     });
             }
 

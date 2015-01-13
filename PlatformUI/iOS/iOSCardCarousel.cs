@@ -37,23 +37,12 @@ namespace Rock.Mobile
             /// </summary>
             PointF PanLastPos { get; set; }
 
-            UIView ParentView { get; set; }
-
-            public iOSCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration, ViewingIndexChanged changedDelegate ) : base( cardWidth, cardHeight, boundsInParent, animationDuration, changedDelegate )
+            public iOSCardCarousel( object parentView, float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration ) : base( parentView, cardWidth, cardHeight, boundsInParent, animationDuration )
             {
-            }
-
-            public override void Init(object parentView)
-            {
-                base.Init(parentView);
-
-                ParentView = parentView as UIView;
-
-                SubLeftCard.AddAsSubview( ParentView );
-                LeftCard.AddAsSubview( ParentView );
-                CenterCard.AddAsSubview( ParentView );
-                RightCard.AddAsSubview( ParentView );
-                PostRightCard.AddAsSubview( ParentView );
+                foreach ( Card card in Cards )
+                {
+                    card.View.AddAsSubview( ParentView );
+                }
 
                 // setup our pan gesture
                 UIPanGestureRecognizer panGesture = new UIPanGestureRecognizer( iOSPanGesture );
@@ -61,13 +50,13 @@ namespace Rock.Mobile
                 panGesture.MaximumNumberOfTouches = 1;
 
                 // add the gesture and all cards to our view
-                ParentView.AddGestureRecognizer( panGesture );
+                ((UIView)ParentView).AddGestureRecognizer( panGesture );
             }
 
             public void iOSPanGesture( UIPanGestureRecognizer obj)
             {
                 // get the required data from the gesture and call our base function
-                PointF currVelocity = obj.VelocityInView( ParentView );
+                PointF currVelocity = obj.VelocityInView( (UIView)ParentView );
                 PointF deltaPan = new PointF( 0, 0 );
 
                 PlatformCardCarousel.PanGestureState state = PlatformCardCarousel.PanGestureState.Began;
@@ -83,7 +72,7 @@ namespace Rock.Mobile
 
                     case UIGestureRecognizerState.Changed:
                     {
-                        PointF absolutePan = obj.TranslationInView( ParentView );
+                        PointF absolutePan = obj.TranslationInView( (UIView)ParentView );
                         deltaPan = new PointF( absolutePan.X - PanLastPos.X, 0 );
 
                         PanLastPos = absolutePan;
@@ -94,6 +83,8 @@ namespace Rock.Mobile
 
                     case UIGestureRecognizerState.Ended:
                     {
+                        UpdateCardPositions( );
+
                         state = PlatformCardCarousel.PanGestureState.Ended;
                         break;
                     }
@@ -104,28 +95,20 @@ namespace Rock.Mobile
 
             public override void TouchesBegan( )
             {
+                Console.WriteLine( "Touches Began" );
+
                 // when touch begins, remove all animations
+                foreach ( Card card in Cards )
+                {
+                    // first get the UIViews backing these PlatformViews
+                    UIView cardView = (UIView) card.View.PlatformNativeObject;
 
-                // first get the UIViews backing these PlatformViews
-                UIView subLeftCardView = SubLeftCard.PlatformNativeObject as UIView;
-                UIView leftCardView = LeftCard.PlatformNativeObject as UIView;
-                UIView centerCardView = CenterCard.PlatformNativeObject as UIView;
-                UIView rightCardView = RightCard.PlatformNativeObject as UIView;
-                UIView postRightCardView = PostRightCard.PlatformNativeObject as UIView;
+                    // and commit the animated positions as the actual card positions.
+                    cardView.Layer.Position = cardView.Layer.PresentationLayer.Position;
 
-                // and commit the animated positions as the actual card positions.
-                subLeftCardView.Layer.Position = subLeftCardView.Layer.PresentationLayer.Position;
-                leftCardView.Layer.Position = leftCardView.Layer.PresentationLayer.Position;
-                centerCardView.Layer.Position = centerCardView.Layer.PresentationLayer.Position;
-                rightCardView.Layer.Position = rightCardView.Layer.PresentationLayer.Position;
-                postRightCardView.Layer.Position = postRightCardView.Layer.PresentationLayer.Position;
-
-                // stop all animations
-                subLeftCardView.Layer.RemoveAllAnimations( );
-                leftCardView.Layer.RemoveAllAnimations( );
-                centerCardView.Layer.RemoveAllAnimations( );
-                rightCardView.Layer.RemoveAllAnimations( );
-                postRightCardView.Layer.RemoveAllAnimations( );
+                    // stop all animations
+                    cardView.Layer.RemoveAllAnimations( );
+                }
 
                 // this has the effect of freezing & stopping the animation in motion.
                 // OnAnimationEnded will be called, but finished will be false, so
@@ -134,6 +117,8 @@ namespace Rock.Mobile
 
             public override void TouchesEnded()
             {
+                UpdateCardPositions( );
+
                 base.TouchesEnded();
             }
 

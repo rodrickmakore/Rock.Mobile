@@ -53,7 +53,7 @@ namespace Rock.Mobile
 
             public override void TouchesBegan( )
             {
-                //Console.WriteLine( "TouchesBegan (OnDown)" );
+                Console.WriteLine( "TouchesBegan (OnDown)" );
 
                 foreach(CardValueAnimator animator in ActiveAnimators )
                 {
@@ -66,6 +66,8 @@ namespace Rock.Mobile
 
             public override void TouchesEnded( )
             {
+                UpdateCardPositions( );
+
                 if( IsPanning == true )
                 {
                     //Console.WriteLine( "Was panning. Don't call base.TouchesEnded" );
@@ -100,22 +102,9 @@ namespace Rock.Mobile
                 return false;
             }
 
-            public DroidCardCarousel( float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration, ViewingIndexChanged changedDelegate ) : base( cardWidth, cardHeight, boundsInParent, animationDuration, changedDelegate )
+            public DroidCardCarousel( object parentView, float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration ) : base( parentView, cardWidth, cardHeight, boundsInParent, animationDuration )
             {
                 ActiveAnimators = new List<CardValueAnimator>( );
-            }
-
-            public override void Init(object parentView)
-            {
-                base.Init(parentView);
-
-                RelativeLayout droidParentView = parentView as RelativeLayout;
-
-                SubLeftCard.AddAsSubview( droidParentView );
-                LeftCard.AddAsSubview( droidParentView );
-                CenterCard.AddAsSubview( droidParentView );
-                RightCard.AddAsSubview( droidParentView );
-                PostRightCard.AddAsSubview( droidParentView );
             }
 
             /// <summary>
@@ -153,6 +142,8 @@ namespace Rock.Mobile
             public void OnAnimationEnd(Animator animation)
             {
                 Animating = false;
+
+                //UpdateCardPositions( );
 
                 //Console.WriteLine( "Animation Stopped" );
             }
