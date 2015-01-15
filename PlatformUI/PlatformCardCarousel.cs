@@ -123,6 +123,8 @@ namespace Rock.Mobile
                     card.View.RemoveAsSubview( ParentView );
                 }
                 Cards.Clear( );
+
+                CenterCardIndex = 0;
             }
 
             //int numSamples { get; set; }
@@ -237,58 +239,61 @@ namespace Rock.Mobile
 
             protected void UpdateCardPositions( )
             {
-                // start by storing the what our new center card will be
-                int newCenterCardIndex = CenterCardIndex;
-
-                // get the range of cards that is moved via panning and animation
-                int startIndex = System.Math.Max( CenterCardIndex - CardPanRange, 0 );
-                int endIndex = System.Math.Min( CenterCardIndex + CardPanRange, Cards.Count );
-
-                for ( int i = startIndex; i < endIndex; i++ )
+                if ( Cards.Count > 0 )
                 {
-                    // get the new position index for the card
-                    Cards[ i ].PositionIndex = GetCardPosIndex( i, Cards[ i ].View.Position );
+                    // start by storing the what our new center card will be
+                    int newCenterCardIndex = CenterCardIndex;
 
-                    // store the card that currently is the center index.
-                    if ( Cards[ i ].PositionIndex == 0 )
+                    // get the range of cards that is moved via panning and animation
+                    int startIndex = System.Math.Max( CenterCardIndex - CardPanRange, 0 );
+                    int endIndex = System.Math.Min( CenterCardIndex + CardPanRange, Cards.Count );
+
+                    for ( int i = startIndex; i < endIndex; i++ )
                     {
-                        newCenterCardIndex = i;
-                        //Console.WriteLine( "Card {0} Position {1} (Now Center) {2}", i, Cards[ i ].PositionIndex, Cards[ i ].View.Position.X );
+                        // get the new position index for the card
+                        Cards[ i ].PositionIndex = GetCardPosIndex( i, Cards[ i ].View.Position );
+
+                        // store the card that currently is the center index.
+                        if ( Cards[ i ].PositionIndex == 0 )
+                        {
+                            newCenterCardIndex = i;
+                            //Console.WriteLine( "Card {0} Position {1} (Now Center) {2}", i, Cards[ i ].PositionIndex, Cards[ i ].View.Position.X );
+                        }
+                        else
+                        {
+                            //Console.WriteLine( "Card {0} Position {1} {2}", i, Cards[ i ].PositionIndex, Cards[ i ].View.Position.X );
+                        }
                     }
-                    else
+
+                    // now take the left and right edges of our range
+                    int leftMinIndex = CenterCardIndex - CardPanRange;
+                    int rightMaxIndex = CenterCardIndex + CardPanRange;
+
+                    // determine where our center card was left off
+                    float centerCardPosX = Cards[ CenterCardIndex ].View.Position.X;
+
+                    // move all cards outside our range to the left to be spaced out relative to the center card
+                    for ( int i = leftMinIndex; i >= System.Math.Max( leftMinIndex - 1, 0 ); i-- )
                     {
-                        //Console.WriteLine( "Card {0} Position {1} {2}", i, Cards[ i ].PositionIndex, Cards[ i ].View.Position.X );
+                        Cards[ i ].PositionIndex = ( Cards[ i + 1 ].PositionIndex - 1 );
+
+                        PointF position = new PointF( centerCardPosX + ( ( Cards[ i ].PositionIndex - 1 ) * CardXSpacing ), CenterCardPos.Y );
+                        Cards[ i ].View.Position = position;
+
                     }
+
+                    // move all cards outside our range to the right to be spaced out relative to the center card
+                    for ( int i = rightMaxIndex; i < System.Math.Min( rightMaxIndex + 1, Cards.Count ); i++ )
+                    {
+                        Cards[ i ].PositionIndex = ( Cards[ i - 1 ].PositionIndex + 1 );
+
+                        PointF position = new PointF( centerCardPosX + ( ( Cards[ i ].PositionIndex + 1 ) * CardXSpacing ), CenterCardPos.Y );
+                        Cards[ i ].View.Position = position;
+                    }
+
+                    // take the new center index
+                    CenterCardIndex = newCenterCardIndex;
                 }
-
-                // now take the left and right edges of our range
-                int leftMinIndex = CenterCardIndex - CardPanRange;
-                int rightMaxIndex = CenterCardIndex + CardPanRange;
-
-                // determine where our center card was left off
-                float centerCardPosX = Cards[ CenterCardIndex ].View.Position.X;
-
-                // move all cards outside our range to the left to be spaced out relative to the center card
-                for ( int i = leftMinIndex; i >= System.Math.Max( leftMinIndex -1, 0 ); i-- )
-                {
-                    Cards[ i ].PositionIndex = ( Cards[ i + 1 ].PositionIndex - 1 );
-
-                    PointF position = new PointF( centerCardPosX + ( (Cards[ i ].PositionIndex - 1) * CardXSpacing ), CenterCardPos.Y );
-                    Cards[ i ].View.Position = position;
-
-                }
-
-                // move all cards outside our range to the right to be spaced out relative to the center card
-                for ( int i = rightMaxIndex; i < System.Math.Min( rightMaxIndex + 1, Cards.Count ); i++ )
-                {
-                    Cards[ i ].PositionIndex = ( Cards[ i - 1 ].PositionIndex + 1 );
-
-                    PointF position = new PointF( centerCardPosX + ( (Cards[ i ].PositionIndex + 1) * CardXSpacing ), CenterCardPos.Y );
-                    Cards[ i ].View.Position = position;
-                }
-
-                // take the new center index
-                CenterCardIndex = newCenterCardIndex;
             }
 
             /// <summary>

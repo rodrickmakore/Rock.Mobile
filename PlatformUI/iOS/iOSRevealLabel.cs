@@ -12,46 +12,12 @@ namespace Rock.Mobile
     namespace PlatformUI
     {
         /// <summary>
-        /// Subclass of UIView to render an underline under the fading text. 
-        /// </summary>
-        public class UnderlineUIView : UIView
-        {
-            public override void Draw(RectangleF rect)
-            {
-                base.Draw(rect);
-
-                using( CGContext context = UIGraphics.GetCurrentContext() )
-                {
-                    context.AddRect( new RectangleF( 0, 0, Frame.Width, 1 ) );
-                    context.Clip();
-
-                    UIColor color = Rock.Mobile.PlatformUI.Util.GetUIColor( 0x777777FF );
-
-                    // probably should change this to not being a gradient
-                    CGGradient gradiant = new CGGradient( CGColorSpace.CreateDeviceRGB(), new CGColor[] { color.CGColor, color.CGColor });
-                    context.DrawLinearGradient( gradiant, new PointF( 0, 0 ), new PointF( Frame.Width, 0 ), CGGradientDrawingOptions.DrawsBeforeStartLocation );
-                }
-            }
-        }
-
-
-        /// <summary>
         /// Derived from iOSLabel, this is a custom label that 
         /// can hide a word and reveal it with a fade in using an animation.
         /// </summary>
         public class iOSRevealLabel : iOSLabel
         {
-            /// <summary>
-            /// The amount to scale the border by relative to the text width.
-            /// Useful if a using gradiants that fade out too early, or in the
-            /// case where too solid lines butt against each other.
-            /// </summary>
-            static float BORDER_WIDTH_SCALER = .99f;
-
-
-            UnderlineUIView UnderlineView { get; set; }
             float Scale { get; set; }
-
 
             // This defines the rate we wish to update animations at, which happens to be 60fps.
             static float ANIMATION_TICK_RATE = (1.0f / 60.0f); 
@@ -84,18 +50,12 @@ namespace Rock.Mobile
                 Label.Layer.Mask.AnchorPoint = Label.Layer.AnchorPoint;
                 ApplyMaskScale( Scale );
 
-
-                // create our border
-                UnderlineView = new UnderlineUIView();
-                UnderlineView.Layer.AnchorPoint = Label.Layer.AnchorPoint;
-                UnderlineView.BackgroundColor = UIColor.Clear;
+                AddUnderline( );
             }
 
             protected override void setBounds(RectangleF bounds)
             {
                 base.setBounds( bounds );
-
-                UpdateUnderline();
 
                 // Update the mask
                 Label.Layer.Mask.Bounds = bounds;
@@ -106,8 +66,6 @@ namespace Rock.Mobile
             {
                 base.setFrame( frame );
 
-                UpdateUnderline();
-
                 // Update the mask
                 Label.Layer.Mask.Bounds = new RectangleF( 0, 0, frame.Width, frame.Height );
                 ApplyMaskScale(Scale);
@@ -115,35 +73,17 @@ namespace Rock.Mobile
 
             protected override void setPosition( PointF position )
             {
-                // to position the border, first get the amount we'll be moving
-                float deltaX = position.X - Label.Frame.X;
-                float deltaY = position.Y - Label.Frame.Y;
-
                 // let the label update
                 base.setPosition( position );
-
-                // now adjust the border by only the difference
-                UnderlineView.Layer.Position = new PointF( UnderlineView.Layer.Position.X + deltaX, 
-                                                           UnderlineView.Layer.Position.Y + deltaY);
             }
 
             public override void AddAsSubview( object masterView )
             {
                 base.AddAsSubview( masterView );
-
-                // we know that masterView will be an iOS View.
-                UIView view = masterView as UIView;
-                if( view == null )
-                {
-                    throw new Exception( "Object passed to iOS AddAsSubview must be a UIView." );
-                }
-                view.AddSubview( UnderlineView );
             }
 
             public override void RemoveAsSubview( object masterView )
             {
-                UnderlineView.RemoveFromSuperview();
-
                 base.RemoveAsSubview( masterView );
             }
 
@@ -193,8 +133,6 @@ namespace Rock.Mobile
             {
                 base.SizeToFit( );
 
-                UpdateUnderline();
-
                 // Update the mask
                 Label.Layer.Mask.Bounds = new RectangleF( 0, 0, Label.Frame.Width, Label.Frame.Height );
                 ApplyMaskScale(Scale);
@@ -218,21 +156,6 @@ namespace Rock.Mobile
 
                 // and now concat the post scale and apply
                 Label.Layer.Mask.Transform = translateScale.Concat( postScale );
-            }
-
-            void UpdateUnderline()
-            {
-                // determine how far down the border should start.
-                // The ascender is basically the distance from the top of the highest font to where the baseline is,
-                // which is effectively the character height.
-                float borderYOffset = Label.Font.Ascender + 2;
-
-                // Same for X, horizontally
-                float borderWidth = (int) ((float)Label.Frame.Width * BORDER_WIDTH_SCALER);
-                float borderXOffset = (Label.Frame.Width - borderWidth) / 2;
-
-                UnderlineView.Layer.Position = new PointF( Label.Frame.X + (int)borderXOffset, Label.Frame.Y + (int) borderYOffset );
-                UnderlineView.Layer.Bounds = new RectangleF( 0, 0, borderWidth, 5 );
             }
         }
     }

@@ -41,6 +41,16 @@ namespace Rock.Mobile
                 }
             }
 
+            protected override int getKeyboardAppearance( )
+            {
+                return (int) TextField.KeyboardAppearance;
+            }
+
+            protected override void setKeyboardAppearance( int style )
+            {
+                TextField.KeyboardAppearance = (UIKeyboardAppearance)style;
+            }
+
             protected override void setBorderColor( uint borderColor )
             {
                 TextField.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;

@@ -74,6 +74,7 @@ namespace Rock.Mobile
             public abstract float GetFade();
             public abstract void SetFade( float fadeAmount );
             public abstract void AnimateToFade( float fadeAmount );
+            public abstract void AddUnderline( );
         }
     }
 }

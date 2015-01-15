@@ -1,4 +1,4 @@
-﻿#if __ANDROID_18__
+﻿#if __ANDROID_18__ && _USE_IBEACON_
 using System;
 using System.Collections.Generic;
 

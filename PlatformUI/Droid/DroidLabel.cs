@@ -21,6 +21,17 @@ namespace Rock.Mobile
         /// </summary>
         public class DroidLabel : PlatformLabel
         {
+            /// <summary>
+            /// The amount to scale the border by relative to the text width.
+            /// Useful if a using gradiants that fade out too early
+            /// </summary>
+            static float BORDER_WIDTH_SCALER = 0.99f;
+
+            /// <summary>
+            /// The view that draws the underline for the word.
+            /// </summary>
+            protected View UnderlineView { get; set; }
+
             protected BorderedRectTextView Label { get; set; }
 
             public DroidLabel( )
@@ -30,6 +41,23 @@ namespace Rock.Mobile
             }
 
             // Properties
+            public override void AddUnderline( )
+            {
+                if ( UnderlineView == null )
+                {
+                    // Define a gradiant underline that will be shown underneath the text
+                    int[] colors = new int[] { int.MaxValue, int.MaxValue };
+                    GradientDrawable border = new GradientDrawable( GradientDrawable.Orientation.LeftRight, colors );
+                    border.SetGradientType( GradientType.LinearGradient );
+
+                    UnderlineView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
+                    UnderlineView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                    UnderlineView.SetBackgroundDrawable( border );
+
+                    UnderlineView.LayoutParameters.Height = 2;
+                }
+            }
+
             public override void SetFont( string fontName, float fontSize )
             {
                 try
@@ -109,6 +137,8 @@ namespace Rock.Mobile
                 Label.LayoutParameters.Width = ( int )bounds.Width;
                 Label.SetMaxWidth( Label.LayoutParameters.Width );
                 Label.LayoutParameters.Height = ( int )bounds.Height;
+
+                UpdateUnderline();
             }
 
             protected override RectangleF getFrame( )
@@ -134,8 +164,19 @@ namespace Rock.Mobile
 
             protected override void setPosition( System.Drawing.PointF position )
             {
+                // to position the border, first get the amount we'll be moving
+                float deltaX = position.X - Label.GetX();
+                float deltaY = position.Y - Label.GetY();
+
                 Label.SetX( position.X );
                 Label.SetY( position.Y );
+
+                // now adjust the border by only the difference
+                if ( UnderlineView != null )
+                {
+                    UnderlineView.SetX( UnderlineView.GetX( ) + deltaX );
+                    UnderlineView.SetY( UnderlineView.GetY( ) + deltaY );
+                }
             }
 
             protected override void setTextColor( uint color )
@@ -225,6 +266,12 @@ namespace Rock.Mobile
                 }
 
                 view.AddView( Label );
+
+                if ( UnderlineView != null )
+                {
+                    view.AddView( UnderlineView );
+                }
+
             }
 
             public override void RemoveAsSubview( object masterView )
@@ -234,6 +281,11 @@ namespace Rock.Mobile
                 if( view == null )
                 {
                     throw new Exception( "Object passed to Android RemoveAsSubview must be a RelativeLayout." );
+                }
+
+                if ( UnderlineView != null )
+                {
+                    view.RemoveView( UnderlineView );
                 }
 
                 view.RemoveView( Label );
@@ -252,6 +304,32 @@ namespace Rock.Mobile
                 Label.LayoutParameters.Height = Label.MeasuredHeight;
 
                 Label.SetMaxWidth( Label.LayoutParameters.Width );
+
+                UpdateUnderline();
+            }
+
+            void UpdateUnderline()
+            {
+                if ( UnderlineView != null )
+                {
+                    // first get the Y starting point of the font, relative to the control.
+                    // (the control's top might start 5 pixels above the actual font, for example)
+                    float fontYStart = ( Label.LayoutParameters.Height - Label.TextSize ) / 2;
+
+                    // Update the Y position of the border here, because 
+                    // if the HEIGHT of the label changed, our starting Y position must change
+                    // so we stay at the bottom of the label.
+                    float borderYOffset = ( fontYStart + Label.TextSize );
+
+                    UnderlineView.SetY( (int)Label.GetY( ) + (int)borderYOffset );
+
+
+                    // Same for X
+                    UnderlineView.LayoutParameters.Width = (int)( (float)Label.LayoutParameters.Width * BORDER_WIDTH_SCALER );
+
+                    float borderXOffset = ( Label.LayoutParameters.Width - UnderlineView.LayoutParameters.Width ) / 2;
+                    UnderlineView.SetX( (int)Label.GetX( ) + (int)borderXOffset );
+                }
             }
 
             public override float GetFade()

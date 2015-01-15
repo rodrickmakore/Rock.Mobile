@@ -100,6 +100,17 @@ namespace Rock.Mobile
             }
 
             // Properties
+            protected override int getKeyboardAppearance( )
+            {
+                // android doesn't support modifying the keyboard appearance
+                return (int) 0;
+            }
+
+            protected override void setKeyboardAppearance( int style )
+            {
+                // android doesn't support modifying the keyboard appearance
+            }
+
             public override void SetFont( string fontName, float fontSize )
             {
                 try

@@ -61,6 +61,14 @@ namespace Rock.Mobile
             protected abstract float getDynamicTextMaxHeight( );
             protected abstract void setDynamicTextMaxHeight( float height );
 
+            public int KeyboardAppearance
+            {
+                get { return getKeyboardAppearance( ); }
+                set { setKeyboardAppearance( value ); }
+            }
+            protected abstract int getKeyboardAppearance( );
+            protected abstract void setKeyboardAppearance( int style );
+
             public abstract void ResignFirstResponder( );
         }
     }
