@@ -6,6 +6,7 @@ using System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using MonoTouch.CoreGraphics;
+using Rock.Mobile.PlatformSpecific.iOS.Animation;
 
 namespace Rock.Mobile
 {
@@ -18,16 +19,6 @@ namespace Rock.Mobile
         public class iOSRevealLabel : iOSLabel
         {
             float Scale { get; set; }
-
-            // This defines the rate we wish to update animations at, which happens to be 60fps.
-            static float ANIMATION_TICK_RATE = (1.0f / 60.0f); 
-
-            // This is the frequency at which we'll get an animation callback. It's basically 60fps, but needs to be in hundredth-nanoseconds
-            // Tick Rate - 60fps
-            // Tick Rate in ms - 0.016ms
-            // Tick Rate in hundredth nanoseconds = 166666
-            static float MILLISECONDS_TO_HUNDREDTH_NANOSECONDS = 10000.0f;
-            static long ANIMATION_TICK_FREQUENCY = (long) ((ANIMATION_TICK_RATE * 1000) * MILLISECONDS_TO_HUNDREDTH_NANOSECONDS);
 
             /// <summary>
             /// The amount of time to take to scale. This should be adjusted based on
@@ -102,31 +93,19 @@ namespace Rock.Mobile
             {
                 fadeAmount = System.Math.Max(.01f, fadeAmount * MaxScale);
 
-                // convert the amount we'll need to change the scale to amount per tick
-                float scalePerTick = (fadeAmount - Scale );
-                scalePerTick /= (SCALE_TIME_SECONDS / ANIMATION_TICK_RATE);
-
-                // Kick off a timer that will interpolate the scale at 60fps
-                NSTimer animTimer = null;
-                animTimer = NSTimer.CreateRepeatingTimer( new TimeSpan( ANIMATION_TICK_FREQUENCY ), new NSAction( 
-                    delegate 
+                SimpleAnimator_Float animator = new SimpleAnimator_Float( Scale, fadeAmount, SCALE_TIME_SECONDS, 
+                    delegate(float percent, object value )
                     {
-                        Scale += scalePerTick;
-
-                        // if we reach our target amount, stop the timer and clamp
-                        // the scale
-                        if(Scale >= fadeAmount )
-                        {
-                            Scale = fadeAmount;
-                            animTimer.Invalidate();
-                        }
-
+                        Scale = (float)value;
                         ApplyMaskScale( Scale );
-                    })
-                );
+                    },
+                    delegate
+                    {
+                        Scale = fadeAmount;
+                        ApplyMaskScale( Scale );
+                    } );
 
-                // launch the timer
-                NSRunLoop.Current.AddTimer( animTimer, NSRunLoop.NSDefaultRunLoopMode );
+                animator.Start( );
             }
 
             public override void SizeToFit( )

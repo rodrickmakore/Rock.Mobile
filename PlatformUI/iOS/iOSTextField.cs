@@ -6,6 +6,7 @@ using MonoTouch.Foundation;
 using MonoTouch.CoreGraphics;
 using MonoTouch.CoreText;
 using Rock.Mobile.PlatformUI.iOSNative;
+using Rock.Mobile.PlatformSpecific.iOS.Animation;
 
 namespace Rock.Mobile
 {
@@ -17,6 +18,11 @@ namespace Rock.Mobile
         public class iOSTextField : PlatformTextField
         {
             DynamicUITextView TextField { get; set; }
+
+            /// <summary>
+            /// The time to animate the text box as it grows
+            /// </summary>
+            float SCALE_TIME_SECONDS = .20f;
 
             public iOSTextField( )
             {
@@ -225,6 +231,54 @@ namespace Rock.Mobile
             public override void SizeToFit( )
             {
                 TextField.SizeToFit( );
+            }
+
+            public override void AnimateOpen( )
+            {
+                if ( TextField.Animating == false && TextField.Hidden == true )
+                {
+                    // unhide and flag it as animating
+                    TextField.Hidden = false;
+                    TextField.Animating = true;
+
+                    // and force it to a 0 size so it grows correctly
+                    TextField.Bounds = RectangleF.Empty;
+
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size, TextField.NaturalSize, SCALE_TIME_SECONDS, 
+                        delegate(float percent, object value )
+                        {
+                            SizeF currSize = (SizeF)value;
+                            TextField.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
+                        },
+                        delegate
+                        {
+                            TextField.Animating = false;
+                        } );
+
+                    animator.Start( );
+                }
+            }
+
+            public override void AnimateClosed( )
+            {
+                if ( TextField.Animating == false && TextField.Hidden == false )
+                {
+                    TextField.Animating = true;
+
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size, new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
+                        delegate(float percent, object value )
+                        {
+                            SizeF currSize = (SizeF)value;
+                            TextField.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
+                        },
+                        delegate
+                        {
+                            TextField.Hidden = true;
+                            TextField.Animating = false;
+                        } );
+
+                    animator.Start( );
+                }
             }
         }
     }

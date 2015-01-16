@@ -8,6 +8,96 @@ using Rock.Mobile.Util.Strings;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.UI
 {
+    public class WebLayout
+    {
+        public enum Result
+        {
+            Success,
+            Fail,
+            Cancel
+        }
+
+        public delegate void LoadResult( Result result, string url );
+
+        public UIView ContainerView { get; set; }
+        UIWebView WebView { get; set; }
+        LoadResult LoadResultHandler { get; set; }
+        UIActivityIndicatorView ProgressBar { get; set; }
+        UIButton CancelButton { get; set; }
+
+        public WebLayout( RectangleF frame )
+        {
+            ContainerView = new UIView( frame );
+
+            WebView = new UIWebView( );
+            WebView.Layer.AnchorPoint = PointF.Empty;
+            WebView.Frame = new RectangleF( 0, 0, ContainerView.Frame.Width, ContainerView.Frame.Height );
+            WebView.LoadStarted += (object s, EventArgs eArgs) => 
+                {
+                    ProgressBar.Hidden = false;
+                };
+
+            WebView.LoadError += (object s, UIWebErrorArgs eArgs) => 
+                {
+                    ProgressBar.Hidden = true;
+                    LoadResultHandler( Result.Fail, WebView.Request.Url.ToString() );
+                };
+
+            WebView.LoadFinished += (object s, EventArgs eArgs) => 
+                {
+                    ProgressBar.Hidden = true;
+                    LoadResultHandler( Result.Success, WebView.Request.Url.ToString() );
+                };
+            ContainerView.AddSubview( WebView );
+
+            ProgressBar = new UIActivityIndicatorView( UIActivityIndicatorViewStyle.WhiteLarge );
+            ProgressBar.Color = UIColor.Gray;
+            ProgressBar.StartAnimating( );
+            ContainerView.AddSubview( ProgressBar );
+
+            ProgressBar.Layer.Position = new PointF (ContainerView.Bounds.Width / 2, ContainerView.Bounds.Height / 2);
+            ProgressBar.Hidden = true;
+
+            CancelButton = UIButton.FromType( UIButtonType.System );
+            CancelButton.Frame = frame;
+            CancelButton.SetTitle( "Cancel", UIControlState.Normal );
+            CancelButton.SizeToFit( );
+            CancelButton.Frame = new RectangleF( (frame.Width - CancelButton.Frame.Width) / 2, frame.Bottom - CancelButton.Frame.Height, CancelButton.Frame.Width, CancelButton.Frame.Height );
+            CancelButton.TouchUpInside += (object sender, EventArgs e ) =>
+                {
+                    LoadResultHandler( Result.Cancel, "" );
+                };
+
+            ContainerView.AddSubview( CancelButton );
+
+            WebView.Bounds = new RectangleF( 0, 0, WebView.Bounds.Width, WebView.Bounds.Height - CancelButton.Bounds.Height );
+        }
+
+        public void LoadUrl( string url, LoadResult resultHandler )
+        {
+            LoadResultHandler = resultHandler;
+
+            // invoke a webview
+            WebView.LoadRequest( new NSUrlRequest( new NSUrl( url ) ) );
+        }
+
+        public void DeleteCacheandCookies ()
+        {
+            NSUrlCache.SharedCache.RemoveAllCachedResponses ();
+            NSHttpCookieStorage storage = NSHttpCookieStorage.SharedStorage;
+
+            foreach (var item in storage.Cookies) {
+                storage.DeleteCookie (item);
+            }
+            NSUserDefaults.StandardUserDefaults.Synchronize ();
+        }
+
+        public void SetCancelButtonColor( uint color )
+        {
+            CancelButton.SetTitleColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ), UIControlState.Normal );
+        }
+    }
+
     /// <summary>
     /// Maintains phone number formatting on any UITextField
     /// </summary>
@@ -29,7 +119,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
                 // next, we'll strip the symbols and re-format it as a phone number
                 string numericString = newString.AsNumeric( );
-                string finalString = FormatNumber( numericString );
+                string finalString = numericString.AsPhoneNumber( );
                 textField.Text = finalString;
 
                 return false;
@@ -63,7 +153,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
                 // next, we'll strip the symbols and re-format it as a phone number
                 string numericString = newString.AsNumeric( );
-                string finalString = FormatNumber( numericString );
+                string finalString = numericString.AsPhoneNumber( );
 
 
                 // now the critical part. Figure out how many symbols lead up to the location
@@ -103,7 +193,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
                     // next, we'll strip the symbols and re-format it as a phone number
                     string numericString = newString.AsNumeric( );
-                    string finalString = FormatNumber( numericString );
+                    string finalString = numericString.AsPhoneNumber( );
 
                     int deltaLen = finalString.Length - textField.Text.Length;
 
@@ -203,39 +293,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Takes a string assumed to be only digits and formats it as a phone number.
-        /// </summary>
-        string FormatNumber( string number )
-        {
-            // nothing to do if it's less than four digits
-            if ( number.Length < 4 
-            )
-            {
-                return number;
-            }
-            // We know it has at least enough for a local exchange and subscriber number
-            else if ( number.Length < 8 )
-            {
-                return number.Substring( 0, 3 ) + "-" + number.Substring( 3 );
-            }
-            else
-            {
-                // We know it has at least enough for an area code and local exchange
-                // Area Code
-                // Local Exchange
-                // Subscriber Number
-                string areaCode = number.Substring( 0, 3 );
-
-                string localExchange = number.Substring( 3, 3 );
-
-                // for the subscriber nubmer, take the remaining four digits, but no more.
-                string subscriberNumber = number.Substring( 6, System.Math.Min( number.Length - 6, 4 ) ); 
-
-                return "(" + areaCode + ")" + " " + localExchange + "-" + subscriberNumber;
-            }
         }
     }
 

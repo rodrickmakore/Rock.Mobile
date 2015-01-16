@@ -13,6 +13,7 @@ using Android.Util;
 using Android.Text;
 using Java.Lang;
 using Java.Lang.Reflect;
+using Rock.Mobile.PlatformSpecific.Android.Animation;
 
 namespace Rock.Mobile
 {
@@ -32,14 +33,15 @@ namespace Rock.Mobile
 
             public override Java.Lang.ICharSequence FilterFormatted(Java.Lang.ICharSequence source, int start, int end, ISpanned dest, int dstart, int dend)
             {
-                if( Parent.AllowInput( source ) )
+                //JHM 1-15-15: Don't limit the text anymore.
+                //if( Parent.AllowInput( source ) )
                 {
                     return base.FilterFormatted(source, start, end, dest, dstart, dend);
                 }
-                else
+                /*else
                 {
                     return new Java.Lang.String("");
-                }
+                }*/
             }
         }
 
@@ -49,6 +51,18 @@ namespace Rock.Mobile
         public class DroidTextField : PlatformTextField
         {
             BorderedRectEditText TextField { get; set; }
+
+            /// <summary>
+            /// The size when the view isn't being animated
+            /// </summary>
+            /// <value>The size of the natural.</value>
+            public System.Drawing.SizeF NaturalSize { get; set; }
+
+            /// <summary>
+            /// Lets us know whether we should alter NaturalSize on a size change or not.
+            /// </summary>
+            /// <value><c>true</c> if animating; otherwise, <c>false</c>.</value>
+            public bool Animating { get; set; }
 
             /// <summary>
             /// A dummy view that absorbs focus when the text field isn't being edited.
@@ -213,6 +227,11 @@ namespace Rock.Mobile
                 {
                     TextField.LayoutParameters.Height = ( int )bounds.Height;
                 }
+
+                if( Animating == false )
+                {
+                    NaturalSize = new System.Drawing.SizeF( bounds.Width, bounds.Height );
+                }
             }
 
             protected override RectangleF getFrame( )
@@ -229,6 +248,11 @@ namespace Rock.Mobile
 
                 RectangleF bounds = new RectangleF( frame.Left, frame.Top, frame.Width, frame.Height );
                 setBounds( bounds );
+
+                if( Animating == false )
+                {
+                    NaturalSize = new System.Drawing.SizeF( bounds.Width, bounds.Height );
+                }
             }
 
             protected override System.Drawing.PointF getPosition( )
@@ -371,12 +395,7 @@ namespace Rock.Mobile
 
             public override void SizeToFit( )
             {
-                // create the specs we want for measurement
-                int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextField.LayoutParameters.Width, MeasureSpecMode.Unspecified );
-                int heightMeasureSpec = View.MeasureSpec.MakeMeasureSpec( 0, MeasureSpecMode.Unspecified );
-
-                // measure the label given the current width/height/text
-                TextField.Measure( widthMeasureSpec, heightMeasureSpec );
+                Measure( );
 
                 // update its width
                 TextField.SetMinWidth( TextField.MeasuredWidth );
@@ -386,6 +405,11 @@ namespace Rock.Mobile
                 if( mScaleHeightForText == false )
                 {
                     TextField.LayoutParameters.Height = TextField.MeasuredHeight;
+                }
+
+                if( Animating == false )
+                {
+                    NaturalSize = new System.Drawing.SizeF( TextField.MeasuredWidth, TextField.LayoutParameters.Height );
                 }
             }
 
@@ -402,6 +426,97 @@ namespace Rock.Mobile
                     // yeild focus to the dummy view so the text field clears it's caret and the selected outline
                     TextField.ClearFocus( );
                     DummyView.RequestFocus( );
+                }
+            }
+
+            void Measure( )
+            {
+                // create the specs we want for measurement
+                int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextField.LayoutParameters.Width, MeasureSpecMode.Unspecified );
+                int heightMeasureSpec = View.MeasureSpec.MakeMeasureSpec( 0, MeasureSpecMode.Unspecified );
+
+                // measure the label given the current width/height/text
+                TextField.Measure( widthMeasureSpec, heightMeasureSpec );
+            }
+
+            public override void AnimateOpen( )
+            {
+                if ( Animating == false && Hidden == true )
+                {
+                    // unhide and flag it as animating
+                    Hidden = false;
+                    Animating = true;
+
+                    // measure so we know the height
+                    Measure( );
+
+                    // start the size at 0
+                    TextField.LayoutParameters.Width = 0;
+                    TextField.LayoutParameters.Height = 0;
+
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( System.Drawing.SizeF.Empty, new System.Drawing.SizeF( NaturalSize.Width, TextField.MeasuredHeight ), .2f, 
+                        delegate(float percent, object value )
+                        {
+                            System.Drawing.SizeF currSize = (System.Drawing.SizeF)value;
+
+                            Rock.Mobile.Threading.Util.PerformOnUIThread( delegate {
+
+                                TextField.LayoutParameters.Width = (int) currSize.Width;
+                                TextField.LayoutParameters.Height = (int) currSize.Height;
+
+                                // redundantly set the min width so it redraws
+                                TextField.SetMinWidth( (int) currSize.Width );
+                            });
+                        },
+                        delegate
+                        {
+                            Animating = false;
+
+                            // restore the original settings for dimensions
+                            TextField.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
+                            TextField.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+                        } );
+
+                    animator.Start( );
+                }
+            }
+
+            public override void AnimateClosed( )
+            {
+                if ( Animating == false && Hidden == false )
+                {
+                    // unhide and flag it as animating
+                    Animating = true;
+
+                    // get the measurements so we know how tall it currently is
+                    Measure( );
+
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new System.Drawing.SizeF( NaturalSize.Width, TextField.MeasuredHeight ), System.Drawing.SizeF.Empty, .2f, 
+                        delegate(float percent, object value )
+                        {
+                            // animate it to 0
+                            System.Drawing.SizeF currSize = (System.Drawing.SizeF)value;
+
+                            Rock.Mobile.Threading.Util.PerformOnUIThread( delegate {
+
+                                TextField.LayoutParameters.Width = (int) currSize.Width;
+                                TextField.LayoutParameters.Height = (int) currSize.Height;
+
+                                // redundantly set the min width so it redraws
+                                TextField.SetMinWidth( TextField.MeasuredWidth );
+                            });
+                        },
+                        delegate
+                        {
+                            Hidden = true;
+                            Animating = false;
+
+                            // restore the original settings for dimensions
+                            TextField.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
+                            TextField.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+                        } );
+
+                    animator.Start( );
                 }
             }
         }

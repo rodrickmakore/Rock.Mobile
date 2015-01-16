@@ -4,6 +4,7 @@ using Android.Widget;
 using Android.Graphics;
 using Android.Animation;
 using Java.IO;
+using Rock.Mobile.PlatformSpecific.Android.Animation;
 
 namespace Rock.Mobile
 {
@@ -14,7 +15,7 @@ namespace Rock.Mobile
             /// <summary>
             /// A subclassed TextView that allows fading in the text
             /// </summary>
-            public class FadeTextView : BorderedRectTextView, Android.Animation.ValueAnimator.IAnimatorUpdateListener, Android.Animation.ValueAnimator.IAnimatorListener
+            public class FadeTextView : BorderedRectTextView
             {
                 /// <summary>
                 /// An alpha-only version of the RGBAMask. This is what we'll actually use to mask.
@@ -98,49 +99,25 @@ namespace Rock.Mobile
                     TextTransform = new Matrix();
                 }
 
-                public void AnimateMaskScale( float targetScale, long duration )
+                public void AnimateMaskScale( float targetScale, float duration )
                 {
                     if( Animating == false )
                     {
                         float clampedValue = System.Math.Max(targetScale, .01f);
 
-                        // setup an animation from our current mask scale to the new one.
-                        ValueAnimator animator = ValueAnimator.OfFloat( _MaskScale, clampedValue);
-
-                        animator.AddUpdateListener( this );
-                        animator.AddListener( this );
-                        animator.SetDuration( duration );
-
-                        animator.Start();
+                        SimpleAnimatorFloat floatAnimator = new SimpleAnimatorFloat( _MaskScale, clampedValue, duration, delegate(float percent, object value) 
+                            {
+                                _MaskScale = (float)value;
+                                Invalidate( );
+                            }, 
+                            delegate 
+                            {
+                                Animating = false;
+                            });
+                        floatAnimator.Start( );
 
                         Animating = true;
                     }
-                }
-
-                public void OnAnimationUpdate(ValueAnimator animation)
-                {
-                    // update the mask scale
-                    _MaskScale = ((Java.Lang.Float)animation.GetAnimatedValue("")).FloatValue();
-
-                    // force the view to be dirty so we get a redraw call.
-                    Invalidate();
-                }
-
-                public void OnAnimationStart(Animator animation)
-                {
-                }
-
-                public void OnAnimationEnd(Animator animation)
-                {
-                    Animating = false;
-                }
-
-                public void OnAnimationRepeat(Animator animation)
-                {
-                }
-
-                public void OnAnimationCancel(Animator animation)
-                {
                 }
 
                 public static void CreateAlphaMask( Android.Content.Context context, string fileName )

@@ -4,6 +4,7 @@ using System;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Drawing;
+using Rock.Mobile.PlatformSpecific.iOS.Animation;
 
 namespace Rock.Mobile
 {
@@ -31,10 +32,10 @@ namespace Rock.Mobile
                 public override bool ShouldChangeText(UITextView textView, NSRange range, string text)
                 {
                     // don't allow lengths past the height limit imposed.
-                    if( text.Length > 0 && textView.Frame.Height > DynamicTextMaxHeight )
+                    /*if( text.Length > 0 && textView.Frame.Height > DynamicTextMaxHeight )
                     {
                         return false;
-                    }
+                    }*/
                     return true;
                 }
 
@@ -66,6 +67,18 @@ namespace Rock.Mobile
                 /// </summary>
                 /// <value><c>true</c> if scale height for text; otherwise, <c>false</c>.</value>
                 public bool ScaleHeightForText { get; set; }
+
+                /// <summary>
+                /// The size when the view isn't being animated
+                /// </summary>
+                /// <value>The size of the natural.</value>
+                public SizeF NaturalSize { get; set; }
+
+                /// <summary>
+                /// Lets us know whether we should alter NaturalSize on a size change or not.
+                /// </summary>
+                /// <value><c>true</c> if animating; otherwise, <c>false</c>.</value>
+                public bool Animating { get; set; }
 
                 /// <summary>
                 /// Limits the height of the dynamic text box
@@ -134,6 +147,11 @@ namespace Rock.Mobile
                             ContentSize = base.Bounds.Size;
                             PlaceholderLabel.Bounds = base.Bounds;
                             SingleLineHeight = size.Height;
+
+                            if( Animating == false )
+                            {
+                                NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                            }
                         }
                     }
                 }
@@ -231,7 +249,16 @@ namespace Rock.Mobile
                     set
                     {
                         // create the bounds with either the text's required height, or the height the user wanted.
-                        base.Bounds = new RectangleF( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
+                        if ( Animating == true )
+                        {
+                            base.Bounds = new RectangleF( value.X, value.Y, value.Width, value.Height );
+                        }
+                        else
+                        {
+                            base.Bounds = new RectangleF( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
+                            NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                        }
+
                         PlaceholderLabel.Bounds = base.Bounds;
                     }
                 }
@@ -247,6 +274,11 @@ namespace Rock.Mobile
                         // create the bounds with either the text's required height, or the height the user wanted.
                         base.Frame = new RectangleF( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
                         PlaceholderLabel.Frame = base.Frame;
+
+                        if( Animating == false )
+                        {
+                            NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                        }
                     }
                 }
 
@@ -276,12 +308,25 @@ namespace Rock.Mobile
                     {
                         // Update the height to match the content height
                         // if scaling is on.
-                        if( ScaleHeightForText )
+                        if( ScaleHeightForText && Animating == false )
                         {
-                            base.Bounds = new RectangleF( base.Bounds.X, 
-                                                          base.Bounds.Y, 
-                                                          base.Bounds.Width,
-                                                          ContentSize.Height + SingleLineHeight );
+                            // do it via animation for a nice growth effect
+                            Animating = true;
+                            SizeF newSize = new SizeF( base.Bounds.Width, ContentSize.Height );
+
+                            SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( base.Bounds.Size, newSize, .10f, 
+                                delegate(float percent, object value )
+                                {
+                                    SizeF currSize = (SizeF)value;
+                                    base.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
+                                },
+                                delegate
+                                {
+                                    Animating = false;
+                                    NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                                } );
+
+                            animator.Start( );
                         }
 
                         // reveal the placeholder only when text is gone.
@@ -302,6 +347,11 @@ namespace Rock.Mobile
                     if( ScaleHeightForText == false )
                     {
                         base.SizeToFit( );
+
+                        if( Animating == false )
+                        {
+                            NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                        }
                     }
                 }
             }

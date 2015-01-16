@@ -70,7 +70,9 @@ namespace Rock.Mobile
             protected abstract void setKeyboardAppearance( int style );
 
             public abstract void ResignFirstResponder( );
+
+            public abstract void AnimateOpen( );
+            public abstract void AnimateClosed( );
         }
     }
 }
-

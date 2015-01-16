@@ -73,7 +73,9 @@ namespace Rock.Mobile
 
             public override void AnimateToFade( float fadeAmount )
             {
-                ((FadeTextView)Label).AnimateMaskScale( MaxScale * fadeAmount, (long) (MaxScale / MASK_TIME_SCALER) );
+                // because this was originally tuned in milliseconds, simply convert it to seconds.
+                long msDuration = (long) (MaxScale / MASK_TIME_SCALER);
+                ( (FadeTextView)Label ).AnimateMaskScale( MaxScale * fadeAmount, msDuration / 1000.0f );
             }
 
             public override void SizeToFit( )

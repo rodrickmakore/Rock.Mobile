@@ -67,6 +67,7 @@
       <DependentUpon>UIScrollViewWrapper.cs</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\UI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Animation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
