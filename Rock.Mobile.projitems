@@ -61,13 +61,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\UI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Graphics.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformUtil\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\UIScrollViewWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\UIScrollViewWrapper.designer.cs">
       <DependentUpon>UIScrollViewWrapper.cs</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\UI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Animation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUtil\String.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
