@@ -15,7 +15,9 @@ namespace Rock.Mobile
         {
             /// <summary>
             /// Special drawable that manages both an outer and inner paint.
-            /// Designed for use only with BorderedRectTextView and BorderedRectTextField
+            /// Designed for use only with BorderedRectTextView, BorderedRectTextField and BorderedRectView
+            /// Note: Transparancy with a solid border doesn't work, because I can't get the stroke'd border to render
+            /// like i need it to, and i need to move on to other stuff. Just set the color to the BG color and be done.
             /// </summary>
             internal class BorderedRectPaintDrawable : PaintDrawable
             {
@@ -95,7 +97,12 @@ namespace Rock.Mobile
 
                 public BorderedRectPaintDrawable( ) : base( )
                 {
+                    // default the paint to clear and no width.
+                    // Basically an invisible border.
                     BorderPaint = new Paint( );
+                    BorderPaint.Color = Color.Transparent;
+                    BorderPaint.SetStyle( Paint.Style.Fill );
+                    BorderPaint.StrokeWidth = 0;
 
                     // create a shape with the new radius
                     Shape = new RoundRectShape( new float[] { 0, 
@@ -110,23 +117,32 @@ namespace Rock.Mobile
 
                 protected override void OnDraw( Shape shape, Canvas canvas, Paint paint )
                 {
-                    // Render the 'border'
-                    base.OnDraw( shape, canvas, BorderPaint );
+                    // Render the 'border' if there's a valid width. Otherwise skip it,
+                    // it's a waste to call.
+                    if ( _BorderWidth > 0 )
+                    {
+                        base.OnDraw( shape, canvas, BorderPaint );
 
-                    // Render the 'fill'
-                    float xOffset = _BorderWidth;
-                    float yOffset = _BorderWidth;
+                        // Render the 'fill'
+                        float xOffset = _BorderWidth;
+                        float yOffset = _BorderWidth;
 
-                    canvas.Translate( xOffset, yOffset );
+                        canvas.Translate( xOffset, yOffset );
 
-                    // shrink it down
-                    shape.Resize( shape.Width - (_BorderWidth * 2), shape.Height - (_BorderWidth * 2) );
+                        // shrink it down
+                        shape.Resize( shape.Width - ( _BorderWidth * 2 ), shape.Height - ( _BorderWidth * 2 ) );
 
-                    // render
-                    base.OnDraw( shape, canvas, paint );
+                        // render
+                        base.OnDraw( shape, canvas, paint );
 
-                    // restore the original size
-                    shape.Resize( shape.Width + (_BorderWidth * 2), shape.Height + (_BorderWidth * 2) );
+                        // restore the original size
+                        shape.Resize( shape.Width + ( _BorderWidth * 2 ), shape.Height + ( _BorderWidth * 2 ) );
+                    }
+                    else
+                    {
+                        // without a border, simply render the view as normal
+                        base.OnDraw( shape, canvas, paint );
+                    }
                 }
             }
 
@@ -151,7 +167,8 @@ namespace Rock.Mobile
                     // create our special bordered rect
                     BorderedPaintDrawable = new BorderedRectPaintDrawable( );
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
-                    BorderedPaintDrawable.BorderPaint = new Paint( BorderedPaintDrawable.Paint );
+                    BorderedPaintDrawable.Paint.Color = Color.Transparent;
+
                     SetBackgroundDrawable( BorderedPaintDrawable );
                 }
 
@@ -175,7 +192,13 @@ namespace Rock.Mobile
                     if( paintDrawable != null )
                     {
                         float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
-                        canvas.Translate( borderWidth, borderWidth );
+
+                        // perform just a vertical translation to ensure the text is centered
+                        canvas.Translate( 0, borderWidth );
+
+                        // create a scalar to uniformly scale down the text so it fits within the border
+                        float scalar = ( canvas.Width - (borderWidth * 2) ) / canvas.Width;
+                        canvas.Scale( scalar, scalar ); 
                     }
 
                     base.OnDraw(canvas);
@@ -191,17 +214,16 @@ namespace Rock.Mobile
 
                     // if there's no text, we don't want to provide any border. There's no text TO border.
                     float borderSize = 0;
-                    if( string.IsNullOrEmpty( Text ) != true )
+                    if ( string.IsNullOrEmpty( Text ) != true )
                     {
                         // now adjust for the border
-                        borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
+                        borderSize = TypedValue.ApplyDimension( ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics );
                     }
-
-                    MeasuredWidth = base.MeasuredWidth + (int)(borderSize * 2);
-                    MeasuredHeight = base.MeasuredHeight + (int)(borderSize * 2);
+                        
+                    MeasuredWidth = base.MeasuredWidth + (int)( borderSize * 2 );
+                    MeasuredHeight = base.MeasuredHeight + (int)( borderSize * 2 );
                 }
             }
-
 
             public class BorderedRectEditText : EditText
             {
@@ -224,7 +246,8 @@ namespace Rock.Mobile
                     // create our special bordered rect
                     BorderedPaintDrawable = new BorderedRectPaintDrawable( );
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
-                    BorderedPaintDrawable.BorderPaint = new Paint( BorderedPaintDrawable.Paint );
+                    BorderedPaintDrawable.Paint.Color = Color.Transparent;
+
                     SetBackgroundDrawable( BorderedPaintDrawable );
                 }
 
@@ -248,7 +271,13 @@ namespace Rock.Mobile
                     if( paintDrawable != null )
                     {
                         float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
-                        canvas.Translate( borderWidth, borderWidth );
+
+                        // perform just a vertical translation to ensure the text is centered
+                        canvas.Translate( 0, borderWidth );
+
+                        // create a scalar to uniformly scale down the text so it fits within the border
+                        float scalar = ( canvas.Width - (borderWidth * 2) ) / canvas.Width;
+                        canvas.Scale( scalar, scalar ); 
                     }
 
                     base.OnDraw(canvas);
@@ -291,7 +320,8 @@ namespace Rock.Mobile
                     // create our special bordered rect
                     BorderedPaintDrawable = new BorderedRectPaintDrawable( );
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
-                    BorderedPaintDrawable.BorderPaint = new Paint( BorderedPaintDrawable.Paint );
+                    BorderedPaintDrawable.Paint.Color = Color.Transparent;
+
                     SetBackgroundDrawable( BorderedPaintDrawable );
                 }
 
