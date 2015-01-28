@@ -1,10 +1,11 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
 using System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreGraphics;
-using MonoTouch.CoreText;
+using UIKit;
+using Foundation;
+using CoreGraphics;
+using CoreText;
+using Rock.Mobile.PlatformSpecific.Util;
 
 namespace Rock.Mobile
 {
@@ -35,7 +36,7 @@ namespace Rock.Mobile
 
             protected override float getBorderWidth()
             {
-                return View.Layer.BorderWidth;
+                return (float) View.Layer.BorderWidth;
             }
             protected override void setBorderWidth( float width )
             {
@@ -44,7 +45,7 @@ namespace Rock.Mobile
 
             protected override float getCornerRadius()
             {
-                return View.Layer.CornerRadius;
+                return (float) View.Layer.CornerRadius;
             }
             protected override void setCornerRadius( float radius )
             {
@@ -63,7 +64,7 @@ namespace Rock.Mobile
 
             protected override float getZPosition( )
             {
-                return View.Layer.ZPosition;
+                return (float) View.Layer.ZPosition;
             }
 
             protected override void setZPosition( float zPosition )
@@ -73,7 +74,7 @@ namespace Rock.Mobile
 
             protected override RectangleF getBounds( )
             {
-                return View.Bounds;
+                return View.Bounds.ToRectF( );
             }
 
             protected override void setBounds( RectangleF bounds )
@@ -83,7 +84,7 @@ namespace Rock.Mobile
 
             protected override RectangleF getFrame( )
             {
-                return View.Frame;
+                return View.Frame.ToRectF( );
             }
 
             protected override void setFrame( RectangleF frame )
@@ -91,9 +92,9 @@ namespace Rock.Mobile
                 View.Frame = frame;
             }
 
-            protected override  PointF getPosition( )
+            protected override PointF getPosition( )
             {
-                return View.Layer.Position;
+                return View.Layer.Position.ToPointF( );
             }
 
             protected override void setPosition( PointF position )

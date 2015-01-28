@@ -1,13 +1,13 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
-using MonoTouch.UIKit;
-using MonoTouch.AssetsLibrary;
-using MonoTouch.Foundation;
-using MonoTouch.CoreImage;
-using MonoTouch.CoreGraphics;
+using UIKit;
+using AssetsLibrary;
+using Foundation;
+using CoreImage;
+using CoreGraphics;
 using System.Runtime.InteropServices;
-using MonoTouch.ImageIO;
-using MonoTouch.CoreFoundation;
+using ImageIO;
+using CoreFoundation;
 
 namespace Rock.Mobile
 {
@@ -97,7 +97,7 @@ namespace Rock.Mobile
                 NSUrl imageDestUrl = NSUrl.CreateFileUrl( new string[] { ImageDest } );
 
                 // create a CGImage destination that converts the image to jpeg
-                CGImageDestination cgImageDest = CGImageDestination.FromUrl( imageDestUrl, MonoTouch.MobileCoreServices.UTType.JPEG, 1 );
+                CGImageDestination cgImageDest = CGImageDestination.Create( imageDestUrl, MobileCoreServices.UTType.JPEG, 1 );
 
                 if ( cgImageDest != null )
                 {
@@ -148,7 +148,7 @@ namespace Rock.Mobile
                                                                                                                    (int)rotatedImage.Extent.Height ) );
 
                     // put the image in the destination, converting it to jpeg.
-                    cgImageDest.AddImage( rotatedCGImage, null );
+                    cgImageDest.AddImage( rotatedCGImage );
 
 
                     // close and dispose.

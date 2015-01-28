@@ -1,6 +1,6 @@
-﻿using System;
-using System.Drawing;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Rock.Mobile
 {

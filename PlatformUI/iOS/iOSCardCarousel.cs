@@ -1,9 +1,11 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
-using MonoTouch.CoreAnimation;
-using MonoTouch.UIKit;
+using CoreAnimation;
+using UIKit;
 using System.Drawing;
-using MonoTouch.Foundation;
+using Foundation;
+using CoreGraphics;
+using Rock.Mobile.PlatformSpecific.Util;
 
 namespace Rock.Mobile
 {
@@ -35,7 +37,7 @@ namespace Rock.Mobile
             /// <summary>
             /// Tracks the last position of panning so delta can be applied
             /// </summary>
-            PointF PanLastPos { get; set; }
+            CGPoint PanLastPos { get; set; }
 
             public iOSCardCarousel( object parentView, float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration ) : base( parentView, cardWidth, cardHeight, boundsInParent, animationDuration )
             {
@@ -56,8 +58,8 @@ namespace Rock.Mobile
             public void iOSPanGesture( UIPanGestureRecognizer obj)
             {
                 // get the required data from the gesture and call our base function
-                PointF currVelocity = obj.VelocityInView( (UIView)ParentView );
-                PointF deltaPan = new PointF( 0, 0 );
+                CGPoint currVelocity = obj.VelocityInView( (UIView)ParentView );
+                CGPoint deltaPan = new CGPoint( 0, 0 );
 
                 PlatformCardCarousel.PanGestureState state = PlatformCardCarousel.PanGestureState.Began;
                 switch ( obj.State )
@@ -72,8 +74,8 @@ namespace Rock.Mobile
 
                     case UIGestureRecognizerState.Changed:
                     {
-                        PointF absolutePan = obj.TranslationInView( (UIView)ParentView );
-                        deltaPan = new PointF( absolutePan.X - PanLastPos.X, 0 );
+                        CGPoint absolutePan = obj.TranslationInView( (UIView)ParentView );
+                        deltaPan = new CGPoint( absolutePan.X - PanLastPos.X, 0 );
 
                         PanLastPos = absolutePan;
 
@@ -90,7 +92,7 @@ namespace Rock.Mobile
                     }
                 }
 
-                base.OnPanGesture( state, currVelocity, deltaPan );
+                base.OnPanGesture( state, currVelocity.ToPointF( ), deltaPan.ToPointF( ) );
             }
 
             public override void TouchesBegan( )

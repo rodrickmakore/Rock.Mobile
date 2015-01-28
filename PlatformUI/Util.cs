@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Rock.Mobile.PlatformUI
 {
@@ -17,10 +17,10 @@ namespace Rock.Mobile.PlatformUI
         #endif
 
         #if __IOS__
-        public static MonoTouch.UIKit.UIColor GetUIColor( uint color )
+        public static UIKit.UIColor GetUIColor( uint color )
         {
             // break out the colors and convert to 0-1 for iOS
-            return new MonoTouch.UIKit.UIColor(
+            return new UIKit.UIColor(
             ( float )( ( color & 0xFF000000 ) >> 24 ) / 255,
             ( float )( ( color & 0x00FF0000 ) >> 16 ) / 255, 
             ( float )( ( color & 0x0000FF00 ) >> 8 ) / 255, 

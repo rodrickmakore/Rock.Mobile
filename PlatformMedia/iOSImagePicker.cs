@@ -1,13 +1,13 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
-using MonoTouch.UIKit;
-using MonoTouch.AssetsLibrary;
-using MonoTouch.Foundation;
-using MonoTouch.CoreImage;
-using MonoTouch.CoreGraphics;
+using UIKit;
+using AssetsLibrary;
+using Foundation;
+using CoreImage;
+using CoreGraphics;
 using System.Runtime.InteropServices;
-using MonoTouch.ImageIO;
-using MonoTouch.CoreFoundation;
+using ImageIO;
+using CoreFoundation;
 
 namespace Rock.Mobile
 {

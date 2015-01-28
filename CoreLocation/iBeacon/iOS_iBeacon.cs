@@ -1,7 +1,7 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
-using MonoTouch.CoreLocation;
-using MonoTouch.Foundation;
+using CoreLocation;
+using Foundation;
 
 namespace Rock.Mobile
 {

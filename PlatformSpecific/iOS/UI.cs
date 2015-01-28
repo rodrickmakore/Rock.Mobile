@@ -1,10 +1,11 @@
-﻿#if __IOS__
+#if __IOS__
 
 using System;
 using System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using Rock.Mobile.Util.Strings;
+using CoreGraphics;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.UI
 {
@@ -25,13 +26,13 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         UIActivityIndicatorView ProgressBar { get; set; }
         UIButton CancelButton { get; set; }
 
-        public WebLayout( RectangleF frame )
+        public WebLayout( CGRect frame )
         {
             ContainerView = new UIView( frame );
 
             WebView = new UIWebView( );
-            WebView.Layer.AnchorPoint = PointF.Empty;
-            WebView.Frame = new RectangleF( 0, 0, ContainerView.Frame.Width, ContainerView.Frame.Height );
+            WebView.Layer.AnchorPoint = CGPoint.Empty;
+            WebView.Frame = new CGRect( 0, 0, ContainerView.Frame.Width, ContainerView.Frame.Height );
             WebView.LoadStarted += (object s, EventArgs eArgs) => 
                 {
                     ProgressBar.Hidden = false;
@@ -55,14 +56,14 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             ProgressBar.StartAnimating( );
             ContainerView.AddSubview( ProgressBar );
 
-            ProgressBar.Layer.Position = new PointF (ContainerView.Bounds.Width / 2, ContainerView.Bounds.Height / 2);
+            ProgressBar.Layer.Position = new CGPoint (ContainerView.Bounds.Width / 2, ContainerView.Bounds.Height / 2);
             ProgressBar.Hidden = true;
 
             CancelButton = UIButton.FromType( UIButtonType.System );
             CancelButton.Frame = frame;
             CancelButton.SetTitle( "Cancel", UIControlState.Normal );
             CancelButton.SizeToFit( );
-            CancelButton.Frame = new RectangleF( (frame.Width - CancelButton.Frame.Width) / 2, frame.Bottom - CancelButton.Frame.Height, CancelButton.Frame.Width, CancelButton.Frame.Height );
+            CancelButton.Frame = new CGRect( (frame.Width - CancelButton.Frame.Width) / 2, frame.Bottom - CancelButton.Frame.Height, CancelButton.Frame.Width, CancelButton.Frame.Height );
             CancelButton.TouchUpInside += (object sender, EventArgs e ) =>
                 {
                     LoadResultHandler( Result.Cancel, "" );
@@ -70,7 +71,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
             ContainerView.AddSubview( CancelButton );
 
-            WebView.Bounds = new RectangleF( 0, 0, WebView.Bounds.Width, WebView.Bounds.Height - CancelButton.Bounds.Height );
+            WebView.Bounds = new CGRect( 0, 0, WebView.Bounds.Width, WebView.Bounds.Height - CancelButton.Bounds.Height );
         }
 
         public void LoadUrl( string url, LoadResult resultHandler )
@@ -115,7 +116,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Console.WriteLine( "Appending" );
 
                 // just append the new character(s)
-                newString = textField.Text.Insert( range.Location, replacementString );
+                newString = textField.Text.Insert( (int)range.Location, replacementString );
 
                 // next, we'll strip the symbols and re-format it as a phone number
                 string numericString = newString.AsNumeric( );
@@ -131,7 +132,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Console.WriteLine( "Deleting" );
 
                 // See if we need to adjust the positioning to remove a number.
-                string deleteString = textField.Text.Substring( range.Location, range.Length );
+                string deleteString = textField.Text.Substring( (int)range.Location, (int)range.Length );
                 bool hasNumbers = HasNumericChars( deleteString );
 
                 // if it DOES NOT have a number, their intention is to
@@ -141,7 +142,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     Console.WriteLine( "No number for delete. Finding nearest.", hasNumbers );
 
                     // find the number they intended to delete
-                    int nearestNumber = FindNearestNumber( textField.Text, range.Location, -1 );
+                    int nearestNumber = FindNearestNumber( textField.Text, (int)range.Location, -1 );
 
                     // so assign the range so it deletes that.
                     range.Location = nearestNumber;
@@ -149,7 +150,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 }
 
                 // remove the chunk of the string
-                newString = textField.Text.Remove( range.Location, range.Length );
+                newString = textField.Text.Remove( (int)range.Location, (int)range.Length );
 
                 // next, we'll strip the symbols and re-format it as a phone number
                 string numericString = newString.AsNumeric( );
@@ -158,8 +159,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
                 // now the critical part. Figure out how many symbols lead up to the location
                 // in the original AND new strings.
-                int numSymbolsToIndexStart = GetNumSymbolsToIndex( textField.Text, range.Location );
-                int numSymbolsToIndexFinal = GetNumSymbolsToIndex( finalString, range.Location );
+                int numSymbolsToIndexStart = GetNumSymbolsToIndex( textField.Text, (int)range.Location );
+                int numSymbolsToIndexFinal = GetNumSymbolsToIndex( finalString, (int)range.Location );
 
                 // that difference is how many characters back we need to adjust
                 int deltaSymbols = System.Math.Abs( numSymbolsToIndexStart - numSymbolsToIndexFinal );
@@ -182,13 +183,13 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     if ( range.Length > 0 )
                     {
                         // if there's a length, part of the existing string is being replaced
-                        newString = textField.Text.Remove( range.Location, range.Length );
-                        newString = newString.Insert( range.Location, replacementString );
+                        newString = textField.Text.Remove( (int)range.Location, (int)range.Length );
+                        newString = newString.Insert( (int)range.Location, replacementString );
                     }
                     else
                     {
                         // otherwise something is being inserted or appended
-                        newString = textField.Text.Insert( range.Location, replacementString );
+                        newString = textField.Text.Insert( (int)range.Location, replacementString );
                     }
 
                     // next, we'll strip the symbols and re-format it as a phone number
@@ -300,14 +301,14 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     {
         public UIActivityIndicatorView ActivityIndicator { get; set; }
 
-        public BlockerView( RectangleF frame ) : base( frame )
+        public BlockerView( CGRect frame ) : base( frame )
         {
             ActivityIndicator = new UIActivityIndicatorView( );
             ActivityIndicator.ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge;
             ActivityIndicator.StartAnimating( );
             ActivityIndicator.SizeToFit( );
-            ActivityIndicator.Layer.AnchorPoint = PointF.Empty;
-            ActivityIndicator.Layer.Position = new PointF( ( frame.Width - ActivityIndicator.Bounds.Width ) / 2, ( frame.Height - ActivityIndicator.Bounds.Height ) / 2 );
+            ActivityIndicator.Layer.AnchorPoint = CGPoint.Empty;
+            ActivityIndicator.Layer.Position = new CGPoint( ( frame.Width - ActivityIndicator.Bounds.Width ) / 2, ( frame.Height - ActivityIndicator.Bounds.Height ) / 2 );
 
             AddSubview( ActivityIndicator );
 
@@ -323,11 +324,11 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             ActivityIndicator.Hidden = false;
 
             UIView.Animate( .5f, 0, UIViewAnimationOptions.CurveEaseInOut, 
-                new NSAction( delegate 
+                new Action( delegate 
                     { 
                         Layer.Opacity = .80f; 
                     } )
-                , new NSAction( delegate 
+                , new Action( delegate 
                     { 
                         // if provided, call their completion handler
                         if( onCompletion != null )
@@ -341,11 +342,11 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public void FadeOut( OnAnimComplete onCompletion )
         {
             UIView.Animate( .5f, 0, UIViewAnimationOptions.CurveEaseInOut, 
-                new NSAction( delegate 
+                new Action( delegate 
                     { 
                         Layer.Opacity = 0.00f;
                     } )
-                , new NSAction( delegate 
+                , new Action( delegate 
                     { 
                         ActivityIndicator.Hidden = true;
 
@@ -405,7 +406,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         /// The starting position of the scrollView so we can restore after the user uses the UIPicker
         /// </summary>
         /// <value>The starting scroll position.</value>
-        PointF StartingScrollPos { get; set; }
+        CGPoint StartingScrollPos { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Rock.Mobile.PlatformSpecific.iOS.UI.PickerAdjustManager"/> class.
@@ -423,16 +424,16 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
             // setup the category picker and selector button
             PickerLabel = pickerLabel;
-            PickerLabel.Layer.AnchorPoint = PointF.Empty;
+            PickerLabel.Layer.AnchorPoint = CGPoint.Empty;
             PickerLabel.SizeToFit( );
-            PickerLabel.Layer.Position = new PointF( ( ParentView.Bounds.Width - PickerLabel.Bounds.Width ) / 2, ParentView.Frame.Bottom );
+            PickerLabel.Layer.Position = new CGPoint( ( ParentView.Bounds.Width - PickerLabel.Bounds.Width ) / 2, ParentView.Frame.Bottom );
         }
 
         public void SetPicker( UIView picker )
         {
             Picker = picker;
-            Picker.Layer.AnchorPoint = PointF.Empty;
-            Picker.Layer.Position = new PointF( 0, PickerLabel.Frame.Top + 10 );
+            Picker.Layer.AnchorPoint = CGPoint.Empty;
+            Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
             ParentView.AddSubview( Picker );
 
             ParentView.AddSubview( PickerLabel );
@@ -464,11 +465,11 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     StartingScrollPos = ParentScrollView.ContentOffset;
 
                     // set the picker to be on screen
-                    PickerLabel.Layer.Position = new PointF( PickerLabel.Layer.Position.X, ParentView.Bounds.Height - (PickerLabel.Bounds.Height + Picker.Bounds.Height) );
-                    Picker.Layer.Position = new PointF( 0, PickerLabel.Frame.Top + 10 );
+                    PickerLabel.Layer.Position = new CGPoint( PickerLabel.Layer.Position.X, ParentView.Bounds.Height - (PickerLabel.Bounds.Height + Picker.Bounds.Height) );
+                    Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
 
                     // scroll the category field into view and lock scrolling
-                    ParentScrollView.ContentOffset = new PointF( 0, Target.Frame.Top - Target.Frame.Height );
+                    ParentScrollView.ContentOffset = new CGPoint( 0, Target.Frame.Top - Target.Frame.Height );
                     ParentScrollView.ScrollEnabled = false;
                 }
                 else
@@ -478,8 +479,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     ParentScrollView.ScrollEnabled = true;
 
                     // move the picker off screen
-                    PickerLabel.Layer.Position = new PointF( PickerLabel.Layer.Position.X, ParentView.Frame.Bottom );
-                    Picker.Layer.Position = new PointF( 0, PickerLabel.Frame.Top + 10 );
+                    PickerLabel.Layer.Position = new CGPoint( PickerLabel.Layer.Position.X, ParentView.Frame.Bottom );
+                    Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
                 }
 
                 Revealed = enabled;
@@ -508,9 +509,9 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// </summary>
     public class KeyboardAdjustManager
     {
-        public const string TextFieldDidBeginEditingNotification = "TextFieldDidBeginEditing";
+        public static NSString TextFieldDidBeginEditingNotification = new NSString( "TextFieldDidBeginEditing" );
 
-        public const string TextFieldChangedNotification = "TextFieldChanged";
+        public static NSString TextFieldChangedNotification = new NSString( "TextFieldChanged" );
 
         /// <summary>
         /// True when a keyboard is present due to UIKeyboardWillShowNotification.
@@ -524,26 +525,26 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         /// The frame of the text field that was tapped when the keyboard was shown.
         /// Used so we know whether to scroll up the text field or not.
         /// </summary>
-        RectangleF Edit_TappedTextFieldFrame { get; set; }
+        CGRect Edit_TappedTextFieldFrame { get; set; }
 
         /// <summary>
         /// The amount the scrollView was scrolled when editing began.
         /// Used so we can restore the scrollView position when editing is finished.
         /// </summary>
         /// <value>The edit start scroll offset.</value>
-        PointF Edit_StartScrollOffset { get; set; }
+        CGPoint Edit_StartScrollOffset { get; set; }
 
         /// <summary>
         /// The position of the UIScrollView when text editing began.
         /// </summary>
         /// <value>The edit start screen offset.</value>
-        PointF Edit_StartScreenOffset { get; set; }
+        CGPoint Edit_StartScreenOffset { get; set; }
 
         /// <summary>
         /// The bottom position of the visible area when the keyboard is up.
         /// </summary>
         /// <value>The edit visible area with keyboard bot.</value>
-        float Edit_VisibleAreaWithKeyboardBot { get; set; }
+        nfloat Edit_VisibleAreaWithKeyboardBot { get; set; }
 
         UIView ParentView { get; set; }
         UIScrollView ParentScrollView { get; set; }
@@ -575,7 +576,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Edit_StartScreenOffset = ParentScrollView.Layer.Position;
 
                 // get the keyboard frame and transform it into our view's space
-                RectangleF keyboardFrame = UIKeyboard.FrameEndFromNotification (notification);
+                CGRect keyboardFrame = UIKeyboard.FrameEndFromNotification (notification);
                 keyboardFrame = ParentView.ConvertRectToView( keyboardFrame, null );
 
                 // first, get the bottom point of the visible area.
@@ -587,7 +588,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             else if ( DisplayingKeyboard == true )
             {
                 // get the keyboard frame and transform it into our view's space
-                RectangleF keyboardFrame = UIKeyboard.FrameBeginFromNotification (notification);
+                CGRect keyboardFrame = UIKeyboard.FrameBeginFromNotification (notification);
                 keyboardFrame = ParentView.ConvertRectToView( keyboardFrame, null );
 
                 // restore the screen to the way it was before editing
@@ -604,17 +605,17 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             UIView.CommitAnimations (); 
         }
 
-        RectangleF GetTappedTextFieldFrame( RectangleF textFrame )
+        CGRect GetTappedTextFieldFrame( RectangleF textFrame )
         {
             // first subtract the amount scrolled by the view.
-            float yPos = textFrame.Y - ParentScrollView.ContentOffset.Y;
-            float xPos = textFrame.X - ParentScrollView.ContentOffset.X;
+            nfloat yPos = textFrame.Y - ParentScrollView.ContentOffset.Y;
+            nfloat xPos = textFrame.X - ParentScrollView.ContentOffset.X;
 
             // now add in however far down the scroll view is from the top.
             yPos += ParentScrollView.Frame.Y;
             xPos += ParentScrollView.Frame.X;
 
-            return new RectangleF( xPos, yPos, textFrame.Width, textFrame.Height );
+            return new CGRect( xPos, yPos, textFrame.Width, textFrame.Height );
         }
 
         public void OnTextFieldDidBeginEditing( NSNotification notification )
@@ -643,23 +644,23 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 // the top of the keyboard without violating scroll constraints
 
                 // determine if they're typing near the bottom of the screen and it needs to scroll.
-                float scrollAmount = (Edit_VisibleAreaWithKeyboardBot - Edit_TappedTextFieldFrame.Bottom);
+                nfloat scrollAmount = (Edit_VisibleAreaWithKeyboardBot - Edit_TappedTextFieldFrame.Bottom);
 
                 // clamp to the legal amount we can scroll "down"
                 // Don't factor in a negative ContentOffset. That could only happen if the view isn't actually going to scroll because all content fits on it.
-                scrollAmount = System.Math.Min( scrollAmount, System.Math.Max( 0, ParentScrollView.ContentOffset.Y ) ); 
+                scrollAmount = System.Math.Min( (float)scrollAmount, System.Math.Max( 0, (float) ParentScrollView.ContentOffset.Y ) ); 
 
                 // Now determine the amount of "up" scroll remaining
-                float maxScrollAmount = ParentScrollView.ContentSize.Height - ParentScrollView.Bounds.Height;
-                float scrollAmountDistRemainingDown = -(maxScrollAmount - ParentScrollView.ContentOffset.Y);
+                nfloat maxScrollAmount = ParentScrollView.ContentSize.Height - ParentScrollView.Bounds.Height;
+                nfloat scrollAmountDistRemainingDown = -(maxScrollAmount - ParentScrollView.ContentOffset.Y);
 
                 // and clamp the scroll amount to that, so we don't scroll "up" beyond the contraints
-                float allowedScrollAmount = System.Math.Max( scrollAmount, scrollAmountDistRemainingDown );
-                ParentScrollView.ContentOffset = new PointF( ParentScrollView.ContentOffset.X, ParentScrollView.ContentOffset.Y - allowedScrollAmount );
+                nfloat allowedScrollAmount = System.Math.Max( (float)scrollAmount, (float)scrollAmountDistRemainingDown );
+                ParentScrollView.ContentOffset = new CGPoint( ParentScrollView.ContentOffset.X, ParentScrollView.ContentOffset.Y - allowedScrollAmount );
 
                 // if we STILL haven't scrolled enough "up" because of scroll contraints, we'll allow the window itself to move up.
-                float scrollDistNeeded = -System.Math.Min( 0, scrollAmount - scrollAmountDistRemainingDown );
-                ParentScrollView.Layer.Position = new PointF( ParentScrollView.Layer.Position.X, ParentScrollView.Layer.Position.Y - scrollDistNeeded );
+                nfloat scrollDistNeeded = -System.Math.Min( 0, (float) (scrollAmount - scrollAmountDistRemainingDown) );
+                ParentScrollView.Layer.Position = new CGPoint( ParentScrollView.Layer.Position.X, ParentScrollView.Layer.Position.Y - scrollDistNeeded );
             }
         }
     }

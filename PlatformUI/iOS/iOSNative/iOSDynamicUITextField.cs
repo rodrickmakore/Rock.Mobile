@@ -1,10 +1,12 @@
-﻿#if __IOS__
+#if __IOS__
 
 using System;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 using System.Drawing;
 using Rock.Mobile.PlatformSpecific.iOS.Animation;
+using CoreGraphics;
+using Rock.Mobile.PlatformSpecific.Util;
 
 namespace Rock.Mobile
 {
@@ -25,7 +27,7 @@ namespace Rock.Mobile
 
                 public override bool ShouldBeginEditing(UITextView textView)
                 {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromRectangleF( textView.Frame ) );
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
                     return true;
                 }
 
@@ -41,7 +43,7 @@ namespace Rock.Mobile
 
                 public override void Changed(UITextView textView)
                 {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromRectangleF( textView.Frame ) );
+                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromCGRect( textView.Frame ) );
                 }
             }
 
@@ -72,7 +74,7 @@ namespace Rock.Mobile
                 /// The size when the view isn't being animated
                 /// </summary>
                 /// <value>The size of the natural.</value>
-                public SizeF NaturalSize { get; set; }
+                public CGSize NaturalSize { get; set; }
 
                 /// <summary>
                 /// Lets us know whether we should alter NaturalSize on a size change or not.
@@ -138,19 +140,19 @@ namespace Rock.Mobile
                         if( ScaleHeightForText )
                         {
                             // measure the font
-                            SizeF size = SizeThatFits( new SizeF( base.Bounds.Width, base.Bounds.Height ) );
+                            CGSize size = SizeThatFits( new CGSize( base.Bounds.Width, base.Bounds.Height ) );
 
                             // round up
-                            base.Bounds = new RectangleF( base.Bounds.X, base.Bounds.Y, base.Bounds.Width, (float) System.Math.Ceiling( size.Height ) );
+                            base.Bounds = new CGRect( base.Bounds.X, base.Bounds.Y, base.Bounds.Width, (float) System.Math.Ceiling( size.Height ) );
 
                             // update our content size AND placeholder
                             ContentSize = base.Bounds.Size;
                             PlaceholderLabel.Bounds = base.Bounds;
-                            SingleLineHeight = size.Height;
+                            SingleLineHeight = (float) size.Height;
 
                             if( Animating == false )
                             {
-                                NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                                NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
                             }
                         }
                     }
@@ -198,7 +200,7 @@ namespace Rock.Mobile
                 {
                     get
                     {
-                        return Layer.ZPosition;
+                        return (float) Layer.ZPosition;
                     }
                     set
                     {
@@ -231,7 +233,7 @@ namespace Rock.Mobile
                 {
                     get
                     {
-                        return Layer.Position;
+                        return Layer.Position.ToPointF( );
                     }
                     set
                     {
@@ -240,7 +242,7 @@ namespace Rock.Mobile
                     }
                 }
 
-                public override RectangleF Bounds
+                public override CGRect Bounds
                 {
                     get
                     {
@@ -251,19 +253,19 @@ namespace Rock.Mobile
                         // create the bounds with either the text's required height, or the height the user wanted.
                         if ( Animating == true )
                         {
-                            base.Bounds = new RectangleF( value.X, value.Y, value.Width, value.Height );
+                            base.Bounds = new CGRect( value.X, value.Y, value.Width, value.Height );
                         }
                         else
                         {
-                            base.Bounds = new RectangleF( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
-                            NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                            base.Bounds = new CGRect( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
+                            NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
                         }
 
                         PlaceholderLabel.Bounds = base.Bounds;
                     }
                 }
 
-                public override RectangleF Frame
+                public override CGRect Frame
                 {
                     get
                     {
@@ -272,12 +274,12 @@ namespace Rock.Mobile
                     set
                     {
                         // create the bounds with either the text's required height, or the height the user wanted.
-                        base.Frame = new RectangleF( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
+                        base.Frame = new CGRect( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
                         PlaceholderLabel.Frame = base.Frame;
 
                         if( Animating == false )
                         {
-                            NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                            NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
                         }
                     }
                 }
@@ -312,18 +314,18 @@ namespace Rock.Mobile
                         {
                             // do it via animation for a nice growth effect
                             Animating = true;
-                            SizeF newSize = new SizeF( base.Bounds.Width, ContentSize.Height );
+                            SizeF newSize = new SizeF( (float) base.Bounds.Width, (float) ContentSize.Height );
 
-                            SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( base.Bounds.Size, newSize, .10f, 
+                            SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new SizeF( (float) base.Bounds.Size.Width, (float)base.Bounds.Size.Height ), newSize, .10f, 
                                 delegate(float percent, object value )
                                 {
                                     SizeF currSize = (SizeF)value;
-                                    base.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
+                                    base.Bounds = new CGRect( 0, 0, currSize.Width, currSize.Height );
                                 },
                                 delegate
                                 {
                                     Animating = false;
-                                    NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                                    NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
                                 } );
 
                             animator.Start( );
@@ -350,7 +352,7 @@ namespace Rock.Mobile
 
                         if( Animating == false )
                         {
-                            NaturalSize = new SizeF( Bounds.Width, Bounds.Height );
+                            NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
                         }
                     }
                 }

@@ -1,9 +1,9 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreGraphics;
-using MonoTouch.CoreText;
+using UIKit;
+using Foundation;
+using CoreGraphics;
+using CoreText;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.Graphics
 {
@@ -21,10 +21,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Graphics
                 String fontPath = NSBundle.MainBundle.BundlePath + "/Fonts/" + name + ".ttf";
 
                 // build a data model for the font
-                CGDataProvider fontProvider = MonoTouch.CoreGraphics.CGDataProvider.FromFile(fontPath);
+                CGDataProvider fontProvider = CoreGraphics.CGDataProvider.FromFile(fontPath);
 
                 // create a renderable font out of it
-                CGFont newFont = MonoTouch.CoreGraphics.CGFont.CreateFromProvider(fontProvider);
+                CGFont newFont = CoreGraphics.CGFont.CreateFromProvider(fontProvider);
 
                 // get the legal loadable font name
                 String fontScriptName = newFont.PostScriptName;

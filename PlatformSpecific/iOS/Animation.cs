@@ -1,6 +1,6 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
-using MonoTouch.Foundation;
+using Foundation;
 using System.Drawing;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.Animation
@@ -70,7 +70,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Animation
         protected void Init( float durationSeconds, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
         {
             // create our timer at 60hz
-            AnimTimer = NSTimer.CreateRepeatingTimer( new TimeSpan( ANIMATION_TICK_FREQUENCY ), new NSAction( 
+            AnimTimer = NSTimer.CreateRepeatingTimer( new TimeSpan( ANIMATION_TICK_FREQUENCY ), new Action<NSTimer>( 
                     delegate
                     {
                         // update our timer

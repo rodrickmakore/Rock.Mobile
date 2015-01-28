@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 
 #if __IOS__
-using MonoTouch.Foundation;
+using Foundation;
 
 namespace Rock.Mobile.Threading
 {
@@ -11,7 +11,7 @@ namespace Rock.Mobile.Threading
 
         public static void PerformOnUIThread( ThreadTask task )
         {
-            new NSObject().InvokeOnMainThread( new NSAction( task ) );
+            new NSObject().InvokeOnMainThread( new Action( task ) );
         }
     }
 }

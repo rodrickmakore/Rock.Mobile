@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.IO;
 using System.Collections.Generic;
@@ -65,8 +65,15 @@ namespace Rock.Mobile
             public void ExecuteAsync<TModel>( string requestUrl, RestRequest request, RequestResult<TModel> resultHandler ) where TModel : new( )
             {
                 RestClient restClient = new RestClient( );
-                restClient.BaseUrl = requestUrl;
                 restClient.CookieContainer = CookieContainer;
+
+                // RestSharp for some reason uses a string on Android, and Uri on iOS. This happened when they migrated to
+                // the Unified API for iOS.
+                #if __IOS__
+                restClient.BaseUrl = new System.Uri( requestUrl );
+                #elif __ANDROID__
+                restClient.BaseUrl = requestUrl;
+                #endif
 
                 // replace the existing json deserializer with Json.Net
                 restClient.AddHandler("application/json", new JsonDeserializer( ) );

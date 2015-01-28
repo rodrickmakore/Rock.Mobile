@@ -1,4 +1,4 @@
-﻿#if __ANDROID__
+#if __ANDROID__
 using System;
 
 // This file is contains graphics classes that should only be used in Android specific code.

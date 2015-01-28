@@ -5,10 +5,10 @@
 // Manual changes to this file will not be maintained.
 //
 #if __IOS__
+using Foundation;
 using System;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
 using System.CodeDom.Compiler;
+using UIKit;
 
 namespace iOS
 {

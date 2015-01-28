@@ -1,10 +1,11 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
 using System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreGraphics;
-using MonoTouch.CoreText;
+using UIKit;
+using Foundation;
+using CoreGraphics;
+using CoreText;
+using Rock.Mobile.PlatformSpecific.Util;
 
 namespace Rock.Mobile
 {
@@ -15,20 +16,20 @@ namespace Rock.Mobile
         /// </summary>
         public class UnderlineUIView : UIView
         {
-            public override void Draw(RectangleF rect)
+            public override void Draw(CGRect rect)
             {
                 base.Draw(rect);
 
                 using( CGContext context = UIGraphics.GetCurrentContext() )
                 {
-                    context.AddRect( new RectangleF( 0, 0, Frame.Width, 1 ) );
+                    context.AddRect( new CGRect( 0, 0, Frame.Width, 1 ) );
                     context.Clip();
 
                     UIColor color = Rock.Mobile.PlatformUI.Util.GetUIColor( 0x777777FF );
 
                     // probably should change this to not being a gradient
                     CGGradient gradiant = new CGGradient( CGColorSpace.CreateDeviceRGB(), new CGColor[] { color.CGColor, color.CGColor });
-                    context.DrawLinearGradient( gradiant, new PointF( 0, 0 ), new PointF( Frame.Width, 0 ), CGGradientDrawingOptions.DrawsBeforeStartLocation );
+                    context.DrawLinearGradient( gradiant, new CGPoint( 0, 0 ), new CGPoint( Frame.Width, 0 ), CGGradientDrawingOptions.DrawsBeforeStartLocation );
                 }
             }
         }
@@ -99,7 +100,7 @@ namespace Rock.Mobile
 
             protected override float getBorderWidth()
             {
-                return Label.Layer.BorderWidth;
+                return (float) Label.Layer.BorderWidth;
             }
             protected override void setBorderWidth( float width )
             {
@@ -108,7 +109,7 @@ namespace Rock.Mobile
 
             protected override float getCornerRadius()
             {
-                return Label.Layer.CornerRadius;
+                return (float) Label.Layer.CornerRadius;
             }
             protected override void setCornerRadius( float radius )
             {
@@ -127,7 +128,7 @@ namespace Rock.Mobile
 
             protected override float getZPosition( )
             {
-                return Label.Layer.ZPosition;
+                return (float) Label.Layer.ZPosition;
             }
 
             protected override void setZPosition( float zPosition )
@@ -137,7 +138,7 @@ namespace Rock.Mobile
 
             protected override RectangleF getBounds( )
             {
-                return Label.Bounds;
+                return Label.Bounds.ToRectF( );
             }
 
             protected override void setBounds( RectangleF bounds )
@@ -149,7 +150,7 @@ namespace Rock.Mobile
 
             protected override RectangleF getFrame( )
             {
-                return Label.Frame;
+                return Label.Frame.ToRectF( );
             }
 
             protected override void setFrame( RectangleF frame )
@@ -161,22 +162,22 @@ namespace Rock.Mobile
 
             protected override  PointF getPosition( )
             {
-                return Label.Layer.Position;
+                return Label.Layer.Position.ToPointF( );
             }
 
             protected override void setPosition( PointF position )
             {
                 // to position the border, first get the amount we'll be moving
-                float deltaX = position.X - Label.Frame.X;
-                float deltaY = position.Y - Label.Frame.Y;
+                float deltaX = (float) (position.X - Label.Frame.X);
+                float deltaY = (float) (position.Y - Label.Frame.Y);
 
                 Label.Layer.Position = position;
 
                 // now adjust the border by only the difference
                 if ( UnderlineView != null )
                 {
-                    UnderlineView.Layer.Position = new PointF( UnderlineView.Layer.Position.X + deltaX, 
-                                                               UnderlineView.Layer.Position.Y + deltaY );
+                    UnderlineView.Layer.Position = new PointF( (float) (UnderlineView.Layer.Position.X + deltaX), 
+                                                               (float) (UnderlineView.Layer.Position.Y + deltaY) );
                 }
             }
 
@@ -269,14 +270,14 @@ namespace Rock.Mobile
                     // determine how far down the border should start.
                     // The ascender is basically the distance from the top of the highest font to where the baseline is,
                     // which is effectively the character height.
-                    float borderYOffset = Label.Font.Ascender + 2;
+                    float borderYOffset = (float) Label.Font.Ascender + 2;
 
                     // Same for X, horizontally
                     float borderWidth = (int)( (float)Label.Frame.Width * BORDER_WIDTH_SCALER );
-                    float borderXOffset = ( Label.Frame.Width - borderWidth ) / 2;
+                    float borderXOffset = (float) ( Label.Frame.Width - borderWidth ) / 2;
 
-                    UnderlineView.Layer.Position = new PointF( Label.Frame.X + (int)borderXOffset, Label.Frame.Y + (int)borderYOffset );
-                    UnderlineView.Layer.Bounds = new RectangleF( 0, 0, borderWidth, 5 );
+                    UnderlineView.Layer.Position = new CGPoint( Label.Frame.X + (int)borderXOffset, Label.Frame.Y + (int)borderYOffset );
+                    UnderlineView.Layer.Bounds = new CGRect( 0, 0, borderWidth, 5 );
                 }
             }
         }

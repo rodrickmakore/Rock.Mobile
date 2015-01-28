@@ -1,12 +1,13 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
 using System.Drawing;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.CoreGraphics;
-using MonoTouch.CoreText;
+using UIKit;
+using Foundation;
+using CoreGraphics;
+using CoreText;
 using Rock.Mobile.PlatformUI.iOSNative;
 using Rock.Mobile.PlatformSpecific.iOS.Animation;
+using Rock.Mobile.PlatformSpecific.Util;
 
 namespace Rock.Mobile
 {
@@ -64,7 +65,7 @@ namespace Rock.Mobile
 
             protected override float getBorderWidth()
             {
-                return TextField.Layer.BorderWidth;
+                return (float) TextField.Layer.BorderWidth;
             }
             protected override void setBorderWidth( float width )
             {
@@ -73,7 +74,7 @@ namespace Rock.Mobile
 
             protected override float getCornerRadius()
             {
-                return TextField.Layer.CornerRadius;
+                return (float) TextField.Layer.CornerRadius;
             }
             protected override void setCornerRadius( float radius )
             {
@@ -107,7 +108,7 @@ namespace Rock.Mobile
 
             protected override RectangleF getBounds( )
             {
-                return TextField.Bounds;
+                return TextField.Bounds.ToRectF( );
             }
 
             protected override void setBounds( RectangleF bounds )
@@ -117,7 +118,7 @@ namespace Rock.Mobile
 
             protected override RectangleF getFrame( )
             {
-                return TextField.Frame;
+                return TextField.Frame.ToRectF( );
             }
 
             protected override void setFrame( RectangleF frame )
@@ -244,7 +245,8 @@ namespace Rock.Mobile
                     // and force it to a 0 size so it grows correctly
                     TextField.Bounds = RectangleF.Empty;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size, TextField.NaturalSize, SCALE_TIME_SECONDS, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new SizeF( (float)TextField.Bounds.Size.Width, (float)TextField.Bounds.Size.Height ), 
+                                                                              new SizeF( (float)TextField.NaturalSize.Width, (float)TextField.NaturalSize.Height ), SCALE_TIME_SECONDS, 
                         delegate(float percent, object value )
                         {
                             SizeF currSize = (SizeF)value;
@@ -265,7 +267,7 @@ namespace Rock.Mobile
                 {
                     TextField.Animating = true;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size, new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new SizeF( (float)TextField.Bounds.Size.Width, (float)TextField.Bounds.Size.Height ), new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
                         delegate(float percent, object value )
                         {
                             SizeF currSize = (SizeF)value;

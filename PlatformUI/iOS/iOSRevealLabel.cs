@@ -1,11 +1,11 @@
-﻿#if __IOS__
+#if __IOS__
 
 using System;
-using MonoTouch.CoreAnimation;
+using CoreAnimation;
 using System.Drawing;
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-using MonoTouch.CoreGraphics;
+using Foundation;
+using UIKit;
+using CoreGraphics;
 using Rock.Mobile.PlatformSpecific.iOS.Animation;
 
 namespace Rock.Mobile
@@ -113,7 +113,7 @@ namespace Rock.Mobile
                 base.SizeToFit( );
 
                 // Update the mask
-                Label.Layer.Mask.Bounds = new RectangleF( 0, 0, Label.Frame.Width, Label.Frame.Height );
+                Label.Layer.Mask.Bounds = new CGRect( 0, 0, Label.Frame.Width, Label.Frame.Height );
                 ApplyMaskScale(Scale);
             }
 
