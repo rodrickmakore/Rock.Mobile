@@ -164,6 +164,9 @@ namespace Rock.Mobile
             /// <param name="finished">If set to <c>true</c> finished.</param>
             void AnimationStopped( CAAnimation anim, UIView cardView, bool finished )
             {
+                // when finished, commit the card position
+                cardView.Layer.Position = cardView.Layer.PresentationLayer.Position;
+
                 // all we need to do is flag Animating as false (if it FINISHED)
                 // so we know how to control panning.
                 if( finished == true )

@@ -316,7 +316,7 @@ namespace Rock.Mobile
                             Animating = true;
                             SizeF newSize = new SizeF( (float) base.Bounds.Width, (float) ContentSize.Height );
 
-                            SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new SizeF( (float) base.Bounds.Size.Width, (float)base.Bounds.Size.Height ), newSize, .10f, 
+                            SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( base.Bounds.Size.ToSizeF( ), newSize, .10f, 
                                 delegate(float percent, object value )
                                 {
                                     SizeF currSize = (SizeF)value;

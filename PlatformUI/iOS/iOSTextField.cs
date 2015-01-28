@@ -245,8 +245,8 @@ namespace Rock.Mobile
                     // and force it to a 0 size so it grows correctly
                     TextField.Bounds = RectangleF.Empty;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new SizeF( (float)TextField.Bounds.Size.Width, (float)TextField.Bounds.Size.Height ), 
-                                                                              new SizeF( (float)TextField.NaturalSize.Width, (float)TextField.NaturalSize.Height ), SCALE_TIME_SECONDS, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size.ToSizeF( ),
+                                                                              TextField.NaturalSize.ToSizeF( ), SCALE_TIME_SECONDS, 
                         delegate(float percent, object value )
                         {
                             SizeF currSize = (SizeF)value;
@@ -267,7 +267,7 @@ namespace Rock.Mobile
                 {
                     TextField.Animating = true;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new SizeF( (float)TextField.Bounds.Size.Width, (float)TextField.Bounds.Size.Height ), new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size.ToSizeF( ), new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
                         delegate(float percent, object value )
                         {
                             SizeF currSize = (SizeF)value;
