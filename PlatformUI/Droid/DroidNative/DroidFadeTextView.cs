@@ -105,7 +105,7 @@ namespace Rock.Mobile
                     {
                         float clampedValue = System.Math.Max(targetScale, .01f);
 
-                        SimpleAnimatorFloat floatAnimator = new SimpleAnimatorFloat( _MaskScale, clampedValue, duration, delegate(float percent, object value) 
+                        SimpleAnimator_Float floatAnimator = new SimpleAnimator_Float( _MaskScale, clampedValue, duration, delegate(float percent, object value) 
                             {
                                 _MaskScale = (float)value;
                                 Invalidate( );

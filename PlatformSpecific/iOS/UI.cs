@@ -6,6 +6,9 @@ using UIKit;
 using Foundation;
 using Rock.Mobile.Util.Strings;
 using CoreGraphics;
+using Rock.Mobile.PlatformSpecific.iOS.Animation;
+using Rock.Mobile.PlatformSpecific.iOS.Graphics;
+using CCVApp.Shared.Config;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.UI
 {
@@ -96,6 +99,171 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public void SetCancelButtonColor( uint color )
         {
             CancelButton.SetTitleColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ), UIControlState.Normal );
+        }
+    }
+
+    /// <summary>
+    /// A simple banner billerboard that sizes to fit the icon and label
+    /// given it, and can animate in our out. A delegate is called
+    /// when the banner is clicked.
+    /// </summary>
+    public class NotificationBillboard : UIView
+    {
+        /// <summary>
+        /// The label representing the icon to display
+        /// </summary>
+        /// <value>The icon.</value>
+        UILabel Icon { get; set; }
+
+        /// <summary>
+        /// The label that displays the text to show
+        /// </summary>
+        /// <value>The label.</value>
+        UILabel Label { get; set; }
+
+        /// <summary>
+        /// The even invoked when the banner is clicked
+        /// </summary>
+        /// <value>The on click action.</value>
+        EventHandler OnClickAction { get; set; }
+
+        /// <summary>
+        /// An invisible button that covers the entire banner and handles the click
+        /// </summary>
+        /// <value>The overlay button.</value>
+        UIButton OverlayButton { get; set; }
+
+        /// <summary>
+        /// The natural height of the banner, necessary for animating it.
+        /// </summary>
+        /// <value>The height of the banner.</value>
+        nfloat BannerWidth { get; set; }
+
+        /// <summary>
+        /// True if the banner is animating (prevents simultaneous animations)
+        /// </summary>
+        bool Animating { get; set; }
+
+        nfloat AnchorPointX { get; set; }
+
+        const float AnimationTime = .25f;
+
+        public void Reveal( )
+        {
+            // if we're not animating
+            if ( Animating == false )
+            {
+                // reveal the banner and flag that we're animating
+                Hidden = false;
+                Animating = true;
+
+                // create an animator and animate us into view
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float) AnchorPointX, (float)(AnchorPointX - BannerWidth), AnimationTime, 
+                    delegate(float percent, object value )
+                    {
+                        Layer.Position = new CGPoint( (float)value, Layer.Position.Y );
+                    },
+                    delegate
+                    {
+                        Animating = false;
+                    } );
+
+                revealer.Start( );
+            }
+        }
+
+        public void Hide( )
+        {
+            // if we're not animating
+            if ( Animating == false )
+            {
+                Animating = true;
+
+                // create a simple animator and animate the banner out of view
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float) (AnchorPointX - BannerWidth), (float)AnchorPointX, AnimationTime, 
+                    delegate(float percent, object value )
+                    {
+                        Layer.Position = new CGPoint( (float)value, Layer.Position.Y );
+                    },
+                    delegate
+                    {
+                        // when complete, hide the banner, since there's no need to render it
+                        Animating = false;
+                        Hidden = true;
+                    } );
+
+                revealer.Start( );
+            }
+        }
+
+        public NotificationBillboard( nfloat displayWidth )
+        {
+            Layer.AnchorPoint = CGPoint.Empty;
+            ClipsToBounds = true;
+
+            Icon = new UILabel();
+            Icon.Layer.AnchorPoint = CGPoint.Empty;
+            AddSubview( Icon );
+
+            Label = new UILabel();
+            Label.Layer.AnchorPoint = CGPoint.Empty;
+            AddSubview( Label );
+
+            OverlayButton = new UIButton();
+            OverlayButton.Layer.AnchorPoint = CGPoint.Empty;
+            AddSubview( OverlayButton );
+
+            AnchorPointX = displayWidth;
+
+            Layer.Position = new CGPoint( (float)AnchorPointX, Layer.Position.Y );
+        }
+
+        public void SetLabel( string iconStr, string labelStr, uint textColor, uint bgColor, EventHandler onClick )
+        {
+            // setup the banner
+            BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor );
+
+            // setup the icon
+            Icon.Text = iconStr;
+            Icon.Font = FontManager.GetFont( ControlStylingConfig.Icon_Font_Primary, ControlStylingConfig.Small_FontSize );
+            Icon.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( textColor );
+            Icon.SizeToFit( );
+
+            // setup the label
+            Label.Text = labelStr;
+            Label.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( textColor );
+            Label.Font = FontManager.GetFont( ControlStylingConfig.Small_Font_Light, ControlStylingConfig.Small_FontSize );
+            Label.SizeToFit( );
+
+            // get the dimensions that the banner needs to be
+            nfloat totalTextWidth = (Icon.Frame.Width * 2) + Label.Frame.Width;
+            nfloat totalTextHeight = Label.Frame.Height;
+
+            // set it up
+            Bounds = new CGRect( 0, 0, totalTextWidth + ( totalTextWidth * .25f ), totalTextHeight + ( totalTextHeight * .25f ) );
+            Layer.CornerRadius = 4;
+
+            // the overlay button bounds should match the banner bounds
+            OverlayButton.Bounds = Bounds;
+
+            nfloat centerPosX = ( Bounds.Width - totalTextWidth ) / 2;
+            nfloat centerPosY = ( Bounds.Height - totalTextHeight ) / 2;
+
+            // get the icon vs text difference so we can make sure the icon is centered within the totalTextHeight.
+            nfloat heightDelta = Label.Bounds.Height - Icon.Bounds.Height;
+
+            Icon.Layer.Position = new CGPoint( centerPosX, centerPosY + (heightDelta / 2) );
+            Label.Layer.Position = new CGPoint( centerPosX + Icon.Bounds.Width * 2, centerPosY );
+
+            if ( OnClickAction != null )
+            {
+                OverlayButton.TouchUpInside -= OnClickAction;
+            }
+
+            OverlayButton.TouchUpInside += onClick;
+            OnClickAction = onClick;
+
+            BannerWidth = Bounds.Width;
         }
     }
 

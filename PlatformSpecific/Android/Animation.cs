@@ -56,9 +56,9 @@ namespace Rock.Mobile.PlatformSpecific.Android.Animation
     /// An animator that will animate a float from start to end along duration, 
     /// and provides optional update and completion callbacks
     /// </summary>
-    public class SimpleAnimatorFloat : SimpleAnimator
+    public class SimpleAnimator_Float : SimpleAnimator
     {
-        public SimpleAnimatorFloat( float start, float end, float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
+        public SimpleAnimator_Float( float start, float end, float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
         {
             // create the type-specific animator
             Animator = ValueAnimator.OfFloat( start, end );
