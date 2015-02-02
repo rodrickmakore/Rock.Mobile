@@ -106,9 +106,18 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// A simple banner billerboard that sizes to fit the icon and label
     /// given it, and can animate in our out. A delegate is called
     /// when the banner is clicked.
+    /// The parent class is a fullscreen overlay, and the banner is a subview within it.
+    /// This allows us to place a button covering the entire screen (but behind the banner)
+    /// and dismiss the banner if the screen is tapped away.
     /// </summary>
     public class NotificationBillboard : UIView
     {
+        /// <summary>
+        /// The actual visible notification banner that the icon and label are in.
+        /// </summary>
+        /// <value>The banner.</value>
+        UIView Banner { get; set; }
+
         /// <summary>
         /// The label representing the icon to display
         /// </summary>
@@ -133,18 +142,19 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         /// <value>The overlay button.</value>
         UIButton OverlayButton { get; set; }
 
-        /// <summary>
-        /// The natural height of the banner, necessary for animating it.
-        /// </summary>
-        /// <value>The height of the banner.</value>
-        nfloat BannerWidth { get; set; }
+        public UIButton DismissLayerButton { get; set; }
 
         /// <summary>
         /// True if the banner is animating (prevents simultaneous animations)
         /// </summary>
         bool Animating { get; set; }
 
-        nfloat AnchorPointX { get; set; }
+        /// <summary>
+        /// The size of the screen, needed for setting up the layout in SetLabel,
+        /// and for animating on and off screen.
+        /// </summary>
+        /// <value>The size of the screen.</value>
+        CGSize ScreenSize { get; set; }
 
         const float AnimationTime = .25f;
 
@@ -158,13 +168,14 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Animating = true;
 
                 // create an animator and animate us into view
-                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float) AnchorPointX, (float)(AnchorPointX - BannerWidth), AnimationTime, 
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float) ScreenSize.Width, 0, AnimationTime, 
                     delegate(float percent, object value )
                     {
                         Layer.Position = new CGPoint( (float)value, Layer.Position.Y );
                     },
                     delegate
                     {
+                        DismissLayerButton.Hidden = false;
                         Animating = false;
                     } );
 
@@ -180,7 +191,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Animating = true;
 
                 // create a simple animator and animate the banner out of view
-                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float) (AnchorPointX - BannerWidth), (float)AnchorPointX, AnimationTime, 
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( 0, (float)ScreenSize.Width, AnimationTime, 
                     delegate(float percent, object value )
                     {
                         Layer.Position = new CGPoint( (float)value, Layer.Position.Y );
@@ -190,39 +201,45 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                         // when complete, hide the banner, since there's no need to render it
                         Animating = false;
                         Hidden = true;
+                        DismissLayerButton.Hidden = true;
                     } );
 
                 revealer.Start( );
             }
         }
 
-        public NotificationBillboard( nfloat displayWidth )
+        public NotificationBillboard( nfloat displayWidth, nfloat displayHeight )
         {
             Layer.AnchorPoint = CGPoint.Empty;
-            ClipsToBounds = true;
+
+            DismissLayerButton = new UIButton();
+            DismissLayerButton.Layer.AnchorPoint = CGPoint.Empty;
+            DismissLayerButton.Hidden = true;
+            AddSubview( DismissLayerButton );
+
+            Banner = new UIView();
+            Banner.Layer.AnchorPoint = CGPoint.Empty;
+            AddSubview( Banner );
 
             Icon = new UILabel();
             Icon.Layer.AnchorPoint = CGPoint.Empty;
-            AddSubview( Icon );
+            Banner.AddSubview( Icon );
 
             Label = new UILabel();
             Label.Layer.AnchorPoint = CGPoint.Empty;
-            AddSubview( Label );
+            Banner.AddSubview( Label );
 
             OverlayButton = new UIButton();
             OverlayButton.Layer.AnchorPoint = CGPoint.Empty;
-            AddSubview( OverlayButton );
+            Banner.AddSubview( OverlayButton );
 
-            AnchorPointX = displayWidth;
+            Layer.Position = new CGPoint( displayWidth, Layer.Position.Y );
 
-            Layer.Position = new CGPoint( (float)AnchorPointX, Layer.Position.Y );
+            ScreenSize = new CGSize( displayWidth, displayHeight );
         }
 
         public void SetLabel( string iconStr, string labelStr, uint textColor, uint bgColor, EventHandler onClick )
         {
-            // setup the banner
-            BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor );
-
             // setup the icon
             Icon.Text = iconStr;
             Icon.Font = FontManager.GetFont( ControlStylingConfig.Icon_Font_Primary, ControlStylingConfig.Small_FontSize );
@@ -239,15 +256,17 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             nfloat totalTextWidth = (Icon.Frame.Width * 2) + Label.Frame.Width;
             nfloat totalTextHeight = Label.Frame.Height;
 
-            // set it up
-            Bounds = new CGRect( 0, 0, totalTextWidth + ( totalTextWidth * .25f ), totalTextHeight + ( totalTextHeight * .25f ) );
-            Layer.CornerRadius = 4;
+            // setup the banner
+            Banner.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor );
+            Banner.Bounds = new CGRect( 0, 0, totalTextWidth + ( totalTextWidth * .25f ), totalTextHeight * 2 );
+            //Banner.Layer.CornerRadius = 4;
+            Banner.Layer.Position = new CGPoint( ScreenSize.Width - Banner.Bounds.Width, 0 );
 
             // the overlay button bounds should match the banner bounds
-            OverlayButton.Bounds = Bounds;
+            OverlayButton.Bounds = Banner.Bounds;
 
-            nfloat centerPosX = ( Bounds.Width - totalTextWidth ) / 2;
-            nfloat centerPosY = ( Bounds.Height - totalTextHeight ) / 2;
+            nfloat centerPosX = ( Banner.Bounds.Width - totalTextWidth ) / 2;
+            nfloat centerPosY = ( Banner.Bounds.Height - totalTextHeight ) / 2;
 
             // get the icon vs text difference so we can make sure the icon is centered within the totalTextHeight.
             nfloat heightDelta = Label.Bounds.Height - Icon.Bounds.Height;
@@ -263,7 +282,15 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             OverlayButton.TouchUpInside += onClick;
             OnClickAction = onClick;
 
-            BannerWidth = Bounds.Width;
+
+            // setup the dismiss button
+            Bounds = new CGRect( 0, 0, ScreenSize.Width, ScreenSize.Height );
+            DismissLayerButton.Bounds = Bounds;
+
+            DismissLayerButton.TouchUpInside += (object sender, EventArgs e) => 
+            {
+                Hide( );
+            };
         }
     }
 

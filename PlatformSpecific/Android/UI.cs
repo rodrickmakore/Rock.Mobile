@@ -112,12 +112,6 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         Button OverlayButton { get; set; }
 
         /// <summary>
-        /// The natural height of the banner, necessary for animating it.
-        /// </summary>
-        /// <value>The height of the banner.</value>
-        float BannerWidth { get; set; }
-
-        /// <summary>
         /// True if the banner is animating (prevents simultaneous animations)
         /// </summary>
         bool Animating { get; set; }
@@ -127,7 +121,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         /// </summary>
         LinearLayout TextLayout { get; set; }
 
-        float AnchorPointX { get; set; }
+        float ScreenWidth { get; set; }
 
         const float AnimationTime = .25f;
 
@@ -141,7 +135,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 Animating = true;
 
                 // create an animator and animate us into view
-                SimpleAnimator_Float revealer = new SimpleAnimator_Float( AnchorPointX, (float)AnchorPointX - BannerWidth, AnimationTime, 
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( ScreenWidth, 0, AnimationTime, 
                     delegate(float percent, object value )
                     {
                         SetX( (float)value );
@@ -163,7 +157,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 Animating = true;
 
                 // create a simple animator and animate the banner out of view
-                SimpleAnimator_Float revealer = new SimpleAnimator_Float( AnchorPointX - BannerWidth, AnchorPointX, AnimationTime, 
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( 0, ScreenWidth, AnimationTime, 
                     delegate(float percent, object value )
                     {
                         SetX( (float)value );
@@ -179,15 +173,28 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             }
         }
 
+        RelativeLayout BannerLayout { get; set; }
+        Button DismissButton { get; set; }
+
         public NotificationBillboard( float deviceWidth, global::Android.Content.Context context ) : base( context )
         {
-            LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+            DismissButton = new Button( context );
+            DismissButton.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent );
+            DismissButton.SetBackgroundDrawable( null );
+            AddView( DismissButton );
+
+            LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent );
+
+            BannerLayout = new RelativeLayout( context );
+            BannerLayout.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+            ( (RelativeLayout.LayoutParams)BannerLayout.LayoutParameters ).AddRule( LayoutRules.AlignParentRight );
+            AddView( BannerLayout );
 
             // create a layout that will horizontally align the icon and label
             TextLayout = new LinearLayout( context );
             TextLayout.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             ( (RelativeLayout.LayoutParams)TextLayout.LayoutParameters ).AddRule( LayoutRules.CenterInParent );
-            AddView( TextLayout );
+            BannerLayout.AddView( TextLayout );
 
             Icon = new TextView( context );
             Icon.LayoutParameters = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
@@ -210,10 +217,9 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             OverlayButton = new Button( context );
             OverlayButton.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             OverlayButton.SetBackgroundDrawable( null );
-            AddView( OverlayButton );
+            BannerLayout.AddView( OverlayButton );
 
-            AnchorPointX = deviceWidth;
-
+            ScreenWidth = deviceWidth;
         }
 
         public void SetLabel( string iconStr, string labelStr, uint textColor, uint bgColor, EventHandler onClick )
@@ -222,7 +228,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             if ( Animating == false )
             {
                 // setup the banner
-                SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor ) );
+                BannerLayout.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor ) );
 
                 // setup the icon
                 Icon.Text = iconStr;
@@ -244,6 +250,11 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 OverlayButton.Click += onClick;
                 OnClickAction = onClick;
 
+                DismissButton.Click += (object sender, EventArgs e ) =>
+                {
+                    Hide( );
+                };
+
 
                 // resize the button to fit over the full banner
                 int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextLayout.LayoutParameters.Width, MeasureSpecMode.Unspecified );
@@ -253,12 +264,12 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 OverlayButton.LayoutParameters.Width = TextLayout.MeasuredWidth;
                 OverlayButton.LayoutParameters.Height = TextLayout.MeasuredHeight;
 
-                // store the width for animation
-                BannerWidth = TextLayout.MeasuredWidth;
+                BannerLayout.LayoutParameters.Width = TextLayout.MeasuredWidth;
+                BannerLayout.LayoutParameters.Height = TextLayout.MeasuredHeight;
 
                 // default it to hidden and offscreen
                 Visibility = ViewStates.Gone;
-                SetX( -BannerWidth );
+                SetX( ScreenWidth );
             }
         }
     }
