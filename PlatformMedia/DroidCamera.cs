@@ -12,6 +12,9 @@ using Android.App;
 using Uri = Android.Net.Uri;
 using Environment = Android.OS.Environment;
 using Android.OS;
+using Android.Views;
+using Android.Media;
+using System.IO;
 
 namespace Rock.Mobile
 {
@@ -24,11 +27,54 @@ namespace Rock.Mobile
         [Activity( Label = "CameraActivity" )]
         class CameraActivity : Activity
         {
+            /*class MyOrientationListener : OrientationEventListener
+            {
+                public MyOrientationListener( Context context, Android.Hardware.SensorDelay delay ) : base( context, delay )
+                {
+                }
+
+                public override void OnOrientationChanged(int orientation)
+                {
+                    System.Console.WriteLine( "Orientation changed" );
+
+                    for ( int i = 0; i < Android.Hardware.Camera.NumberOfCameras; i++ )
+                    {
+                        Android.Hardware.Camera.CameraInfo camInfo = new Android.Hardware.Camera.CameraInfo();
+                        Android.Hardware.Camera.GetCameraInfo( i, camInfo );
+
+                        orientation = (orientation + 45) / 90 * 90;
+
+                        int rotation = 0;
+                        if (camInfo.Facing == Android.Hardware.CameraFacing.Front )
+                        {
+                            rotation = (camInfo.Orientation - orientation + 360) % 360;
+                        }
+                        else 
+                        {  
+                            // back-facing camera
+                            rotation = (camInfo.Orientation + orientation) % 360;
+                        }
+
+                        Android.Hardware.Camera camera = Android.Hardware.Camera.Open( i );
+                        Android.Hardware.Camera.Parameters camParams = camera.GetParameters( );
+                        camParams.SetRotation( rotation );
+                        camera.SetParameters( camParams );
+                        //Android.Hardware.Camera.Parameters.SetRotation( rotation );
+                        //camInfo.
+                    }
+                }
+            }*/
+
             string ImageFile { get; set; }
+
+            //MyOrientationListener Listener { get; set; }
 
             protected override void OnCreate( Android.OS.Bundle savedInstanceState )
             {
                 base.OnCreate( savedInstanceState );
+
+                //Listener = new MyOrientationListener( this, Android.Hardware.SensorDelay.Normal );
+                //Listener.Enable( );
 
                 bool didStartCamera = false;
                 if( savedInstanceState != null )
@@ -44,7 +90,7 @@ namespace Rock.Mobile
                 if ( didStartCamera == false )
                 {
                     // retrieve the desired location
-                    File imageFile = (Java.IO.File)this.Intent.Extras.Get( "ImageDest" );
+                    Java.IO.File imageFile = (Java.IO.File)this.Intent.Extras.Get( "ImageDest" );
 
                     // create our intent and launch the camera
                     Intent intent = new Intent( MediaStore.ActionImageCapture );
@@ -97,7 +143,7 @@ namespace Rock.Mobile
         class DroidCamera : PlatformCamera
         {
             protected CaptureImageEvent CaptureImageEventDelegate { get; set; }
-            public File ImageFileDest { get; set; }
+            public Java.IO.File ImageFileDest { get; set; }
 
             public override bool IsAvailable( )
             {
@@ -119,7 +165,7 @@ namespace Rock.Mobile
                 }
 
                 // store the location they want the file to be in.
-                File imageFileDest = imageDest as File;
+                Java.IO.File imageFileDest = imageDest as Java.IO.File;
                 if( imageFileDest == null )
                 {
                     throw new Exception( "imageDest must be of type File" );
@@ -138,11 +184,71 @@ namespace Rock.Mobile
             {
                 switch ( resultCode )
                 {
-                    case Result.Ok: CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, imageFile ) ); break;
+                    case Result.Ok: 
+                    {
+                        // Open the bitmap
+                        Bitmap cameraBmp = MediaStore.Images.Media.GetBitmap( Rock.Mobile.PlatformSpecific.Android.Core.Context.ContentResolver, Uri.FromFile( new Java.IO.File( imageFile ) ) );
+
+                        // create a rotation matrix to orient the picture "up"
+                        Matrix transform = new Matrix();
+                        transform.PostRotate( NeededRotation( new Java.IO.File( imageFile ) ) );
+
+                        // re-create the bitmap rotated.
+                        Bitmap rotatedBmp = Bitmap.CreateBitmap( cameraBmp, 0, 0, cameraBmp.Width, cameraBmp.Height, transform, true );
+
+                        // save to disk as a jpg, overwriting our original
+                        MemoryStream memStream = new MemoryStream( );
+                        rotatedBmp.Compress( Bitmap.CompressFormat.Jpeg, 100, memStream );
+
+                        using (FileStream writer = new FileStream( imageFile, FileMode.Create ))
+                        {
+                            memStream.WriteTo( writer );
+                        }
+
+                        // release our refs to the bmps
+                        cameraBmp.Dispose( );
+                        cameraBmp = null;
+
+                        rotatedBmp.Dispose( );
+                        rotatedBmp = null;
+
+                        // send off the success notification
+                        CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, imageFile ) ); 
+                        break;
+                    }
+
                     case Result.Canceled: CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, null ) ); break;
                     default: CaptureImageEventDelegate( this, new CaptureImageEventArgs( false, null ) ); break;
                 }
             }
+
+
+            public static int NeededRotation(Java.IO.File ff)
+            {
+                try
+                {
+                    // extract the header info
+                    ExifInterface exif = new ExifInterface( ff.AbsolutePath );
+
+                    // determine how we should rotate the image
+                    int orientation = exif.GetAttributeInt( ExifInterface.TagOrientation, 0 );
+                    switch( orientation )
+                    {
+                        case 3: return 180;
+                        case 6: return 90;
+                        case 8: return 270;
+                    }
+
+                    return 0;
+
+                } 
+                catch (Exception e)
+                {
+                }
+
+                return 0;
+            }
+
         }
     }
 }

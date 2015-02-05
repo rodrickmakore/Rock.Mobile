@@ -127,8 +127,8 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
         public void Reveal( )
         {
-            // if we're not animating
-            if ( Animating == false )
+            // if we're not animating and AREN'T visible
+            if ( Animating == false  && Visibility == ViewStates.Gone )
             {
                 // reveal the banner and flag that we're animating
                 Visibility = ViewStates.Visible;
@@ -151,8 +151,8 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
         public void Hide( )
         {
-            // if we're not animating
-            if ( Animating == false )
+            // if we're not animating and ARE visible
+            if ( Animating == false && Visibility == ViewStates.Visible )
             {
                 Animating = true;
 
