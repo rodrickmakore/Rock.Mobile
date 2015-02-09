@@ -27,6 +27,7 @@ namespace Rock.Mobile
         [Activity( Label = "CameraActivity" )]
         class CameraActivity : Activity
         {
+            // Code if we ever manually need to use a camera.
             /*class MyOrientationListener : OrientationEventListener
             {
                 public MyOrientationListener( Context context, Android.Hardware.SensorDelay delay ) : base( context, delay )
@@ -242,7 +243,7 @@ namespace Rock.Mobile
                     return 0;
 
                 } 
-                catch (Exception e)
+                catch (Exception )
                 {
                 }
 

@@ -250,12 +250,6 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 OverlayButton.Click += onClick;
                 OnClickAction = onClick;
 
-                DismissButton.Click += (object sender, EventArgs e ) =>
-                {
-                    Hide( );
-                };
-
-
                 // resize the button to fit over the full banner
                 int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextLayout.LayoutParameters.Width, MeasureSpecMode.Unspecified );
                 int heightMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextLayout.LayoutParameters.Height, MeasureSpecMode.Unspecified );
@@ -271,6 +265,23 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 Visibility = ViewStates.Gone;
                 SetX( ScreenWidth );
             }
+        }
+
+        public override bool DispatchTouchEvent(MotionEvent e)
+        {
+            // get the tapped position and the bannerPos's bounding box
+            PointF tappedPos = new PointF( e.GetX( ), e.GetY( ) );
+            RectangleF bannerBB = new RectangleF( BannerLayout.GetX( ), BannerLayout.GetY( ), BannerLayout.GetX( ) + BannerLayout.Width, BannerLayout.GetY( ) + BannerLayout.Height );
+
+            // if they tapped inside the banner, send the click notification
+            if ( bannerBB.Contains( tappedPos ) )
+            {
+                OnClickAction( null, null );
+            }
+
+            // either way dismiss the banner and let the touch input continue
+            Hide( );
+            return false;
         }
     }
 }

@@ -69,6 +69,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUtil\String.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\UIScrollViewWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUtil\FileIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

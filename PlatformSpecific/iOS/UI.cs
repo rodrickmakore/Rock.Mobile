@@ -112,6 +112,31 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// </summary>
     public class NotificationBillboard : UIView
     {
+        public override UIView HitTest(CGPoint point, UIEvent uievent)
+        {
+            // transform the point into absolute coords
+            CGPoint absolutePoint = new CGPoint( point.X + Frame.Left,
+                                                 point.Y + Frame.Top );
+
+            // now is that tap within the frame bounds?
+            if ( Frame.Contains( absolutePoint ) )
+            {
+                // yup, now is the point in frame space (which is what we got in the first place)
+                // within the banner? (Which is also in frame space, not absolute)
+                if ( Banner.Frame.Contains( point ) )
+                {
+                    // fire off the clicked notification
+                    OnClickAction( null, null );
+                }
+
+                // hide the billboard
+                Hide( );
+            }
+
+            // no matter what, don't consume the touch input.
+            return null;
+        }
+
         /// <summary>
         /// The actual visible notification banner that the icon and label are in.
         /// </summary>
@@ -135,14 +160,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         /// </summary>
         /// <value>The on click action.</value>
         EventHandler OnClickAction { get; set; }
-
-        /// <summary>
-        /// An invisible button that covers the entire banner and handles the click
-        /// </summary>
-        /// <value>The overlay button.</value>
-        UIButton OverlayButton { get; set; }
-
-        public UIButton DismissLayerButton { get; set; }
 
         /// <summary>
         /// True if the banner is animating (prevents simultaneous animations)
@@ -175,7 +192,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     },
                     delegate
                     {
-                        DismissLayerButton.Hidden = false;
                         Animating = false;
                     } );
 
@@ -201,7 +217,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                         // when complete, hide the banner, since there's no need to render it
                         Animating = false;
                         Hidden = true;
-                        DismissLayerButton.Hidden = true;
                     } );
 
                 revealer.Start( );
@@ -211,11 +226,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public NotificationBillboard( nfloat displayWidth, nfloat displayHeight )
         {
             Layer.AnchorPoint = CGPoint.Empty;
-
-            DismissLayerButton = new UIButton();
-            DismissLayerButton.Layer.AnchorPoint = CGPoint.Empty;
-            DismissLayerButton.Hidden = true;
-            AddSubview( DismissLayerButton );
 
             Banner = new UIView();
             Banner.Layer.AnchorPoint = CGPoint.Empty;
@@ -228,10 +238,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             Label = new UILabel();
             Label.Layer.AnchorPoint = CGPoint.Empty;
             Banner.AddSubview( Label );
-
-            OverlayButton = new UIButton();
-            OverlayButton.Layer.AnchorPoint = CGPoint.Empty;
-            Banner.AddSubview( OverlayButton );
 
             Layer.Position = new CGPoint( displayWidth, Layer.Position.Y );
 
@@ -257,13 +263,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             nfloat totalTextHeight = Label.Frame.Height;
 
             // setup the banner
+            Banner.UserInteractionEnabled = false;
             Banner.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor );
             Banner.Bounds = new CGRect( 0, 0, totalTextWidth + ( totalTextWidth * .25f ), totalTextHeight * 2 );
-            //Banner.Layer.CornerRadius = 4;
             Banner.Layer.Position = new CGPoint( ScreenSize.Width - Banner.Bounds.Width, 0 );
-
-            // the overlay button bounds should match the banner bounds
-            OverlayButton.Bounds = Banner.Bounds;
 
             nfloat centerPosX = ( Banner.Bounds.Width - totalTextWidth ) / 2;
             nfloat centerPosY = ( Banner.Bounds.Height - totalTextHeight ) / 2;
@@ -274,23 +277,11 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             Icon.Layer.Position = new CGPoint( centerPosX, centerPosY + (heightDelta / 2) );
             Label.Layer.Position = new CGPoint( centerPosX + Icon.Bounds.Width * 2, centerPosY );
 
-            if ( OnClickAction != null )
-            {
-                OverlayButton.TouchUpInside -= OnClickAction;
-            }
-
-            OverlayButton.TouchUpInside += onClick;
             OnClickAction = onClick;
 
 
             // setup the dismiss button
             Bounds = new CGRect( 0, 0, ScreenSize.Width, ScreenSize.Height );
-            DismissLayerButton.Bounds = Bounds;
-
-            DismissLayerButton.TouchUpInside += (object sender, EventArgs e) => 
-            {
-                Hide( );
-            };
         }
     }
 
