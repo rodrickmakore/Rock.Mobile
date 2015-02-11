@@ -185,7 +185,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Animating = true;
 
                 // create an animator and animate us into view
-                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float) ScreenSize.Width, 0, AnimationTime, 
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float)Layer.Position.X, 0, AnimationTime, 
                     delegate(float percent, object value )
                     {
                         Layer.Position = new CGPoint( (float)value, Layer.Position.Y );
@@ -207,7 +207,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 Animating = true;
 
                 // create a simple animator and animate the banner out of view
-                SimpleAnimator_Float revealer = new SimpleAnimator_Float( 0, (float)ScreenSize.Width, AnimationTime, 
+                SimpleAnimator_Float revealer = new SimpleAnimator_Float( (float)Layer.Position.X, (float)ScreenSize.Width, AnimationTime, 
                     delegate(float percent, object value )
                     {
                         Layer.Position = new CGPoint( (float)value, Layer.Position.Y );

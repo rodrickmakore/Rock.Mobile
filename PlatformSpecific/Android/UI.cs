@@ -36,6 +36,9 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
         public WebLayout( global::Android.Content.Context context ) : base( context )
         {
+            // required for pre-21 android
+            CookieSyncManager.CreateInstance( context );
+
             CookieManager.Instance.RemoveAllCookie( );
 
             WebView = new WebView( Rock.Mobile.PlatformSpecific.Android.Core.Context );
