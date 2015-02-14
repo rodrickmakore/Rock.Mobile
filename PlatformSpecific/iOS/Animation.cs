@@ -25,6 +25,52 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Animation
         }
     }
 
+    public class SimpleAnimator_Color : SimpleAnimator
+    {
+        uint StartR { get; set; }
+        uint StartG { get; set; }
+        uint StartB { get; set; }
+        uint StartA { get; set; }
+
+        int DeltaR { get; set; }
+        int DeltaG { get; set; }
+        int DeltaB { get; set; }
+        int DeltaA { get; set; }
+
+        public SimpleAnimator_Color( uint start, uint end, float duration, AnimationUpdate updateDelegate, AnimationComplete completionDelegate )
+        {
+            Init( duration, updateDelegate, completionDelegate );
+
+            StartR = (start & 0xFF000000) >> 24;
+            StartG = (start & 0x00FF0000) >> 16;
+            StartB = (start & 0x0000FF00) >> 8;
+            StartA = (start & 0xFF);
+
+            uint endR = (end & 0xFF000000) >> 24;
+            uint endG = (end & 0x00FF0000) >> 16;
+            uint endB = (end & 0x0000FF00) >> 8;;
+            uint endA = (end & 0xFF);
+
+            DeltaR = (int) (endR - StartR);
+            DeltaG = (int) (endG - StartG);
+            DeltaB = (int) (endB - StartB);
+            DeltaA = (int) (endA - StartA);
+        }
+
+        protected override void AnimTick( float percent, AnimationUpdate updateDelegate )
+        {
+            // cast to int so we don't lose the sign when adding a negative delta
+            uint currR = (uint) ((int)StartR + (int) ( (float)DeltaR * percent ));
+            uint currG = (uint) ((int)StartG + (int) ( (float)DeltaG * percent ));
+            uint currB = (uint) ((int)StartB + (int) ( (float)DeltaB * percent ));
+            uint currA = (uint) ((int)StartA + (int) ( (float)DeltaA * percent ));
+
+            uint currValue = currR << 24 | currG << 16 | currB << 8 | currA;
+
+            updateDelegate( percent, currValue );
+        }
+    }
+
     public class SimpleAnimator_SizeF : SimpleAnimator
     {
         SizeF StartValue { get; set; }
@@ -77,7 +123,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Animation
                         CurrentTime += ANIMATION_TICK_RATE;
 
                         // let the animation implementation do what it needs to
-                        AnimTick( CurrentTime / durationSeconds, updateDelegate );
+                        AnimTick( System.Math.Min( CurrentTime / durationSeconds, 1.00f ), updateDelegate );
                         
                         // see if we're finished.
                         if( CurrentTime >= durationSeconds )

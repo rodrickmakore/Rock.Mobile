@@ -13,6 +13,57 @@ using Android.Animation;
 
 namespace Rock.Mobile.PlatformSpecific.Android.Animation
 {
+    public class SimpleAnimator_Color : SimpleAnimator
+    {
+        uint StartR { get; set; }
+        uint StartG { get; set; }
+        uint StartB { get; set; }
+        uint StartA { get; set; }
+
+        int DeltaR { get; set; }
+        int DeltaG { get; set; }
+        int DeltaB { get; set; }
+        int DeltaA { get; set; }
+
+        public SimpleAnimator_Color( uint start, uint end, float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
+        {
+            StartR = (start & 0xFF000000) >> 24;
+            StartG = (start & 0x00FF0000) >> 16;
+            StartB = (start & 0x0000FF00) >> 8;
+            StartA = (start & 0xFF);
+
+            uint endR = (end & 0xFF000000) >> 24;
+            uint endG = (end & 0x00FF0000) >> 16;
+            uint endB = (end & 0x0000FF00) >> 8;;
+            uint endA = (end & 0xFF);
+
+            DeltaR = (int) (endR - StartR);
+            DeltaG = (int) (endG - StartG);
+            DeltaB = (int) (endB - StartB);
+            DeltaA = (int) (endA - StartA);
+
+            Init( duration, updateDelegate, completeDelegate );
+        }
+
+        protected override void AnimTick(float percent, AnimationUpdate updateDelegate)
+        {
+            // get the current value and provide it to the caller
+
+            // cast to int so we don't lose the sign when adding a negative delta
+            uint currR = (uint) ((int)StartR + (int) ( (float)DeltaR * percent ));
+            uint currG = (uint) ((int)StartG + (int) ( (float)DeltaG * percent ));
+            uint currB = (uint) ((int)StartB + (int) ( (float)DeltaB * percent ));
+            uint currA = (uint) ((int)StartA + (int) ( (float)DeltaA * percent ));
+
+            uint value = currR << 24 | currG << 16 | currB << 8 | currA;
+
+            if ( updateDelegate != null )
+            {
+                updateDelegate( percent, value );
+            }
+        }
+    }
+
     public class SimpleAnimator_SizeF : SimpleAnimator
     {
         System.Drawing.SizeF StartValue { get; set; }
@@ -20,34 +71,23 @@ namespace Rock.Mobile.PlatformSpecific.Android.Animation
 
         public SimpleAnimator_SizeF( System.Drawing.SizeF start, System.Drawing.SizeF end, float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
         {
-            // create the type-specific animator
-            //Animator = ValueAnimator.OfObject( this, start, end );
-            Animator = ValueAnimator.OfFloat( 0.00f, 1.00f );
-
             StartValue = start;
             Delta = new System.Drawing.SizeF( end.Width - start.Width, end.Height - start.Height );
 
             Init( duration, updateDelegate, completeDelegate );
         }
 
-        public override void OnAnimationUpdate(ValueAnimator animation)
+        protected override void AnimTick(float percent, AnimationUpdate updateDelegate)
         {
             // get the current value and provide it to the caller
             if ( AnimationUpdateDelegate != null )
             {
-                float percent = System.Math.Min( (float)animation.CurrentPlayTime / (float)animation.Duration, 1.00f );
+                System.Drawing.SizeF value = new System.Drawing.SizeF( StartValue.Width + (Delta.Width * percent), StartValue.Height + (Delta.Height * percent) );
 
-                System.Drawing.SizeF currValue = new System.Drawing.SizeF( StartValue.Width + (Delta.Width * percent), StartValue.Height + (Delta.Height * percent) );
-
-                AnimationUpdateDelegate( percent, currValue );
-            }
-        }
-
-        public override void OnAnimationEnd(Animator animation)
-        {
-            if ( AnimationCompleteDelegate != null )
-            {
-                AnimationCompleteDelegate( );
+                if ( updateDelegate != null )
+                {
+                    updateDelegate( percent, value );
+                }
             }
         }
     }
@@ -58,29 +98,24 @@ namespace Rock.Mobile.PlatformSpecific.Android.Animation
     /// </summary>
     public class SimpleAnimator_Float : SimpleAnimator
     {
+        float StartValue { get; set; }
+        float EndValue { get; set; }
+
         public SimpleAnimator_Float( float start, float end, float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
         {
-            // create the type-specific animator
-            Animator = ValueAnimator.OfFloat( start, end );
+            StartValue = start;
+            EndValue = end;
 
             Init( duration, updateDelegate, completeDelegate );
         }
 
-        public override void OnAnimationUpdate(ValueAnimator animation)
+        protected override void AnimTick(float percent, AnimationUpdate updateDelegate)
         {
-            // get the current value and provide it to the caller
-            if ( AnimationUpdateDelegate != null )
-            {
-                float value = ((Java.Lang.Float)animation.GetAnimatedValue("")).FloatValue();
-                AnimationUpdateDelegate( System.Math.Min( (float)animation.CurrentPlayTime / (float)animation.Duration, 1.00f ), value );
-            }
-        }
+            float value = StartValue + ((EndValue - StartValue) * percent);
 
-        public override void OnAnimationEnd(Animator animation)
-        {
-            if ( AnimationCompleteDelegate != null )
+            if ( updateDelegate != null )
             {
-                AnimationCompleteDelegate( );
+                updateDelegate( percent, value );
             }
         }
     }
@@ -99,6 +134,8 @@ namespace Rock.Mobile.PlatformSpecific.Android.Animation
 
         protected void Init( float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
         {
+            Animator = ValueAnimator.OfFloat( 0.00f, 1.00f );
+
             Animator.AddUpdateListener( this );
             Animator.AddListener( this );
 
@@ -117,8 +154,21 @@ namespace Rock.Mobile.PlatformSpecific.Android.Animation
             }
         }
 
-        public abstract void OnAnimationUpdate(ValueAnimator animation);
-        public abstract void OnAnimationEnd(Animator animation);
+        protected abstract void AnimTick( float percent, AnimationUpdate updateDelegate );
+
+        public void OnAnimationUpdate(ValueAnimator animation)
+        {
+            float percent = System.Math.Min( (float)animation.CurrentPlayTime / (float)animation.Duration, 1.00f );
+            AnimTick( percent, AnimationUpdateDelegate );
+        }
+
+        public void OnAnimationEnd(Animator animation)
+        {
+            if ( AnimationCompleteDelegate != null )
+            {
+                AnimationCompleteDelegate( );
+            }
+        }
 
         public void OnAnimationStart(Animator animation)
         {

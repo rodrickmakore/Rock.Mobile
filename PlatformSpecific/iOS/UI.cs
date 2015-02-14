@@ -69,7 +69,11 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             CancelButton.Frame = new CGRect( (frame.Width - CancelButton.Frame.Width) / 2, frame.Bottom - CancelButton.Frame.Height, CancelButton.Frame.Width, CancelButton.Frame.Height );
             CancelButton.TouchUpInside += (object sender, EventArgs e ) =>
                 {
-                    LoadResultHandler( Result.Cancel, "" );
+                    // guard against a null handler, which might happen if cancel is pressed before LoadUrl is called.
+                    if( LoadResultHandler != null )
+                    {
+                        LoadResultHandler( Result.Cancel, "" );
+                    }
                 };
 
             ContainerView.AddSubview( CancelButton );

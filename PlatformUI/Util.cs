@@ -14,6 +14,11 @@ namespace Rock.Mobile.PlatformUI
                 ( byte )( ( color & 0x0000FF00 ) >> 8 ), 
                 ( byte )( ( color & 0x000000FF ) ) );
         }
+
+        public static uint UIColorToInt( Android.Graphics.Color color )
+        {
+            return (uint) (color.R << 24 | color.G << 16 | color.B << 8 | color.A);
+        }
         #endif
 
         #if __IOS__
@@ -25,6 +30,14 @@ namespace Rock.Mobile.PlatformUI
             ( float )( ( color & 0x00FF0000 ) >> 16 ) / 255, 
             ( float )( ( color & 0x0000FF00 ) >> 8 ) / 255, 
             ( float )( ( color & 0x000000FF ) ) / 255 );
+        }
+
+        public static uint UIColorToInt( UIKit.UIColor color )
+        {
+            nfloat colorR, colorG, colorB, colorA;
+            color.GetRGBA( out colorR, out colorG, out colorB, out colorA );
+
+            return (uint)( colorR * 255.0f ) << 24 | (uint)( colorG * 255.0f ) << 16 | (uint)( colorB * 255.0f ) << 8 | (uint)( colorA * 255.0f );
         }
         #endif
     }
