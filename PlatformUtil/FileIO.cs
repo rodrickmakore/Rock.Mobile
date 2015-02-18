@@ -27,6 +27,9 @@ namespace Rock.Mobile.Util.FileIO
             MemoryStream memStream = new MemoryStream( );
             stream.CopyTo( memStream );
 
+            // reset the memstream position
+            memStream.Position = 0;
+
             stream.Dispose( );
             stream = null;
 
