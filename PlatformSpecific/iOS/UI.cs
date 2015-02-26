@@ -624,6 +624,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             Picker = picker;
             Picker.Layer.AnchorPoint = CGPoint.Empty;
             Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
+            Picker.Bounds = new CGRect( 0, 0, ParentView.Bounds.Width, 100 ); //force the width smaller so it fits on all devices.
             ParentView.AddSubview( Picker );
 
             ParentView.AddSubview( PickerLabel );
