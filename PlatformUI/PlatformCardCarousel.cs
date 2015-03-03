@@ -241,27 +241,41 @@ namespace Rock.Mobile
             {
                 if ( Cards.Count > 0 )
                 {
-                    // start by storing the what our new center card will be
+                    // start by assuming our center card index won't change
                     int newCenterCardIndex = CenterCardIndex;
 
                     // get the range of cards that is moved via panning and animation
                     int startIndex = System.Math.Max( CenterCardIndex - CardPanRange, 0 );
                     int endIndex = System.Math.Min( CenterCardIndex + CardPanRange, Cards.Count );
 
-                    for ( int i = startIndex; i < endIndex; i++ )
+                    // get the new position index of the center card
+                    Cards[ CenterCardIndex ].PositionIndex = GetCenterCardPosIndex( CenterCardIndex, Cards[ CenterCardIndex ] );
+
+                    // now that we know the position of the center card, we can safely adjust the indices of
+                    // all the cards to its left and right that pan.
+
+                    // update indices to the left of center
+                    for ( int i = CenterCardIndex - 1; i >= startIndex; i-- )
                     {
-                        // get the new position index for the card
-                        Cards[ i ].PositionIndex = GetCardPosIndex( i, Cards[ i ].View.Position );
+                        Cards[ i ].PositionIndex = Cards[ i + 1 ].PositionIndex - 1;
 
                         // store the card that currently is the center index.
                         if ( Cards[ i ].PositionIndex == 0 )
                         {
                             newCenterCardIndex = i;
-                            //Console.WriteLine( "Card {0} Position {1} (Now Center) {2}", i, Cards[ i ].PositionIndex, Cards[ i ].View.Position.X );
                         }
-                        else
+                    }
+
+                    // update indices to the right of center
+                    for ( int i = CenterCardIndex + 1; i < endIndex; i++ )
+                    {
+                        // get the new position index for the card
+                        Cards[ i ].PositionIndex = Cards[ i - 1 ].PositionIndex + 1;
+
+                        // store the card that currently is the center index.
+                        if ( Cards[ i ].PositionIndex == 0 )
                         {
-                            //Console.WriteLine( "Card {0} Position {1} {2}", i, Cards[ i ].PositionIndex, Cards[ i ].View.Position.X );
+                            newCenterCardIndex = i;
                         }
                     }
 
@@ -297,26 +311,32 @@ namespace Rock.Mobile
             }
 
             /// <summary>
-            /// Take cardIndex, which is the position of the card within the cards array,
-            /// and figure out its Position Index, which is the -5 to Count + 5 index position the card should be at.
+            /// Given the center card and its absolute position in memory,
+            /// determine what it's visual carousel index should be.
             /// </summary>
-            /// <returns>The card position index.</returns>
-            /// <param name="cardIndex">Card index.</param>
-            /// <param name="position">Position.</param>
-            int GetCardPosIndex( int cardIndex, PointF position )
+            static float sCardPanThreshold = 25;
+            int GetCenterCardPosIndex( int absCenterCardIndex, Card centerCard )
             {
-                // first, get the real floating point index of the card
-                float posIndex = ( position.X / CardXSpacing );
+                // first see how far the card has been moved
+                float deltaPos = centerCard.View.Position.X - CenterCardPos.X;
 
-                // round either down or up depending on which side of center its on.
-                // we do this so that the center of the card is what determines the index, rather than its left edge.
-                posIndex += posIndex < 0.00f ? -.5f : .5f;
-                //realIndexPos += extraIndex;
+                // start with its current position
+                int positionIndex = centerCard.PositionIndex;
 
-                // finally cast that to an int and use that to get the position of the "index" the card should move to.
-                // note that we clamp to the minimum and maximum its possible for the given card to move indices, which
+                // if the user moved enough left or right, adjust the index
+                if ( deltaPos < -sCardPanThreshold )
+                {
+                    positionIndex -= 1;
+                }
+                else if ( deltaPos > sCardPanThreshold )
+                {
+                    positionIndex += 1;
+                }
+
+                // now clamp so that if the card is at the edge of the list in memory, we don't allow moving it further
+                // note that we do this by clamping to the minimum and maximum its possible for the given card to move indices, which
                 // has the effect of "stopping" the cards when you get to either end.
-                return System.Math.Max( -( Cards.Count - 1 ) + cardIndex, System.Math.Min( (int)( posIndex ), cardIndex ) );
+                return System.Math.Max( -( Cards.Count - 1 ) + absCenterCardIndex, System.Math.Min( positionIndex, absCenterCardIndex ) );
             }
         }
     }
