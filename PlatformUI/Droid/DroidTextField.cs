@@ -13,7 +13,7 @@ using Android.Util;
 using Android.Text;
 using Java.Lang;
 using Java.Lang.Reflect;
-using Rock.Mobile.PlatformSpecific.Android.Animation;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile
 {

@@ -4,9 +4,9 @@ using System;
 using UIKit;
 using Foundation;
 using System.Drawing;
-using Rock.Mobile.PlatformSpecific.iOS.Animation;
 using CoreGraphics;
 using Rock.Mobile.PlatformSpecific.Util;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile
 {

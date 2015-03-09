@@ -4,7 +4,7 @@ using Android.Widget;
 using Android.Graphics;
 using Android.Animation;
 using Java.IO;
-using Rock.Mobile.PlatformSpecific.Android.Animation;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile
 {

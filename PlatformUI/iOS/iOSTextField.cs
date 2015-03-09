@@ -6,8 +6,8 @@ using Foundation;
 using CoreGraphics;
 using CoreText;
 using Rock.Mobile.PlatformUI.iOSNative;
-using Rock.Mobile.PlatformSpecific.iOS.Animation;
 using Rock.Mobile.PlatformSpecific.Util;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile
 {

@@ -21,6 +21,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)PlatformGraphics\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformUtil\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformAnimation\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
@@ -55,7 +56,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformCardCarousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidCardCarousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\Graphics.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformGraphics\Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\System.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Util.cs" />
@@ -65,11 +65,16 @@
       <DependentUpon>UIScrollViewWrapper.cs</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\UI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUtil\String.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\UIScrollViewWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUtil\FileIO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidCircleView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformCircleView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSCircleView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformAnimation\DroidSimpleAnimator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformAnimation\iOSSimpleAnimator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformAnimation\PlatformAnimators.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

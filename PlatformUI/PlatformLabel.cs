@@ -41,6 +41,14 @@ namespace Rock.Mobile
             protected abstract void setTextAlignment( TextAlignment alignment );
 
             public abstract void SizeToFit( );
+
+            public float CornerRadius
+            {
+                get { return getCornerRadius( ); }
+                set { setCornerRadius( value ); }
+            }
+            protected abstract float getCornerRadius( );
+            protected abstract void setCornerRadius( float width );
         }
 
         /// <summary>

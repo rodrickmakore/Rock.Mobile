@@ -6,7 +6,7 @@ using System.Drawing;
 using Foundation;
 using UIKit;
 using CoreGraphics;
-using Rock.Mobile.PlatformSpecific.iOS.Animation;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile
 {

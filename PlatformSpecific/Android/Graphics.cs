@@ -170,8 +170,6 @@ namespace Rock.Mobile.PlatformSpecific.Android.Graphics
     /// </summary>
     public class CircleView : View
     {
-        public float Radius { get; set; }
-
         float _StrokeWidth;
         public float StrokeWidth
         {
@@ -242,7 +240,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.Graphics
             float yPos = canvas.Height / 2;
 
             // and render
-            canvas.DrawCircle( xPos, yPos, Rock.Mobile.Graphics.Util.UnitToPx( Radius ), Paint );
+            canvas.DrawCircle( xPos, yPos, (Width *.95f) / 2, Paint );
         }
     }
 

@@ -7,16 +7,16 @@ namespace Rock.Mobile
         /// <summary>
         /// The base Platform View that provides an interface to platform specific views.
         /// </summary>
-        public abstract class PlatformView : PlatformBaseUI
+        public abstract class PlatformCircleView : PlatformBaseUI
         {
-            public static PlatformView Create( )
+            public static PlatformCircleView Create( )
             {
                 #if __IOS__
-                return new iOSView( );
+                return new iOSCircleView( );
                 #endif
 
                 #if __ANDROID__
-                return new DroidView( );
+                return new DroidCircleView( );
                 #endif
             }
 
@@ -32,14 +32,6 @@ namespace Rock.Mobile
                 get { return getPlatformNativeObject( ); }
             }
             protected abstract object getPlatformNativeObject( );
-
-            public float CornerRadius
-            {
-                get { return getCornerRadius( ); }
-                set { setCornerRadius( value ); }
-            }
-            protected abstract float getCornerRadius( );
-            protected abstract void setCornerRadius( float width );
         }
     }
 }

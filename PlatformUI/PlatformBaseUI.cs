@@ -55,13 +55,13 @@ namespace Rock.Mobile
             protected abstract float getBorderWidth( );
             protected abstract void setBorderWidth( float width );
 
-            public float CornerRadius
+            /*public float CornerRadius
             {
                 get { return getCornerRadius( ); }
                 set { setCornerRadius( value ); }
             }
             protected abstract float getCornerRadius( );
-            protected abstract void setCornerRadius( float width );
+            protected abstract void setCornerRadius( float width );*/
 
             public float Opacity
             {

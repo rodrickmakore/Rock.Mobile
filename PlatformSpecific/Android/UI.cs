@@ -7,9 +7,9 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Util;
 using System.Drawing;
-using Rock.Mobile.PlatformSpecific.Android.Animation;
 using CCVApp.Shared.Config;
 using Rock.Mobile.PlatformSpecific.Android.Graphics;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile.PlatformSpecific.Android.UI
 {
@@ -136,6 +136,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 // reveal the banner and flag that we're animating
                 Visibility = ViewStates.Visible;
                 Animating = true;
+                BringToFront( );
 
                 // create an animator and animate us into view
                 SimpleAnimator_Float revealer = new SimpleAnimator_Float( ScreenWidth, 0, AnimationTime, 
@@ -225,7 +226,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             ScreenWidth = deviceWidth;
         }
 
-        public void SetLabel( string iconStr, string labelStr, uint textColor, uint bgColor, EventHandler onClick )
+        public void SetLabel( string iconStr, string iconFont, float iconSize, string labelStr, string labelFont, float labelSize, uint textColor, uint bgColor, EventHandler onClick )
         {
             // don't allow changing WHILE we're animating
             if ( Animating == false )
@@ -235,14 +236,14 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
                 // setup the icon
                 Icon.Text = iconStr;
-                Icon.SetTypeface( FontManager.Instance.GetFont( ControlStylingConfig.Icon_Font_Primary ), global::Android.Graphics.TypefaceStyle.Normal );
-                Icon.SetTextSize( ComplexUnitType.Dip, ControlStylingConfig.Small_FontSize );
+                Icon.SetTypeface( FontManager.Instance.GetFont( iconFont ), global::Android.Graphics.TypefaceStyle.Normal );
+                Icon.SetTextSize( ComplexUnitType.Dip, iconSize );
                 Icon.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( textColor ) );
 
                 // setup the label
                 Label.Text = labelStr;
-                Label.SetTypeface( FontManager.Instance.GetFont( ControlStylingConfig.Small_Font_Light ), global::Android.Graphics.TypefaceStyle.Normal );
-                Label.SetTextSize( ComplexUnitType.Dip, ControlStylingConfig.Small_FontSize );
+                Label.SetTypeface( FontManager.Instance.GetFont( labelFont ), global::Android.Graphics.TypefaceStyle.Normal );
+                Label.SetTextSize( ComplexUnitType.Dip, labelSize );
                 Label.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( textColor ) );
 
                 if ( OnClickAction != null )
@@ -279,7 +280,10 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             // if they tapped inside the banner, send the click notification
             if ( bannerBB.Contains( tappedPos ) )
             {
-                OnClickAction( null, null );
+                if ( Visibility == ViewStates.Visible )
+                {
+                    OnClickAction( null, null );
+                }
             }
 
             // either way dismiss the banner and let the touch input continue

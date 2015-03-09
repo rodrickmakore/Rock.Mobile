@@ -6,9 +6,8 @@ using UIKit;
 using Foundation;
 using Rock.Mobile.Util.Strings;
 using CoreGraphics;
-using Rock.Mobile.PlatformSpecific.iOS.Animation;
 using Rock.Mobile.PlatformSpecific.iOS.Graphics;
-using CCVApp.Shared.Config;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.UI
 {
@@ -129,8 +128,12 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 // within the banner? (Which is also in frame space, not absolute)
                 if ( Banner.Frame.Contains( point ) )
                 {
-                    // fire off the clicked notification
-                    OnClickAction( null, null );
+                    // only fire off the action if the banner is visible
+                    if ( Hidden == false )
+                    {
+                        // fire off the clicked notification
+                        OnClickAction( null, null );
+                    }
                 }
 
                 // hide the billboard
@@ -185,6 +188,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             if ( Animating == false )
             {
                 // reveal the banner and flag that we're animating
+                Superview.BringSubviewToFront( this );
+
                 Hidden = false;
                 Animating = true;
 
@@ -246,20 +251,23 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             Layer.Position = new CGPoint( displayWidth, Layer.Position.Y );
 
             ScreenSize = new CGSize( displayWidth, displayHeight );
+
+            Hidden = true;
+            Animating = false;
         }
 
-        public void SetLabel( string iconStr, string labelStr, uint textColor, uint bgColor, EventHandler onClick )
+        public void SetLabel( string iconStr, string iconFont, float iconSize, string labelStr, string labelFont, float labelSize, uint textColor, uint bgColor, EventHandler onClick )
         {
             // setup the icon
             Icon.Text = iconStr;
-            Icon.Font = FontManager.GetFont( ControlStylingConfig.Icon_Font_Primary, ControlStylingConfig.Small_FontSize );
+            Icon.Font = FontManager.GetFont( iconFont, iconSize );
             Icon.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( textColor );
             Icon.SizeToFit( );
 
             // setup the label
             Label.Text = labelStr;
             Label.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( textColor );
-            Label.Font = FontManager.GetFont( ControlStylingConfig.Small_Font_Light, ControlStylingConfig.Small_FontSize );
+            Label.Font = FontManager.GetFont( labelFont, labelSize );
             Label.SizeToFit( );
 
             // get the dimensions that the banner needs to be
