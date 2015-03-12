@@ -105,6 +105,16 @@ namespace Rock.Mobile
                 View.Hidden = hidden;
             }
 
+            protected override bool getUserInteractionEnabled( )
+            {
+                return View.UserInteractionEnabled;
+            }
+
+            protected override void setUserInteractionEnabled( bool enabled )
+            {
+                View.UserInteractionEnabled = enabled;
+            }
+
             public override void AddAsSubview( object masterView )
             {
                 // we know that masterView will be an iOS View.

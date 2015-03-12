@@ -204,6 +204,19 @@ namespace Rock.Mobile
                 Label.Visibility = hidden == true ? ViewStates.Gone : ViewStates.Visible;
             }
 
+            protected override bool getUserInteractionEnabled( )
+            {
+                // doesn't matter if we return this or regular Focusable,
+                // because we set them both, guaranteeing the same value.
+                return Label.FocusableInTouchMode;
+            }
+
+            protected override void setUserInteractionEnabled( bool enabled )
+            {
+                Label.FocusableInTouchMode = enabled;
+                Label.Focusable = enabled;
+            }
+
             protected override TextAlignment getTextAlignment( )
             {
                 // gonna have to do a stupid transform

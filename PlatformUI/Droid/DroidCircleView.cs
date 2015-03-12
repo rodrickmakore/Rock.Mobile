@@ -126,6 +126,19 @@ namespace Rock.Mobile
                 View.Visibility = hidden == true ? ViewStates.Gone : ViewStates.Visible;
             }
 
+            protected override bool getUserInteractionEnabled( )
+            {
+                // doesn't matter if we return this or regular Focusable,
+                // because we set them both, guaranteeing the same value.
+                return View.FocusableInTouchMode;
+            }
+
+            protected override void setUserInteractionEnabled( bool enabled )
+            {
+                View.FocusableInTouchMode = enabled;
+                View.Focusable = enabled;
+            }
+
             public override void AddAsSubview( object masterView )
             {
                 // we know that masterView will be an iOS View.

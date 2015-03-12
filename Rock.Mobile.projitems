@@ -75,6 +75,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformAnimation\DroidSimpleAnimator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformAnimation\iOSSimpleAnimator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformAnimation\PlatformAnimators.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformResultView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

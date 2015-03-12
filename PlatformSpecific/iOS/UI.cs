@@ -11,6 +11,24 @@ using Rock.Mobile.Animation;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.UI
 {
+    public class Util
+    {
+        public static void AnimateViewColor( uint targetColor, UIView uiView )
+        {
+            uint currBGColor = Rock.Mobile.PlatformUI.Util.UIColorToInt( uiView.BackgroundColor );
+
+            // if they left the name field blank and didn't turn on Anonymous, flag the field.
+            uint targetBGColor = targetColor;
+
+            SimpleAnimator_Color lastNameAnimator = new SimpleAnimator_Color( currBGColor, targetBGColor, .15f, delegate(float percent, object value )
+                {
+                    uiView.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( (uint)value );
+                }
+                , null );
+            lastNameAnimator.Start( );
+        }
+    }
+    
     public class WebLayout
     {
         public enum Result

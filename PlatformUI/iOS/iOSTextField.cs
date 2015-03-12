@@ -146,6 +146,16 @@ namespace Rock.Mobile
                 TextField.Hidden = hidden;
             }
 
+            protected override bool getUserInteractionEnabled( )
+            {
+                return TextField.UserInteractionEnabled;
+            }
+
+            protected override void setUserInteractionEnabled( bool enabled )
+            {
+                TextField.UserInteractionEnabled = enabled;
+            }
+
             protected override void setTextColor( uint color )
             {
                 TextField.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );

@@ -111,6 +111,14 @@ namespace Rock.Mobile
             protected abstract bool getHidden( );
             protected abstract void setHidden( bool hidden );
 
+            public bool UserInteractionEnabled
+            {
+                get { return getUserInteractionEnabled( ); }
+                set { setUserInteractionEnabled( value ); }
+            }
+            protected abstract bool getUserInteractionEnabled( );
+            protected abstract void setUserInteractionEnabled( bool hidden );
+
             /// <summary>
             /// Adds _THIS_ object AS a subView of the masterView.
             /// Don't confuse this with adding a subView TO this object.

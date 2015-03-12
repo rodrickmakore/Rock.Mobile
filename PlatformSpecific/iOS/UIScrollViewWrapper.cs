@@ -17,6 +17,10 @@ namespace iOS
 		{
 		}
 
+        public UIScrollViewWrapper () : base ()
+        {
+        }
+
         public override void TouchesBegan(NSSet touches, UIEvent evt)
         {
             base.TouchesBegan(touches, evt);

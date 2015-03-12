@@ -276,6 +276,19 @@ namespace Rock.Mobile
                 TextField.Visibility = hidden == true ? ViewStates.Gone : ViewStates.Visible;
             }
 
+            protected override bool getUserInteractionEnabled( )
+            {
+                // doesn't matter if we return this or regular Focusable,
+                // because we set them both, guaranteeing the same value.
+                return TextField.FocusableInTouchMode;
+            }
+
+            protected override void setUserInteractionEnabled( bool enabled )
+            {
+                TextField.FocusableInTouchMode = enabled;
+                TextField.Focusable = enabled;
+            }
+
             protected override void setTextColor( uint color )
             {
                 TextField.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );

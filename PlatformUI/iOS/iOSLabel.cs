@@ -216,6 +216,16 @@ namespace Rock.Mobile
                 Label.Hidden = hidden;
             }
 
+            protected override bool getUserInteractionEnabled( )
+            {
+                return Label.UserInteractionEnabled;
+            }
+
+            protected override void setUserInteractionEnabled( bool enabled )
+            {
+                Label.UserInteractionEnabled = enabled;
+            }
+
             public override void AddAsSubview( object masterView )
             {
                 // we know that masterView will be an iOS View.
