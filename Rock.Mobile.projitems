@@ -32,18 +32,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Threading\Threading.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformBaseUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformTextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidRevealLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidTextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidNative\DroidFadeTextView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSRevealLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSTextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSView.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidNative\BorderedRectViews.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Profiler\Profiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMedia\PlatformCamera.cs" />
@@ -79,6 +75,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSNative\iOSDynamicUITextView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidTextView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSTextView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformTextView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

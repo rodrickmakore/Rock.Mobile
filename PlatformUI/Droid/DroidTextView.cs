@@ -20,12 +20,12 @@ namespace Rock.Mobile
     namespace PlatformUI
     {
         /// <summary>
-        /// Subclassed length filter to allow us to prevent the textField
+        /// Subclassed length filter to allow us to prevent the TextView
         /// from growing larger than our limit.
         /// </summary>
         public class HeightFilter : InputFilterLengthFilter
         {
-            public DroidTextField Parent { get; set; }
+            public DroidTextView Parent { get; set; }
 
             public HeightFilter( int max ) : base (max)
             {
@@ -46,11 +46,11 @@ namespace Rock.Mobile
         }
 
         /// <summary>
-        /// Android implementation of a text field.
+        /// Android implementation of a text view.
         /// </summary>
-        public class DroidTextField : PlatformTextField
+        public class DroidTextView : PlatformTextView
         {
-            BorderedRectEditText TextField { get; set; }
+            BorderedRectEditText TextView { get; set; }
 
             /// <summary>
             /// The size when the view isn't being animated
@@ -76,7 +76,7 @@ namespace Rock.Mobile
             public bool AllowInput( Java.Lang.ICharSequence source )
             {
                 // allow it as long as we're within the height limit
-                if( TextField.Height < mDynamicTextMaxHeight || source.Length( ) == 0 )
+                if( TextView.Height < mDynamicTextMaxHeight || source.Length( ) == 0 )
                 {
                     return true;
                 }
@@ -88,14 +88,14 @@ namespace Rock.Mobile
 
             static Field CursorResource { get; set; }
 
-            public DroidTextField( )
+            public DroidTextView( )
             {
-                TextField = new BorderedRectEditText( Rock.Mobile.PlatformSpecific.Android.Core.Context );
-                TextField.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
-                TextField.SetScrollContainer( true );
-                TextField.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
-                TextField.SetHorizontallyScrolling( false );
-                TextField.SetFilters( new IInputFilter[] { new HeightFilter(int.MaxValue) { Parent = this } } );
+                TextView = new BorderedRectEditText( Rock.Mobile.PlatformSpecific.Android.Core.Context );
+                TextView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                TextView.SetScrollContainer( true );
+                TextView.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
+                TextView.SetHorizontallyScrolling( false );
+                TextView.SetFilters( new IInputFilter[] { new HeightFilter(int.MaxValue) { Parent = this } } );
 
                 // create a dummy view that can take focus to de-select the text field
                 DummyView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
@@ -105,12 +105,17 @@ namespace Rock.Mobile
                 // let the dummy request focus so that the edit field doesn't get it and bring up the keyboard.
                 DummyView.RequestFocus();
 
-                // use reflection to get a reference to the textField's cursor resource
+                // use reflection to get a reference to the TextView's cursor resource
                 if ( CursorResource == null )
                 {
                     CursorResource = Java.Lang.Class.ForName( "android.widget.TextView" ).GetDeclaredField( "mCursorDrawableRes" );
                     CursorResource.Accessible = true;
                 }
+            }
+
+            protected override object getPlatformNativeObject()
+            {
+                return TextView;
             }
 
             // Properties
@@ -130,8 +135,8 @@ namespace Rock.Mobile
                 try
                 {
                     Typeface fontFace = Rock.Mobile.PlatformSpecific.Android.Graphics.FontManager.Instance.GetFont( fontName );
-                    TextField.SetTypeface( fontFace, TypefaceStyle.Normal );
-                    TextField.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
+                    TextView.SetTypeface( fontFace, TypefaceStyle.Normal );
+                    TextView.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
 
                     if( mScaleHeightForText )
                     {
@@ -146,7 +151,7 @@ namespace Rock.Mobile
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                TextField.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
+                TextView.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
 
                 // normalize the color so we can determine what color to use for the cursor
                 float normalizedColor = (float) backgroundColor / (float)0xFFFFFFFF;
@@ -154,46 +159,46 @@ namespace Rock.Mobile
                 // background is closer to white, use a dark cursor
                 if ( normalizedColor > .50f )
                 {
-                    CursorResource.Set( TextField, Droid.Resource.Drawable.dark_cursor );
+                    CursorResource.Set( TextView, Droid.Resource.Drawable.dark_cursor );
                 }
                 else
                 {
                     // background is closer to black, use a light cursor
-                    CursorResource.Set( TextField, Droid.Resource.Drawable.light_cursor );
+                    CursorResource.Set( TextView, Droid.Resource.Drawable.light_cursor );
                 }
             }
 
             protected override void setBorderColor( uint borderColor )
             {
-                TextField.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
+                TextView.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
             }
 
             protected override float getBorderWidth()
             {
-                return TextField.BorderWidth;
+                return TextView.BorderWidth;
             }
             protected override void setBorderWidth( float width )
             {
-                TextField.BorderWidth = width;
+                TextView.BorderWidth = width;
             }
 
             protected override float getCornerRadius()
             {
-                return TextField.Radius;
+                return TextView.Radius;
             }
             protected override void setCornerRadius( float radius )
             {
-                TextField.Radius = radius;
+                TextView.Radius = radius;
             }
 
             protected override float getOpacity( )
             {
-                return TextField.Alpha;
+                return TextView.Alpha;
             }
 
             protected override void setOpacity( float opacity )
             {
-                TextField.Alpha = opacity;
+                TextView.Alpha = opacity;
             }
 
             protected override float getZPosition( )
@@ -212,7 +217,7 @@ namespace Rock.Mobile
                 //Bounds is simply the localSpace coordinates of the edges.
                 // NOTE: On android we're not supporting a non-0 left/top. I don't know why you'd EVER
                 // want this, but it's possible to set on iOS.
-                return new RectangleF( 0, 0, TextField.LayoutParameters.Width, TextField.LayoutParameters.Height );
+                return new RectangleF( 0, 0, TextView.LayoutParameters.Width, TextView.LayoutParameters.Height );
             }
 
             protected override void setBounds( RectangleF bounds )
@@ -220,12 +225,12 @@ namespace Rock.Mobile
                 //Bounds is simply the localSpace coordinates of the edges.
                 // NOTE: On android we're not supporting a non-0 left/top. I don't know why you'd EVER
                 // want this, but it's possible to set on iOS.
-                TextField.SetMinWidth( (int)bounds.Width );
-                TextField.SetMaxWidth( TextField.LayoutParameters.Width );
+                TextView.SetMinWidth( (int)bounds.Width );
+                TextView.SetMaxWidth( TextView.LayoutParameters.Width );
 
                 if( mScaleHeightForText == false )
                 {
-                    TextField.LayoutParameters.Height = ( int )bounds.Height;
+                    TextView.LayoutParameters.Height = ( int )bounds.Height;
                 }
 
                 if( Animating == false )
@@ -237,7 +242,7 @@ namespace Rock.Mobile
             protected override RectangleF getFrame( )
             {
                 //Frame is the transformed bounds to include position, so the Right/Bottom will be absolute.
-                RectangleF frame = new RectangleF( TextField.GetX( ), TextField.GetY( ), TextField.LayoutParameters.Width, TextField.LayoutParameters.Height );
+                RectangleF frame = new RectangleF( TextView.GetX( ), TextView.GetY( ), TextView.LayoutParameters.Width, TextView.LayoutParameters.Height );
                 return frame;
             }
 
@@ -257,72 +262,72 @@ namespace Rock.Mobile
 
             protected override System.Drawing.PointF getPosition( )
             {
-                return new System.Drawing.PointF( TextField.GetX( ), TextField.GetY( ) );
+                return new System.Drawing.PointF( TextView.GetX( ), TextView.GetY( ) );
             }
 
             protected override void setPosition( System.Drawing.PointF position )
             {
-                TextField.SetX( position.X );
-                TextField.SetY( position.Y );
+                TextView.SetX( position.X );
+                TextView.SetY( position.Y );
             }
 
             protected override bool getHidden( )
             {
-                return TextField.Visibility == ViewStates.Gone ? true : false;
+                return TextView.Visibility == ViewStates.Gone ? true : false;
             }
 
             protected override void setHidden( bool hidden )
             {
-                TextField.Visibility = hidden == true ? ViewStates.Gone : ViewStates.Visible;
+                TextView.Visibility = hidden == true ? ViewStates.Gone : ViewStates.Visible;
             }
 
             protected override bool getUserInteractionEnabled( )
             {
                 // doesn't matter if we return this or regular Focusable,
                 // because we set them both, guaranteeing the same value.
-                return TextField.FocusableInTouchMode;
+                return TextView.FocusableInTouchMode;
             }
 
             protected override void setUserInteractionEnabled( bool enabled )
             {
-                TextField.FocusableInTouchMode = enabled;
-                TextField.Focusable = enabled;
+                TextView.FocusableInTouchMode = enabled;
+                TextView.Focusable = enabled;
             }
 
             protected override void setTextColor( uint color )
             {
-                TextField.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
+                TextView.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
             }
 
             protected override string getText( )
             {
-                return TextField.Text;
+                return TextView.Text;
             }
 
             protected override void setText( string text )
             {
-                TextField.Text = text;
+                TextView.Text = text;
             }
 
             protected override void setPlaceholderTextColor( uint color )
             {
-                TextField.SetHintTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
+                TextView.SetHintTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ) );
             }
 
             protected override string getPlaceholder( )
             {
-                return TextField.Hint;
+                return TextView.Hint;
             }
 
             protected override void setPlaceholder( string placeholder )
             {
-                TextField.Hint = placeholder;
+                TextView.Hint = placeholder;
             }
 
             protected override TextAlignment getTextAlignment( )
             {
                 // gonna have to do a stupid transform
-                switch( TextField.Gravity )
+                switch( TextView.Gravity )
                 {
                     case GravityFlags.Center:
                         return TextAlignment.Center;
@@ -340,16 +345,16 @@ namespace Rock.Mobile
                 switch( alignment )
                 {
                     case TextAlignment.Center:
-                        TextField.Gravity = GravityFlags.Center;
+                    TextView.Gravity = GravityFlags.Center;
                         break;
                     case TextAlignment.Left:
-                        TextField.Gravity = GravityFlags.Left;
+                    TextView.Gravity = GravityFlags.Left;
                         break;
                     case TextAlignment.Right:
-                        TextField.Gravity = GravityFlags.Right;
+                    TextView.Gravity = GravityFlags.Right;
                         break;
                     default:
-                        TextField.Gravity = GravityFlags.Left;
+                    TextView.Gravity = GravityFlags.Left;
                         break;
                 }
             }
@@ -361,7 +366,7 @@ namespace Rock.Mobile
                 // if scaling is turned on, restore the content wrapping
                 if( scale == true )
                 {
-                    TextField.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                    TextView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 }
             }
 
@@ -388,7 +393,7 @@ namespace Rock.Mobile
                     throw new System.Exception( "Object passed to Android AddAsSubview must be a ViewGroup or subclass." );
                 }
 
-                view.AddView( TextField );
+                view.AddView( TextView );
                 view.AddView( DummyView );
             }
 
@@ -400,7 +405,7 @@ namespace Rock.Mobile
                     throw new System.Exception( "Object passed to Android RemoveAsSubview must be a ViewGroup or subclass." );
                 }
 
-                view.RemoveView( TextField );
+                view.RemoveView( TextView );
                 view.RemoveView( DummyView );
             }
 
@@ -409,18 +414,18 @@ namespace Rock.Mobile
                 Measure( );
 
                 // update its width
-                TextField.SetMinWidth( TextField.MeasuredWidth );
-                TextField.SetMaxWidth( TextField.MeasuredWidth );
+                TextView.SetMinWidth( TextView.MeasuredWidth );
+                TextView.SetMaxWidth( TextView.MeasuredWidth );
 
                 // set the height which will include the wrapped lines
                 if( mScaleHeightForText == false )
                 {
-                    TextField.LayoutParameters.Height = TextField.MeasuredHeight;
+                    TextView.LayoutParameters.Height = TextView.MeasuredHeight;
                 }
 
                 if( Animating == false )
                 {
-                    NaturalSize = new System.Drawing.SizeF( TextField.MeasuredWidth, TextField.LayoutParameters.Height );
+                    NaturalSize = new System.Drawing.SizeF( TextView.MeasuredWidth, TextView.LayoutParameters.Height );
                 }
             }
 
@@ -428,14 +433,14 @@ namespace Rock.Mobile
             {
                 // only allow this text edit to hide the keyboard if it's the text field with focus.
                 Activity activity = ( Activity )Rock.Mobile.PlatformSpecific.Android.Core.Context;
-                if( activity.CurrentFocus != null && ( activity.CurrentFocus as EditText ) == TextField )
+                if( activity.CurrentFocus != null && ( activity.CurrentFocus as EditText ) == TextView )
                 {
                     InputMethodManager imm = ( InputMethodManager )Rock.Mobile.PlatformSpecific.Android.Core.Context.GetSystemService( Android.Content.Context.InputMethodService );
 
-                    imm.HideSoftInputFromWindow( TextField.WindowToken, 0 );
+                    imm.HideSoftInputFromWindow( TextView.WindowToken, 0 );
 
                     // yeild focus to the dummy view so the text field clears it's caret and the selected outline
-                    TextField.ClearFocus( );
+                    TextView.ClearFocus( );
                     DummyView.RequestFocus( );
                 }
             }
@@ -443,11 +448,11 @@ namespace Rock.Mobile
             void Measure( )
             {
                 // create the specs we want for measurement
-                int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextField.LayoutParameters.Width, MeasureSpecMode.Unspecified );
+                int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( TextView.LayoutParameters.Width, MeasureSpecMode.Unspecified );
                 int heightMeasureSpec = View.MeasureSpec.MakeMeasureSpec( 0, MeasureSpecMode.Unspecified );
 
                 // measure the label given the current width/height/text
-                TextField.Measure( widthMeasureSpec, heightMeasureSpec );
+                TextView.Measure( widthMeasureSpec, heightMeasureSpec );
             }
 
             public override void AnimateOpen( )
@@ -462,21 +467,21 @@ namespace Rock.Mobile
                     Measure( );
 
                     // start the size at 0
-                    TextField.LayoutParameters.Width = 0;
-                    TextField.LayoutParameters.Height = 0;
+                    TextView.LayoutParameters.Width = 0;
+                    TextView.LayoutParameters.Height = 0;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( System.Drawing.SizeF.Empty, new System.Drawing.SizeF( NaturalSize.Width, TextField.MeasuredHeight ), .2f, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( System.Drawing.SizeF.Empty, new System.Drawing.SizeF( NaturalSize.Width, TextView.MeasuredHeight ), .2f, 
                         delegate(float percent, object value )
                         {
                             System.Drawing.SizeF currSize = (System.Drawing.SizeF)value;
 
                             Rock.Mobile.Threading.Util.PerformOnUIThread( delegate {
 
-                                TextField.LayoutParameters.Width = (int) currSize.Width;
-                                TextField.LayoutParameters.Height = (int) currSize.Height;
+                                TextView.LayoutParameters.Width = (int) currSize.Width;
+                                TextView.LayoutParameters.Height = (int) currSize.Height;
 
                                 // redundantly set the min width so it redraws
-                                TextField.SetMinWidth( (int) currSize.Width );
+                                TextView.SetMinWidth( (int) currSize.Width );
                             });
                         },
                         delegate
@@ -484,8 +489,8 @@ namespace Rock.Mobile
                             Animating = false;
 
                             // restore the original settings for dimensions
-                            TextField.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
-                            TextField.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
                         } );
 
                     animator.Start( );
@@ -502,7 +507,7 @@ namespace Rock.Mobile
                     // get the measurements so we know how tall it currently is
                     Measure( );
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new System.Drawing.SizeF( NaturalSize.Width, TextField.MeasuredHeight ), System.Drawing.SizeF.Empty, .2f, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( new System.Drawing.SizeF( NaturalSize.Width, TextView.MeasuredHeight ), System.Drawing.SizeF.Empty, .2f, 
                         delegate(float percent, object value )
                         {
                             // animate it to 0
@@ -510,11 +515,11 @@ namespace Rock.Mobile
 
                             Rock.Mobile.Threading.Util.PerformOnUIThread( delegate {
 
-                                TextField.LayoutParameters.Width = (int) currSize.Width;
-                                TextField.LayoutParameters.Height = (int) currSize.Height;
+                                TextView.LayoutParameters.Width = (int) currSize.Width;
+                                TextView.LayoutParameters.Height = (int) currSize.Height;
 
                                 // redundantly set the min width so it redraws
-                                TextField.SetMinWidth( TextField.MeasuredWidth );
+                                TextView.SetMinWidth( TextView.MeasuredWidth );
                             });
                         },
                         delegate
@@ -523,8 +528,8 @@ namespace Rock.Mobile
                             Animating = false;
 
                             // restore the original settings for dimensions
-                            TextField.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
-                            TextField.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
                         } );
 
                     animator.Start( );

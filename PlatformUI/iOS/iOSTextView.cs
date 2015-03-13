@@ -16,23 +16,28 @@ namespace Rock.Mobile
         /// <summary>
         /// The iOS implementation of a text field.
         /// </summary>
-        public class iOSTextField : PlatformTextField
+        public class iOSTextView : PlatformTextView
         {
-            DynamicUITextView TextField { get; set; }
+            DynamicUITextView TextView { get; set; }
 
             /// <summary>
             /// The time to animate the text box as it grows
             /// </summary>
             float SCALE_TIME_SECONDS = .20f;
 
-            public iOSTextField( )
+            public iOSTextView( )
             {
-                TextField = new DynamicUITextView( );
-                TextField.Layer.AnchorPoint = new PointF( 0, 0 );
-                TextField.TextAlignment = UITextAlignment.Left;
+                TextView = new DynamicUITextView( );
+                TextView.Layer.AnchorPoint = new PointF( 0, 0 );
+                TextView.TextAlignment = UITextAlignment.Left;
 
-                TextField.Editable = true;
-                TextField.ClipsToBounds = true;
+                TextView.Editable = true;
+                TextView.ClipsToBounds = true;
+            }
+
+            protected override object getPlatformNativeObject()
+            {
+                return TextView;
             }
 
             // Properties
@@ -40,7 +45,7 @@ namespace Rock.Mobile
             {
                 try
                 {
-                    TextField.Font = Rock.Mobile.PlatformSpecific.iOS.Graphics.FontManager.GetFont(fontName, fontSize);
+                    TextView.Font = Rock.Mobile.PlatformSpecific.iOS.Graphics.FontManager.GetFont(fontName, fontSize);
                 } 
                 catch
                 {
@@ -50,175 +55,175 @@ namespace Rock.Mobile
 
             protected override int getKeyboardAppearance( )
             {
-                return (int) TextField.KeyboardAppearance;
+                return (int) TextView.KeyboardAppearance;
             }
 
             protected override void setKeyboardAppearance( int style )
             {
-                TextField.KeyboardAppearance = (UIKeyboardAppearance)style;
+                TextView.KeyboardAppearance = (UIKeyboardAppearance)style;
             }
 
             protected override void setBorderColor( uint borderColor )
             {
-                TextField.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
+                TextView.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
             protected override float getBorderWidth()
             {
-                return (float) TextField.Layer.BorderWidth;
+                return (float) TextView.Layer.BorderWidth;
             }
             protected override void setBorderWidth( float width )
             {
-                TextField.Layer.BorderWidth = width;
+                TextView.Layer.BorderWidth = width;
             }
 
             protected override float getCornerRadius()
             {
-                return (float) TextField.Layer.CornerRadius;
+                return (float) TextView.Layer.CornerRadius;
             }
             protected override void setCornerRadius( float radius )
             {
-                TextField.Layer.CornerRadius = radius;
+                TextView.Layer.CornerRadius = radius;
             }
 
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                TextField.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
+                TextView.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
             protected override float getOpacity( )
             {
-                return TextField.Opacity;
+                return TextView.Opacity;
             }
 
             protected override void setOpacity( float opacity )
             {
-                TextField.Opacity = opacity;
+                TextView.Opacity = opacity;
             }
 
             protected override float getZPosition( )
             {
-                return TextField.ZPosition;
+                return TextView.ZPosition;
             }
 
             protected override void setZPosition( float zPosition )
             {
-                TextField.ZPosition = zPosition;
+                TextView.ZPosition = zPosition;
             }
 
             protected override RectangleF getBounds( )
             {
-                return TextField.Bounds.ToRectF( );
+                return TextView.Bounds.ToRectF( );
             }
 
             protected override void setBounds( RectangleF bounds )
             {
-                TextField.Bounds = bounds;
+                TextView.Bounds = bounds;
             }
 
             protected override RectangleF getFrame( )
             {
-                return TextField.Frame.ToRectF( );
+                return TextView.Frame.ToRectF( );
             }
 
             protected override void setFrame( RectangleF frame )
             {
-                TextField.Frame = frame;
+                TextView.Frame = frame;
             }
 
             protected override  PointF getPosition( )
             {
-                return TextField.Position;
+                return TextView.Position;
             }
 
             protected override void setPosition( PointF position )
             {
-                TextField.Position = position;
+                TextView.Position = position;
             }
 
             protected override bool getHidden( )
             {
-                return TextField.Hidden;
+                return TextView.Hidden;
             }
 
             protected override void setHidden( bool hidden )
             {
-                TextField.Hidden = hidden;
+                TextView.Hidden = hidden;
             }
 
             protected override bool getUserInteractionEnabled( )
             {
-                return TextField.UserInteractionEnabled;
+                return TextView.UserInteractionEnabled;
             }
 
             protected override void setUserInteractionEnabled( bool enabled )
             {
-                TextField.UserInteractionEnabled = enabled;
+                TextView.UserInteractionEnabled = enabled;
             }
 
             protected override void setTextColor( uint color )
             {
-                TextField.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
+                TextView.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
             }
 
             protected override void setPlaceholderTextColor( uint color )
             {
-                TextField.PlaceholderTextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
+                TextView.PlaceholderTextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( color );
             }
 
             protected override string getText( )
             {
-                return TextField.Text;
+                return TextView.Text;
             }
 
             protected override void setText( string text )
             {
-                TextField.Text = text;
+                TextView.Text = text;
             }
 
             protected override TextAlignment getTextAlignment( )
             {
-                return ( TextAlignment )TextField.TextAlignment;
+                return ( TextAlignment )TextView.TextAlignment;
             }
 
             protected override void setTextAlignment( TextAlignment alignment )
             {
-                TextField.TextAlignment = ( UITextAlignment )alignment;
+                TextView.TextAlignment = ( UITextAlignment )alignment;
             }
 
             protected override string getPlaceholder( )
             {
-                return TextField.Placeholder;
+                return TextView.Placeholder;
             }
 
             protected override void setPlaceholder( string placeholder )
             {
-                TextField.Placeholder = placeholder;
+                TextView.Placeholder = placeholder;
             }
 
             protected override bool getScaleHeightForText( )
             {
-                return TextField.ScaleHeightForText;
+                return TextView.ScaleHeightForText;
             }
 
             protected override void setScaleHeightForText( bool scale )
             {
-                TextField.ScaleHeightForText = scale;
+                TextView.ScaleHeightForText = scale;
             }
 
             public override void ResignFirstResponder( )
             {
-                TextField.ResignFirstResponder( );
+                TextView.ResignFirstResponder( );
             }
 
             protected override void setDynamicTextMaxHeight( float height )
             {
-                TextField.DynamicTextMaxHeight = height;
+                TextView.DynamicTextMaxHeight = height;
             }
 
             protected override float getDynamicTextMaxHeight( )
             {
-                return TextField.DynamicTextMaxHeight;
+                return TextView.DynamicTextMaxHeight;
             }
 
             public override void AddAsSubview( object masterView )
@@ -230,41 +235,41 @@ namespace Rock.Mobile
                     throw new Exception( "Object passed to iOS AddAsSubview must be a UIView." );
                 }
 
-                TextField.AddAsSubview( view );
+                TextView.AddAsSubview( view );
             }
 
             public override void RemoveAsSubview( object obj )
             {
                 // Obj is only needed by Android, so we ignore it
-                TextField.RemoveFromSuperview( );
+                TextView.RemoveFromSuperview( );
             }
 
             public override void SizeToFit( )
             {
-                TextField.SizeToFit( );
+                TextView.SizeToFit( );
             }
 
             public override void AnimateOpen( )
             {
-                if ( TextField.Animating == false && TextField.Hidden == true )
+                if ( TextView.Animating == false && TextView.Hidden == true )
                 {
                     // unhide and flag it as animating
-                    TextField.Hidden = false;
-                    TextField.Animating = true;
+                    TextView.Hidden = false;
+                    TextView.Animating = true;
 
                     // and force it to a 0 size so it grows correctly
-                    TextField.Bounds = RectangleF.Empty;
+                    TextView.Bounds = RectangleF.Empty;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size.ToSizeF( ),
-                                                                              TextField.NaturalSize.ToSizeF( ), SCALE_TIME_SECONDS, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextView.Bounds.Size.ToSizeF( ),
+                                                                              TextView.NaturalSize.ToSizeF( ), SCALE_TIME_SECONDS, 
                         delegate(float percent, object value )
                         {
                             SizeF currSize = (SizeF)value;
-                            TextField.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
+                            TextView.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
                         },
                         delegate
                         {
-                            TextField.Animating = false;
+                            TextView.Animating = false;
                         } );
 
                     animator.Start( );
@@ -273,20 +278,20 @@ namespace Rock.Mobile
 
             public override void AnimateClosed( )
             {
-                if ( TextField.Animating == false && TextField.Hidden == false )
+                if ( TextView.Animating == false && TextView.Hidden == false )
                 {
-                    TextField.Animating = true;
+                    TextView.Animating = true;
 
-                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextField.Bounds.Size.ToSizeF( ), new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
+                    SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( TextView.Bounds.Size.ToSizeF( ), new SizeF( 0, 0 ), SCALE_TIME_SECONDS, 
                         delegate(float percent, object value )
                         {
                             SizeF currSize = (SizeF)value;
-                            TextField.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
+                            TextView.Bounds = new RectangleF( 0, 0, currSize.Width, currSize.Height );
                         },
                         delegate
                         {
-                            TextField.Hidden = true;
-                            TextField.Animating = false;
+                            TextView.Hidden = true;
+                            TextView.Animating = false;
                         } );
 
                     animator.Start( );

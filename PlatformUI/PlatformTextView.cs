@@ -17,18 +17,31 @@ namespace Rock.Mobile
         /// <summary>
         /// The base text field that provides an interface to platform specific text fields.
         /// </summary>
-        public abstract class PlatformTextField : PlatformBaseLabelUI
+        public abstract class PlatformTextView : PlatformBaseLabelUI
         {
-            public static PlatformTextField Create( )
+            public static PlatformTextView Create( )
             {
                 #if __IOS__
-                return new iOSTextField( );
+                return new iOSTextView( );
                 #endif
 
                 #if __ANDROID__
-                return new DroidTextField( );
+                return new DroidTextView( );
                 #endif
             }
+
+            /// <summary>
+            /// If we want to use PlatformUI broadly, one concession
+            /// that needs to be made is the ability to get the 
+            /// native view so that features that aren't implemented can
+            /// be performed in native code.
+            /// </summary>
+            /// <value>The platform native object.</value>
+            public object PlatformNativeObject
+            {
+                get { return getPlatformNativeObject( ); }
+            }
+            protected abstract object getPlatformNativeObject( );
 
             public string Placeholder
             {
