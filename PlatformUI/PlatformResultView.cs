@@ -65,11 +65,18 @@ namespace RockMobile
 
             // default the view size and opacity
             SetOpacity( 0.00f );
-            View.Frame = frame;
+            View.Frame = new RectangleF( frame.Left, frame.Top, frame.Width, frame.Height );
 
             // setup the background layers
-            StatusBackground.Frame = new RectangleF( View.Frame.X - 10, View.Frame.Top + 10, View.Frame.Width + 20, 44 );
-            ResultBackground.Frame = new RectangleF( View.Frame.X - 10, View.Frame.Height / 3, View.Frame.Width + 20, 150 );
+            StatusBackground.Frame = new RectangleF( View.Frame.X, 
+                                                     View.Frame.Top + Rock.Mobile.Graphics.Util.UnitToPx( 10 ), 
+                                                     View.Frame.Width, 
+                                                     Rock.Mobile.Graphics.Util.UnitToPx( 44 ) );
+            
+            ResultBackground.Frame = new RectangleF( View.Frame.X, 
+                                                     View.Frame.Height / 3, 
+                                                     View.Frame.Width, 
+                                                     Rock.Mobile.Graphics.Util.UnitToPx( 150 ) );
         }
 
         void SetOpacity( float opacity )
@@ -112,7 +119,11 @@ namespace RockMobile
 
             DoneButton.BackgroundColor = buttonBGColor;
             DoneButton.TextColor = buttonTextColor;
+
+            // only round the button on iOS
+            #if __IOS__
             DoneButton.CornerRadius = 4;
+            #endif
         }
 
         public void Display( string statusLabel, string resultSymbol, string resultLabel, string buttonLabel )
@@ -120,23 +131,29 @@ namespace RockMobile
             // set and position the status label
             StatusLabel.Text = statusLabel;
             StatusLabel.SizeToFit( );
-            StatusLabel.Frame = new RectangleF( ( View.Frame.Width - StatusLabel.Frame.Width ) / 2, StatusBackground.Frame.Top + (( StatusBackground.Frame.Height - StatusLabel.Frame.Height ) / 2), StatusLabel.Frame.Width, StatusLabel.Frame.Height );
+            StatusLabel.Frame = new RectangleF( ( View.Frame.Width - StatusLabel.Frame.Width ) / 2, 
+                                                StatusBackground.Frame.Top + (( StatusBackground.Frame.Height - StatusLabel.Frame.Height ) / 2), 
+                                                StatusLabel.Frame.Width, 
+                                                StatusLabel.Frame.Height );
 
             // set and position the result symbol
             ResultSymbol.Text = resultSymbol;
             ResultSymbol.SizeToFit( );
-            ResultSymbol.Frame = new RectangleF( ( View.Frame.Width - ResultSymbol.Frame.Width ) / 2, ResultBackground.Frame.Top + 10, ResultSymbol.Frame.Width, ResultSymbol.Frame.Height );
+            ResultSymbol.Frame = new RectangleF( ( View.Frame.Width - ResultSymbol.Frame.Width ) / 2, 
+                                                  ResultBackground.Frame.Top + Rock.Mobile.Graphics.Util.UnitToPx( 10 ), 
+                                                  ResultSymbol.Frame.Width, 
+                                                  ResultSymbol.Frame.Height );
 
             // set and position the result text
             ResultLabel.Text = resultLabel;
-            ResultLabel.Frame = new RectangleF( 0, 0, ResultBackground.Frame.Width - 40, 0 );
+            ResultLabel.Frame = new RectangleF( 0, 0, ResultBackground.Frame.Width - Rock.Mobile.Graphics.Util.UnitToPx( 40 ), 0 );
             ResultLabel.SizeToFit( );
-            ResultLabel.Frame = new RectangleF( ( View.Frame.Width - ResultLabel.Frame.Width ) / 2, ResultSymbol.Frame.Bottom + 25, ResultLabel.Frame.Width, ResultLabel.Frame.Height );
+            ResultLabel.Frame = new RectangleF( ( View.Frame.Width - ResultLabel.Frame.Width ) / 2, ResultSymbol.Frame.Bottom + Rock.Mobile.Graphics.Util.UnitToPx( 25 ), ResultLabel.Frame.Width, ResultLabel.Frame.Height );
 
             DoneButton.Text = buttonLabel;
             DoneButton.SizeToFit( );
-            float doneWidth = DoneButton.Frame.Width * 2;
-            DoneButton.Frame = new RectangleF( ( View.Frame.Width - doneWidth ) / 2, ResultBackground.Frame.Bottom + 10, doneWidth, DoneButton.Frame.Height );
+            float doneWidth = DoneButton.Frame.Width + Rock.Mobile.Graphics.Util.UnitToPx( 122 );
+            DoneButton.Frame = new RectangleF( ( View.Frame.Width - doneWidth ) / 2, ResultBackground.Frame.Bottom + Rock.Mobile.Graphics.Util.UnitToPx( 10 ), doneWidth, DoneButton.Frame.Height );
 
             SetOpacity( 1.00f );
         }

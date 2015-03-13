@@ -201,11 +201,10 @@ namespace Rock.Mobile
 
             public override void AddAsSubview( object masterView )
             {
-                // we know that masterView will be an iOS View.
-                RelativeLayout view = masterView as RelativeLayout;
+                ViewGroup view = masterView as ViewGroup;
                 if( view == null )
                 {
-                    throw new System.Exception( "Object passed to Android AddAsSubview must be a RelativeLayout." );
+                    throw new System.Exception( "Object passed to Android AddAsSubview must be a ViewGroup or subclass." );
                 }
 
                 view.AddView( Button );
@@ -213,11 +212,10 @@ namespace Rock.Mobile
 
             public override void RemoveAsSubview( object masterView )
             {
-                // we know that masterView will be an iOS View.
-                RelativeLayout view = masterView as RelativeLayout;
+                ViewGroup view = masterView as ViewGroup;
                 if( view == null )
                 {
-                    throw new System.Exception( "Object passed to Android RemoveAsSubview must be a RelativeLayout." );
+                    throw new System.Exception( "Object passed to Android RemoveAsSubview must be a ViewGroup or subclass." );
                 }
 
                 view.RemoveView( Button );

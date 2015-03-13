@@ -291,6 +291,23 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             return false;
         }
     }
+
+    public class Util
+    {
+        public static void AnimateViewColor( uint currColor, uint targetColor, View uiView, SimpleAnimator.AnimationComplete complete )
+        {
+            SimpleAnimator_Color viewAnimator = new SimpleAnimator_Color( currColor, targetColor, .15f, delegate(float percent, object value )
+                {
+                    uiView.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( (uint)value ) );
+                }
+                ,
+                delegate
+                {
+                    complete( );
+                } );
+            viewAnimator.Start( );
+        }
+    }
 }
 
 #endif
