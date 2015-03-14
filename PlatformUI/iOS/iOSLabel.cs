@@ -93,6 +93,11 @@ namespace Rock.Mobile
                 Label.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
+            protected override uint getBackgroundColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( Label.Layer.BackgroundColor );
+            }
+
             protected override void setBorderColor( uint borderColor )
             {
                 Label.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;

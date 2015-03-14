@@ -86,6 +86,11 @@ namespace Rock.Mobile
                 TextView.Layer.CornerRadius = radius;
             }
 
+            protected override uint getBackgroundColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( TextView.Layer.BackgroundColor );
+            }
+
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 TextView.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;

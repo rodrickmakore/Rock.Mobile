@@ -38,8 +38,10 @@ namespace Rock.Mobile
             public uint BackgroundColor
             {
                 set { setBackgroundColor( value ); }
+                get { return getBackgroundColor( ); }
             }
             protected abstract void setBackgroundColor( uint backgroundColor );
+            protected abstract uint getBackgroundColor( );
 
             public uint BorderColor
             {

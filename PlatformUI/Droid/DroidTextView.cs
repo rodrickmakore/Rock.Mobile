@@ -50,7 +50,8 @@ namespace Rock.Mobile
         /// </summary>
         public class DroidTextView : PlatformTextView
         {
-            BorderedRectEditText TextView { get; set; }
+            protected BorderedRectEditText TextView { get; set; }
+            protected uint _BackgroundColor { get; set; }
 
             /// <summary>
             /// The size when the view isn't being animated
@@ -149,9 +150,17 @@ namespace Rock.Mobile
                 }
             }
 
+            protected override uint getBackgroundColor()
+            {
+                return _BackgroundColor;
+            }
+
             protected override void setBackgroundColor( uint backgroundColor )
             {
+                _BackgroundColor = backgroundColor;
+                
                 TextView.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
+                TextView.Invalidate( );
 
                 // normalize the color so we can determine what color to use for the cursor
                 float normalizedColor = (float) backgroundColor / (float)0xFFFFFFFF;

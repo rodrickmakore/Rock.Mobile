@@ -32,6 +32,7 @@ namespace Rock.Mobile
             /// </summary>
             protected View UnderlineView { get; set; }
 
+            protected uint _BackgroundColor { get; set; }
             protected BorderedRectTextView Label { get; set; }
 
             public DroidLabel( )
@@ -72,9 +73,16 @@ namespace Rock.Mobile
                 }
             }
 
+            protected override uint getBackgroundColor()
+            {
+                return _BackgroundColor;
+            }
+
             protected override void setBackgroundColor( uint backgroundColor )
             {
+                _BackgroundColor = backgroundColor;
                 Label.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
+                Label.Invalidate( );
             }
 
             protected override void setBorderColor( uint borderColor )

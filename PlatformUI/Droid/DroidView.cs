@@ -20,6 +20,7 @@ namespace Rock.Mobile
         public class DroidView : PlatformView
         {
             protected BorderedRectView View { get; set; }
+            protected uint _BackgroundColor { get; set; }
 
             public DroidView( )
             {
@@ -28,9 +29,16 @@ namespace Rock.Mobile
             }
 
             // Properties
+            protected override uint getBackgroundColor()
+            {
+                return _BackgroundColor;
+            }
+
             protected override void setBackgroundColor( uint backgroundColor )
             {
+                _BackgroundColor = backgroundColor;
                 View.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
+                View.Invalidate( );
             }
 
             protected override void setBorderColor( uint borderColor )

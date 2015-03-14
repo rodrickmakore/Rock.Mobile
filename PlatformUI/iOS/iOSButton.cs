@@ -78,6 +78,11 @@ namespace Rock.Mobile
                 Button.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
+            protected override uint getBackgroundColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( Button.Layer.BackgroundColor );
+            }
+
             protected override float getOpacity( )
             {
                 return Button.Layer.Opacity;

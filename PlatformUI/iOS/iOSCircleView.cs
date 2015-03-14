@@ -29,6 +29,11 @@ namespace Rock.Mobile
                 View.Layer.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ).CGColor;
             }
 
+            protected override uint getBackgroundColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( View.Layer.BackgroundColor );
+            }
+
             protected override void setBorderColor( uint borderColor )
             {
                 View.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;

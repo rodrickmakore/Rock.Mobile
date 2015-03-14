@@ -20,6 +20,7 @@ namespace Rock.Mobile
         /// </summary>
         public class DroidCircleView : PlatformCircleView
         {
+            protected uint _BackgroundColor;
             protected CircleView View { get; set; }
 
             public DroidCircleView( )
@@ -30,9 +31,14 @@ namespace Rock.Mobile
             }
 
             // Properties
+            protected override uint getBackgroundColor()
+            {
+                return _BackgroundColor;
+            }
+
             protected override void setBackgroundColor( uint backgroundColor )
             {
-                //View.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( 0xFFFF00FF ) );
+                _BackgroundColor = backgroundColor;
                 View.Color = Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor );
                 View.Invalidate( );
             }

@@ -1,9 +1,20 @@
 using System;
+using Rock.Mobile.Animation;
 
 namespace Rock.Mobile.PlatformUI
 {
     public class Util
     {
+        public static void AnimateBackgroundColor( PlatformBaseUI view, uint targetColor )
+        {
+            SimpleAnimator_Color animator = new SimpleAnimator_Color( view.BackgroundColor, targetColor, .15f, delegate(float percent, object value )
+                {
+                    view.BackgroundColor = (uint)value;
+                }
+                , null );
+            animator.Start( );
+        }
+
         #if __ANDROID__
         public static Android.Graphics.Color GetUIColor( uint color )
         {
@@ -30,6 +41,22 @@ namespace Rock.Mobile.PlatformUI
             ( float )( ( color & 0x00FF0000 ) >> 16 ) / 255, 
             ( float )( ( color & 0x0000FF00 ) >> 8 ) / 255, 
             ( float )( ( color & 0x000000FF ) ) / 255 );
+        }
+
+        public static uint UIColorToInt( CoreGraphics.CGColor color )
+        {
+            nfloat colorR = 0, colorG = 0, colorB = 0, colorA = 0;
+
+            nint numComponents = color.NumberOfComponents;
+            if ( numComponents == 4 )
+            {
+                colorR = color.Components[ 0 ];
+                colorG = color.Components[ 1 ];
+                colorB = color.Components[ 2 ];
+                colorA = color.Components[ 3 ];
+            }
+
+            return (uint)( colorR * 255.0f ) << 24 | (uint)( colorG * 255.0f ) << 16 | (uint)( colorB * 255.0f ) << 8 | (uint)( colorA * 255.0f );
         }
 
         public static uint UIColorToInt( UIKit.UIColor color )
