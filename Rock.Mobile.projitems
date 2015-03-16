@@ -81,6 +81,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformTextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidTextField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSTextField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformBusyIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSBusyIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidBusyIndicator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

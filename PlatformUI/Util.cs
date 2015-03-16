@@ -15,6 +15,16 @@ namespace Rock.Mobile.PlatformUI
             animator.Start( );
         }
 
+        public static void AnimateBackgroundOpacity( PlatformBaseUI view, float targetOpacity )
+        {
+            SimpleAnimator_Float animator = new SimpleAnimator_Float( view.Opacity, targetOpacity, .15f, delegate(float percent, object value )
+                {
+                    view.Opacity = (float)value;
+                }
+                , null );
+            animator.Start( );
+        }
+
         #if __ANDROID__
         public static Android.Graphics.Color GetUIColor( uint color )
         {
