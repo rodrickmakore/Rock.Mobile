@@ -120,15 +120,33 @@ namespace Rock.Mobile
             }
 
             // Properties
-            protected override int getKeyboardAppearance( )
+            protected override KeyboardAppearanceStyle getKeyboardAppearance( )
             {
                 // android doesn't support modifying the keyboard appearance
-                return (int) 0;
+                return (KeyboardAppearanceStyle) 0;
             }
 
-            protected override void setKeyboardAppearance( int style )
+            protected override void setKeyboardAppearance( KeyboardAppearanceStyle style )
             {
                 // android doesn't support modifying the keyboard appearance
+            }
+
+            protected override AutoCorrectionType getAutoCorrectionType()
+            {
+                return 0;
+            }
+
+            protected override void setAutoCorrectionType(AutoCorrectionType style)
+            {
+            }
+
+            protected override AutoCapitalizationType getAutoCapitalizationType()
+            {
+                return 0;
+            }
+
+            protected override void setAutoCapitalizationType(AutoCapitalizationType style)
+            {
             }
 
             public override void SetFont( string fontName, float fontSize )

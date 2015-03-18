@@ -84,6 +84,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformBusyIndicator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSBusyIndicator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidBusyIndicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformImageView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSImageView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidImageView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />

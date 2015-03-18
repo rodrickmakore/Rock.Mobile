@@ -373,6 +373,80 @@ namespace Rock.Mobile
                 }
             }
 
+            public class BorderedRectImageView : ImageView
+            {
+                BorderedRectPaintDrawable BorderedPaintDrawable { get; set; }
+
+                public float BorderWidth 
+                { 
+                    get { return BorderedPaintDrawable.BorderWidth; } 
+                    set { BorderedPaintDrawable.BorderWidth = value; }
+                }
+
+                public float Radius
+                {
+                    get { return BorderedPaintDrawable.Radius; }
+                    set { BorderedPaintDrawable.Radius = value; }
+                }
+
+                public BorderedRectImageView( Android.Content.Context context ) : base( context )
+                {
+                    // create our special bordered rect
+                    BorderedPaintDrawable = new BorderedRectPaintDrawable( );
+                    BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
+                    BorderedPaintDrawable.Paint.Color = Color.Transparent;
+
+                    SetBackgroundDrawable( BorderedPaintDrawable );
+                }
+
+                public override void SetBackgroundColor( Android.Graphics.Color color )
+                {
+                    // put the color in the regular 'paint', which is really our fill color,
+                    // but to the end user is the background color.
+                    BorderedPaintDrawable.Paint.Color = color;
+                }
+
+                public void SetBorderColor( Android.Graphics.Color color )
+                {
+                    // set the color of the border paint, which is the paint used
+                    // for our border outline
+                    BorderedPaintDrawable.BorderPaint.Color = color;
+                }
+
+                protected override void OnDraw(Android.Graphics.Canvas canvas)
+                {
+                    BorderedRectPaintDrawable paintDrawable = Background as BorderedRectPaintDrawable;
+                    if( paintDrawable != null )
+                    {
+                        float borderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, paintDrawable.BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
+
+                        // perform just a vertical translation to ensure the text is centered
+                        canvas.Translate( 0, borderWidth );
+
+                        // create a scalar to uniformly scale down the text so it fits within the border
+                        float scalar = ( canvas.Width - (borderWidth * 2) ) / canvas.Width;
+                        canvas.Scale( scalar, scalar ); 
+                    }
+
+                    base.OnDraw(canvas);
+                }
+
+                // hide the base methods for measurement so we can apply border dimensions
+                public new int MeasuredWidth { get; set; }
+                public new int MeasuredHeight { get; set; }
+
+                public new void Measure( int widthMeasureSpec, int heightMeasureSpec )
+                {
+                    base.Measure( widthMeasureSpec, heightMeasureSpec );
+
+                    // now adjust for the border
+                    float borderSize = TypedValue.ApplyDimension(ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
+
+                    MeasuredWidth = base.MeasuredWidth + (int)(borderSize * 2);
+                    MeasuredHeight = base.MeasuredHeight + (int)(borderSize * 2);
+                }
+            }
+
             public class BorderedRectView : RelativeLayout
             {
                 BorderedRectPaintDrawable BorderedPaintDrawable { get; set; }

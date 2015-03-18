@@ -30,6 +30,7 @@ namespace Rock.Mobile
             public DroidButton( )
             {
                 Button = new BorderedRectButton( Rock.Mobile.PlatformSpecific.Android.Core.Context );
+                Button.SetBackgroundDrawable( null );
                 Button.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
 
                 Button.Click += (object sender, EventArgs e ) =>
@@ -231,23 +232,19 @@ namespace Rock.Mobile
 
             public override void SizeToFit( )
             {
-                Measure( );
-
-                // update its width
-                Button.SetMinWidth( Button.MeasuredWidth );
-                Button.SetMaxWidth( Button.MeasuredWidth );
-
-                Button.LayoutParameters.Height = Button.MeasuredHeight;
-            }
-
-            void Measure( )
-            {
                 // create the specs we want for measurement
                 int widthMeasureSpec = View.MeasureSpec.MakeMeasureSpec( Button.LayoutParameters.Width, MeasureSpecMode.Unspecified );
                 int heightMeasureSpec = View.MeasureSpec.MakeMeasureSpec( 0, MeasureSpecMode.Unspecified );
 
                 // measure the label given the current width/height/text
                 Button.Measure( widthMeasureSpec, heightMeasureSpec );
+
+                // update its width
+                Button.SetMinWidth( Button.MeasuredWidth );
+                Button.SetMaxWidth( Button.MeasuredWidth );
+
+                Button.LayoutParameters.Width = Button.MeasuredWidth;
+                Button.LayoutParameters.Height = Button.MeasuredHeight;
             }
         }
     }

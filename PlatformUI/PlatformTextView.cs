@@ -14,6 +14,29 @@ namespace Rock.Mobile
             Natural
         }
 
+        // This is only for iOS, Android's can't be configured.
+        // Enums match iOS.
+        public enum KeyboardAppearanceStyle
+        {
+            Light,
+            Dark
+        }
+
+        public enum AutoCapitalizationType
+        {
+            None,
+            Words,
+            Sentences,
+            All
+        }
+
+        public enum AutoCorrectionType
+        {
+            Default,
+            No,
+            Yes
+        }
+
         /// <summary>
         /// The base text field that provides an interface to platform specific text fields.
         /// </summary>
@@ -73,13 +96,29 @@ namespace Rock.Mobile
             protected abstract float getDynamicTextMaxHeight( );
             protected abstract void setDynamicTextMaxHeight( float height );
 
-            public int KeyboardAppearance
+            public KeyboardAppearanceStyle KeyboardAppearance
             {
                 get { return getKeyboardAppearance( ); }
                 set { setKeyboardAppearance( value ); }
             }
-            protected abstract int getKeyboardAppearance( );
-            protected abstract void setKeyboardAppearance( int style );
+            protected abstract KeyboardAppearanceStyle getKeyboardAppearance( );
+            protected abstract void setKeyboardAppearance( KeyboardAppearanceStyle style );
+
+            public AutoCorrectionType AutoCorrectionType
+            {
+                get { return getAutoCorrectionType( ); }
+                set { setAutoCorrectionType( value ); }
+            }
+            protected abstract AutoCorrectionType getAutoCorrectionType( );
+            protected abstract void setAutoCorrectionType( AutoCorrectionType style );
+
+            public AutoCapitalizationType AutoCapitalizationType
+            {
+                get { return getAutoCapitalizationType( ); }
+                set { setAutoCapitalizationType( value ); }
+            }
+            protected abstract AutoCapitalizationType getAutoCapitalizationType( );
+            protected abstract void setAutoCapitalizationType( AutoCapitalizationType style );
 
             public abstract void ResignFirstResponder( );
 

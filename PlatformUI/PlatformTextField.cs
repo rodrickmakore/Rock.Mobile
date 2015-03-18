@@ -48,13 +48,29 @@ namespace Rock.Mobile
             }
             protected abstract void setPlaceholderTextColor( uint color );
 
-            public int KeyboardAppearance
+            public KeyboardAppearanceStyle KeyboardAppearance
             {
                 get { return getKeyboardAppearance( ); }
                 set { setKeyboardAppearance( value ); }
             }
-            protected abstract int getKeyboardAppearance( );
-            protected abstract void setKeyboardAppearance( int style );
+            protected abstract KeyboardAppearanceStyle getKeyboardAppearance( );
+            protected abstract void setKeyboardAppearance( KeyboardAppearanceStyle style );
+
+            public AutoCorrectionType AutoCorrectionType
+            {
+                get { return getAutoCorrectionType( ); }
+                set { setAutoCorrectionType( value ); }
+            }
+            protected abstract AutoCorrectionType getAutoCorrectionType( );
+            protected abstract void setAutoCorrectionType( AutoCorrectionType style );
+
+            public AutoCapitalizationType AutoCapitalizationType
+            {
+                get { return getAutoCapitalizationType( ); }
+                set { setAutoCapitalizationType( value ); }
+            }
+            protected abstract AutoCapitalizationType getAutoCapitalizationType( );
+            protected abstract void setAutoCapitalizationType( AutoCapitalizationType style );
 
             public abstract void ResignFirstResponder( );
         }

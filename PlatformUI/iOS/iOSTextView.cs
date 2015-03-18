@@ -53,14 +53,34 @@ namespace Rock.Mobile
                 }
             }
 
-            protected override int getKeyboardAppearance( )
+            protected override KeyboardAppearanceStyle getKeyboardAppearance( )
             {
-                return (int) TextView.KeyboardAppearance;
+                return (KeyboardAppearanceStyle)TextView.KeyboardAppearance;
             }
 
-            protected override void setKeyboardAppearance( int style )
+            protected override void setKeyboardAppearance( KeyboardAppearanceStyle style )
             {
                 TextView.KeyboardAppearance = (UIKeyboardAppearance)style;
+            }
+
+            protected override AutoCorrectionType getAutoCorrectionType( )
+            {
+                return (AutoCorrectionType)TextView.AutocorrectionType;
+            }
+
+            protected override void setAutoCorrectionType( AutoCorrectionType type )
+            {
+                TextView.AutocorrectionType = (UITextAutocorrectionType) type;
+            }
+
+            protected override AutoCapitalizationType getAutoCapitalizationType( )
+            {
+                return (AutoCapitalizationType)TextView.AutocapitalizationType;
+            }
+
+            protected override void setAutoCapitalizationType( AutoCapitalizationType type )
+            {
+                TextView.AutocapitalizationType = (UITextAutocapitalizationType) type;
             }
 
             protected override void setBorderColor( uint borderColor )
