@@ -67,6 +67,12 @@ namespace Rock.Mobile.Util.Strings
 
             return result;
         }
+
+        public static string ParseURLToFileName( string url )
+        {
+            int lastSlashIndex = url.LastIndexOf( "/" ) + 1;
+            return url.Substring( lastSlashIndex );
+        }
     }
 
     public static class StringExtensions
