@@ -30,7 +30,6 @@ namespace Rock.Mobile
             public DroidButton( )
             {
                 Button = new BorderedRectButton( Rock.Mobile.PlatformSpecific.Android.Core.Context );
-                Button.SetBackgroundDrawable( null );
                 Button.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
 
                 Button.Click += (object sender, EventArgs e ) =>
@@ -127,8 +126,9 @@ namespace Rock.Mobile
                 // NOTE: On android we're not supporting a non-0 left/top. I don't know why you'd EVER
                 // want this, but it's possible to set on iOS.
                 Button.SetMinWidth( (int)bounds.Width );
-                Button.SetMaxWidth( Button.LayoutParameters.Width );
-                Button.LayoutParameters.Height = ( int )bounds.Height;
+                Button.SetMaxWidth( (int)bounds.Width );
+                Button.LayoutParameters.Width = (int)bounds.Width;
+                Button.LayoutParameters.Height = (int)bounds.Height;
             }
 
             protected override RectangleF getFrame( )
