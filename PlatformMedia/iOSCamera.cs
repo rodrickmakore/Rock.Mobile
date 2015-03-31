@@ -22,7 +22,7 @@ namespace Rock.Mobile
                 static CameraController _Instance = new CameraController( );
                 public static CameraController Instance { get { return _Instance; } }
 
-                public override bool ShouldAutorotate()
+                /*public override bool ShouldAutorotate()
                 {
                     if ( UIDeviceOrientation.Portrait == UIDevice.CurrentDevice.Orientation )
                     {
@@ -39,7 +39,7 @@ namespace Rock.Mobile
                 public override UIInterfaceOrientation PreferredInterfaceOrientationForPresentation( )
                 {
                     return UIInterfaceOrientation.Portrait;
-                }
+                }*/
             }
 
             protected CaptureImageEvent CaptureImageEventDelegate { get; set; }

@@ -98,6 +98,19 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             WebView.Bounds = new CGRect( 0, 0, WebView.Bounds.Width, WebView.Bounds.Height - CancelButton.Bounds.Height );
         }
 
+        public void LayoutChanged( CGRect containerBounds )
+        {
+            ContainerView.Frame = containerBounds;
+            WebView.Frame = containerBounds;
+
+            ProgressBar.Layer.Position = new CGPoint (ContainerView.Bounds.Width / 2, ContainerView.Bounds.Height / 2);
+
+            CancelButton.Frame = new CGRect( (containerBounds.Width - CancelButton.Frame.Width) / 2, 
+                                             containerBounds.Bottom - CancelButton.Frame.Height, 
+                                             CancelButton.Frame.Width, 
+                                             CancelButton.Frame.Height );
+        }
+
         public void LoadUrl( string url, LoadResult resultHandler )
         {
             LoadResultHandler = resultHandler;
@@ -513,7 +526,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         }
     }
 
-    class BlockerView : UIView
+    /*class BlockerView : UIView
     {
         public UIActivityIndicatorView ActivityIndicator { get; set; }
 
@@ -574,7 +587,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     } )
             );
         }
-    }
+    }*/
 
     /// <summary>
     /// Utility class that makes sure a TargetView isn't obstructed by a picker.
@@ -642,68 +655,130 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             PickerLabel = pickerLabel;
             PickerLabel.Layer.AnchorPoint = CGPoint.Empty;
             PickerLabel.SizeToFit( );
-            PickerLabel.Layer.Position = new CGPoint( ( ParentView.Bounds.Width - PickerLabel.Bounds.Width ) / 2, ParentView.Frame.Bottom );
         }
 
         public void SetPicker( UIView picker )
         {
             Picker = picker;
             Picker.Layer.AnchorPoint = CGPoint.Empty;
+            ParentView.AddSubview( Picker );
+            ParentView.AddSubview( PickerLabel );
+
+            Picker.Hidden = true;
+            PickerLabel.Hidden = true;
+        }
+
+        public void LayoutChanged( )
+        {
             Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
             Picker.Bounds = new CGRect( 0, 0, ParentView.Bounds.Width, 100 ); //force the width smaller so it fits on all devices.
-            ParentView.AddSubview( Picker );
-
-            ParentView.AddSubview( PickerLabel );
+            PickerLabel.Layer.Position = new CGPoint( ( ParentView.Bounds.Width - PickerLabel.Bounds.Width ) / 2, ParentView.Frame.Bottom );
         }
 
         /// <summary>
         /// Shows / Hides the category picker by animating the picker onto the screen and scrolling
         /// the ScrollView to reveal the category field.
         /// </summary>
-        public void TogglePicker( bool enabled )
+        public void TogglePicker( bool enabled, bool animate = true )
         {
-            if ( Picker == null )
+            if ( animate == true )
             {
-                throw new Exception( "Call SetPicker before using TogglePicker!" );
+                if ( Picker == null )
+                {
+                    throw new Exception( "Call SetPicker before using TogglePicker!" );
+                }
+
+                // only do something if there's a state change
+                if ( Revealed != enabled )
+                {
+                    nfloat targetPos = 0.00f;
+                    nfloat targetScroll = 0.00f;
+                    if ( enabled == true )
+                    {
+                        StartingScrollPos = ParentScrollView.ContentOffset;
+
+                        Picker.Hidden = false;
+                        PickerLabel.Hidden = false;
+
+                        targetPos = ParentView.Bounds.Height - ( PickerLabel.Bounds.Height + Picker.Bounds.Height );
+                        targetScroll = Target.Frame.Top - Target.Frame.Height;
+                    }
+                    else
+                    {
+                        targetPos = ParentView.Frame.Bottom;
+                        targetScroll = StartingScrollPos.Y;
+                    }
+
+                    ParentScrollView.ScrollEnabled = false;
+                    Revealed = enabled;
+                    
+                    //Start an animation
+                    SimpleAnimator_Float posAnim = new SimpleAnimator_Float( (float)PickerLabel.Layer.Position.Y, (float)targetPos, .25f, 
+                                                       delegate(float percent, object value )
+                        {
+                            PickerLabel.Layer.Position = new CGPoint( PickerLabel.Layer.Position.X, (float)value );
+                            Picker.Layer.Position = new CGPoint( Picker.Layer.Position.X, (float)value + 10 );
+                        },
+                                                       delegate
+                        {
+                            // if we're finished and have now disabled the picker
+                            if ( enabled == false )
+                            {
+                                // hide it, re-enable scrolling, and restore our scroll position.
+                                Picker.Hidden = true;
+                                PickerLabel.Hidden = true;
+                            }
+                        } );
+                    posAnim.Start( );
+
+
+                    //Start an animation
+                    SimpleAnimator_Float scrollAnim = new SimpleAnimator_Float( (float)ParentScrollView.ContentOffset.Y, (float)targetScroll, .25f,
+                                                          delegate(float percent, object value )
+                        {
+                            ParentScrollView.ContentOffset = new CGPoint( ParentScrollView.ContentOffset.X, (float)value );
+                        },
+                                                          delegate
+                        {
+                            // if we're finished and have now disabled the picker
+                            if ( enabled == false )
+                            {
+                                // re-enable scrolling
+                                ParentScrollView.ScrollEnabled = true;
+                            }
+                        } );
+                    scrollAnim.Start( );
+                }
             }
-
-            // only do something if there's a state change
-            if ( Revealed != enabled )
+            else
             {
-                //Start an animation
-                UIView.BeginAnimations( "AnimateForPicker" );
-                UIView.SetAnimationBeginsFromCurrentState( true );
-                UIView.SetAnimationDuration( .5f );
-                UIView.SetAnimationCurve( UIViewAnimationCurve.EaseInOut );
-
+                // if they don't want animation, immediately make the change
                 if ( enabled == true )
                 {
-                    // stamp the scroll position of the scrollview
                     StartingScrollPos = ParentScrollView.ContentOffset;
 
-                    // set the picker to be on screen
-                    PickerLabel.Layer.Position = new CGPoint( PickerLabel.Layer.Position.X, ParentView.Bounds.Height - (PickerLabel.Bounds.Height + Picker.Bounds.Height) );
-                    Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
+                    Picker.Hidden = false;
+                    PickerLabel.Hidden = false;
 
-                    // scroll the category field into view and lock scrolling
-                    ParentScrollView.ContentOffset = new CGPoint( 0, Target.Frame.Top - Target.Frame.Height );
+                    PickerLabel.Layer.Position = new CGPoint( PickerLabel.Layer.Position.X, ParentView.Bounds.Height - ( PickerLabel.Bounds.Height + Picker.Bounds.Height ) );
+                    Picker.Layer.Position = new CGPoint( Picker.Layer.Position.X, PickerLabel.Layer.Position.Y + 10 );
+
                     ParentScrollView.ScrollEnabled = false;
+                    ParentScrollView.ContentOffset = new CGPoint( ParentScrollView.ContentOffset.X, Target.Frame.Top - Target.Frame.Height );
                 }
                 else
                 {
-                    // we're hiding the picker, so restore the original scroll position and enable it
-                    ParentScrollView.ContentOffset = StartingScrollPos;
-                    ParentScrollView.ScrollEnabled = true;
+                    Picker.Hidden = true;
+                    PickerLabel.Hidden = true;
 
-                    // move the picker off screen
                     PickerLabel.Layer.Position = new CGPoint( PickerLabel.Layer.Position.X, ParentView.Frame.Bottom );
-                    Picker.Layer.Position = new CGPoint( 0, PickerLabel.Frame.Top + 10 );
+                    Picker.Layer.Position = new CGPoint( Picker.Layer.Position.X, PickerLabel.Layer.Position.Y + 10 );
+
+                    ParentScrollView.ScrollEnabled = true;
+                    ParentScrollView.ContentOffset = StartingScrollPos;
                 }
 
                 Revealed = enabled;
-
-                //Commit the animation
-                UIView.CommitAnimations( ); 
             }
         }
     }

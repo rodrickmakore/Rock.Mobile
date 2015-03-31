@@ -5,23 +5,23 @@ namespace Rock.Mobile.PlatformUI
 {
     public class Util
     {
-        public static void AnimateBackgroundColor( PlatformBaseUI view, uint targetColor )
+        public static void AnimateBackgroundColor( PlatformBaseUI view, uint targetColor, SimpleAnimator.AnimationComplete onCompletion = null )
         {
             SimpleAnimator_Color animator = new SimpleAnimator_Color( view.BackgroundColor, targetColor, .15f, delegate(float percent, object value )
                 {
                     view.BackgroundColor = (uint)value;
                 }
-                , null );
+                , onCompletion );
             animator.Start( );
         }
 
-        public static void AnimateBackgroundOpacity( PlatformBaseUI view, float targetOpacity )
+        public static void AnimateBackgroundOpacity( PlatformBaseUI view, float targetOpacity, SimpleAnimator.AnimationComplete onCompletion = null )
         {
             SimpleAnimator_Float animator = new SimpleAnimator_Float( view.Opacity, targetOpacity, .15f, delegate(float percent, object value )
                 {
                     view.Opacity = (float)value;
                 }
-                , null );
+                , onCompletion );
             animator.Start( );
         }
 
