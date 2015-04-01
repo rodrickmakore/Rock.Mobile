@@ -95,6 +95,21 @@ namespace Rock.Mobile
                 base.OnPanGesture( state, currVelocity.ToPointF( ), deltaPan.ToPointF( ) );
             }
 
+            public override void LayoutChanged( float cardWidth, float cardHeight, RectangleF boundsInParent )
+            {
+                base.LayoutChanged( cardWidth, cardHeight, boundsInParent );
+
+                // clear out any pending animations for the cards, since we want to reset their positions
+                foreach ( Card card in Cards )
+                {
+                    // first get the UIViews backing these PlatformViews
+                    UIView cardView = (UIView) card.View.PlatformNativeObject;
+
+                    // stop all animations
+                    cardView.Layer.RemoveAllAnimations( );
+                }
+            }
+
             public override void TouchesBegan( )
             {
                 Console.WriteLine( "Touches Began" );

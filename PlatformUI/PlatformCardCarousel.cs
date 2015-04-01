@@ -116,6 +116,29 @@ namespace Rock.Mobile
                 Cards.Add( card );
             }
 
+            public virtual void LayoutChanged( float cardWidth, float cardHeight, RectangleF boundsInParent )
+            {
+                // update the card bounds
+                BoundsInParent = boundsInParent;
+                CardWidth = cardWidth;
+                CardHeight = cardHeight;
+
+                // the center position should be center on screen
+                CenterCardPos = new PointF( ((BoundsInParent.Width - CardWidth) / 2), BoundsInParent.Y );
+
+                // left should be exactly one screen width to the left, and right one screen width to the right
+                CardXSpacing = BoundsInParent.Width * .88f;
+
+                // reset the position of each card
+                for( int i = 0; i < Cards.Count; i++ )
+                {
+                    Cards[ i ].View.Position = new PointF( CenterCardPos.X + ( CardXSpacing * i ), BoundsInParent.Y );
+                    Cards[ i ].PositionIndex = i;
+                }
+
+                CenterCardIndex = 0;
+            }
+
             public void Clear( )
             {
                 foreach ( Card card in Cards )
