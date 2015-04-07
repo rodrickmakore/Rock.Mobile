@@ -22,6 +22,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformUtil\" />
     <Folder Include="$(MSBuildThisFileDirectory)PlatformAnimation\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PlatformIO\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\PlatformImageView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\iOS\iOSImageView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformUI\Droid\DroidImageView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformIO\FileCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)PlatformUI\.gitignore" />
