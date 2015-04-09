@@ -179,6 +179,7 @@ namespace Rock.Mobile
             {
                 Button.FocusableInTouchMode = enabled;
                 Button.Focusable = enabled;
+                Button.Enabled = enabled;
             }
 
             protected override void setTextColor( uint color )
