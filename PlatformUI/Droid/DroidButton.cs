@@ -64,7 +64,8 @@ namespace Rock.Mobile
             protected override void setBackgroundColor( uint backgroundColor )
             {
                 _BackgroundColor = backgroundColor;
-                Button.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
+                Button.SetBackgroundDrawable( new ColorDrawable( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) ) );
+                //Button.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( backgroundColor ) );
                 Button.Invalidate( );
             }
 
