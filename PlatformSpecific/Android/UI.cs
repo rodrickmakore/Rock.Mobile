@@ -25,13 +25,20 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
                 Parent.OnPageFinished( view, url );
             }
+
+            public override void OnReceivedError(WebView view, ClientError errorCode, string description, string failingUrl)
+            {
+                base.OnReceivedError(view, errorCode, description, failingUrl);
+
+                Parent.OnReceivedError( errorCode, description, failingUrl );
+            }
         }
 
         WebView WebView { get; set; }
         ProgressBar ProgressBar { get; set; }
         Button CloseButton { get; set; }
 
-        public delegate void PageLoaded( string url );
+        public delegate void PageLoaded( bool result );
         PageLoaded PageLoadedHandler { get; set; }
 
         public WebLayout( global::Android.Content.Context context ) : base( context )
@@ -66,11 +73,23 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             ProgressBar.BringToFront();
         }
 
+        public void ResetCookies( )
+        {
+            CookieManager.Instance.RemoveAllCookie( );
+        }
+
         public void LoadUrl( string url, PageLoaded loadedHandler )
         {
             PageLoadedHandler = loadedHandler;
 
+            ProgressBar.Visibility = ViewStates.Visible;
             WebView.LoadUrl( url );
+        }
+
+        public void OnReceivedError( ClientError errorCode, string description, string failingUrl )
+        {
+            ProgressBar.Visibility = ViewStates.Invisible;
+            PageLoadedHandler( false );
         }
 
         public void OnPageFinished( WebView view, string url )
@@ -79,7 +98,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             imm.HideSoftInputFromWindow( view.WindowToken, 0 );
 
             ProgressBar.Visibility = ViewStates.Invisible;
-            PageLoadedHandler( url );
+            PageLoadedHandler( true );
         }
     }
 
