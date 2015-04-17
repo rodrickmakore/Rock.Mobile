@@ -29,8 +29,6 @@ namespace Rock.Mobile
                 // store our callback event
                 ImagePickEventDelegate = callback;
 
-
-
                 // setup the image picker
                 UIImagePickerController imageController = new UIImagePickerController( );
                 imageController.Delegate = new UIImagePickerControllerDelegate( );
