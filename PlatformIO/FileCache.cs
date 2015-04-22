@@ -111,8 +111,9 @@ namespace CCVApp.Shared
         /// <summary>
         /// Scans the cache hashtable and removes any entries that are expired. Additionally, it deletes the file
         /// from the cache folder.
+        /// CAUTION: If you pass true, all files will automatically be erased
         /// </summary>
-        public void CleanUp( )
+        public void CleanUp( bool forceEraseAll = false )
         {
             lock ( locker )
             {
@@ -127,7 +128,7 @@ namespace CCVApp.Shared
 
                     // if it's older than our expiration time, delete it
                     TimeSpan deltaTime = ( DateTime.Now - entryValue );
-                    if ( DateTime.Now >= entryValue )
+                    if ( DateTime.Now >= entryValue || forceEraseAll == true)
                     {
                         // delete the entry
                         File.Delete( CachePath + "/" + entry.Key );

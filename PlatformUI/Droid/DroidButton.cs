@@ -171,15 +171,11 @@ namespace Rock.Mobile
 
             protected override bool getUserInteractionEnabled( )
             {
-                // doesn't matter if we return this or regular Focusable,
-                // because we set them both, guaranteeing the same value.
-                return Button.FocusableInTouchMode;
+                return Button.Enabled;
             }
 
             protected override void setUserInteractionEnabled( bool enabled )
             {
-                Button.FocusableInTouchMode = enabled;
-                Button.Focusable = enabled;
                 Button.Enabled = enabled;
             }
 
