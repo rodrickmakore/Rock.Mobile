@@ -93,8 +93,9 @@ namespace Rock.Mobile
 
                 void UpdateShape( )
                 {
-                    // if there's a border width, create a shape to render that represents the border.
-                    if ( _BorderWidth > 0 )
+                    // if there's a border width or corner radius, create a shape to render that represents the border.
+                    // This will allow either a bordered button, or a rounded button.
+                    if ( _BorderWidth > 0 || _Radius > 0 )
                     {
                         Shape = new RoundRectShape( new float[]
                             { 
