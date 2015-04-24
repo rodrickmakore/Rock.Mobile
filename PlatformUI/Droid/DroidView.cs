@@ -83,6 +83,10 @@ namespace Rock.Mobile
             protected override void setZPosition( float zPosition )
             {
                 //Android doesn't use/need a Z position for its layers. (It goes based on order added)
+                if ( zPosition > 0 )
+                {
+                    View.BringToFront( );
+                }
             }
 
             protected override RectangleF getBounds( )
@@ -100,6 +104,8 @@ namespace Rock.Mobile
                 // want this, but it's possible to set on iOS.
                 View.LayoutParameters.Width = ( int )bounds.Width;
                 View.LayoutParameters.Height = ( int )bounds.Height;
+
+                View.RequestLayout( );
             }
 
             protected override RectangleF getFrame( )
@@ -116,6 +122,8 @@ namespace Rock.Mobile
 
                 RectangleF bounds = new RectangleF( frame.Left, frame.Top, frame.Width, frame.Height );
                 setBounds( bounds );
+
+                View.RequestLayout( );
             }
 
             protected override System.Drawing.PointF getPosition( )

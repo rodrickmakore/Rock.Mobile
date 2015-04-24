@@ -32,6 +32,33 @@ namespace Rock.Mobile.Animation
         }
     }
 
+    public class SimpleAnimator_RectF : SimpleAnimator
+    {
+        System.Drawing.RectangleF StartValue { get; set; }
+        System.Drawing.RectangleF Delta { get; set; }
+
+        public SimpleAnimator_RectF( System.Drawing.RectangleF start, System.Drawing.RectangleF end, float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
+        {
+            StartValue = start;
+            Delta = new System.Drawing.RectangleF( end.X - start.X, end.Y - start.Y, end.Width - start.Width, end.Height - start.Height );
+
+            Init( duration, updateDelegate, completeDelegate );
+        }
+
+        protected override void AnimTick(float percent, AnimationUpdate updateDelegate)
+        {
+            // get the current value and provide it to the caller
+            System.Drawing.RectangleF value = new System.Drawing.RectangleF( StartValue.X + (Delta.X * percent), 
+                                                                             StartValue.Y + (Delta.Y * percent), 
+                                                                             StartValue.Width + (Delta.Width * percent), 
+                                                                             StartValue.Height + (Delta.Height * percent) );
+            if ( updateDelegate != null )
+            {
+                updateDelegate( percent, value );
+            }
+        }
+    }
+
     public class SimpleAnimator_PointF : SimpleAnimator
     {
         System.Drawing.PointF StartValue { get; set; }

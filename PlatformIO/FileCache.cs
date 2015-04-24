@@ -100,7 +100,11 @@ namespace CCVApp.Shared
                 //string cachePath = MonoTouch.Foundation.NSFileManager.DefaultManager.GetUrls (MonoTouch.Foundation.NSSearchPathDirectory.DocumentDirectory, MonoTouch.Foundation.NSSearchPathDomain.User) [0].ToString();
                 string cachePath = System.IO.Path.Combine ( Environment.GetFolderPath(Environment.SpecialFolder.Personal), "" );
                 #else
-                string cachePath = Rock.Mobile.PlatformSpecific.Android.Core.Context.GetExternalFilesDir( null ).ToString( );
+                string cachePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                // JHM 4-24-15: Suddenly, certain android devices began crashing because GetExternalFilesDir returned null. It seems to be
+                // that the device no longer has an sd card mounted. Using the above not only works, but is more consistent with what
+                // I use everywhere else in the app.
+                //string cachePath = Rock.Mobile.PlatformSpecific.Android.Core.Context.GetExternalFilesDir( null ).ToString( );
                 #endif
 
                 cachePath += "/" + CacheDirectory;

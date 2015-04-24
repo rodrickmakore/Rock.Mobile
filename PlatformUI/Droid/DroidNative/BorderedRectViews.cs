@@ -16,7 +16,7 @@ namespace Rock.Mobile
             /// <summary>
             /// Special drawable that manages both an outer and inner paint.
             /// Designed for use only with BorderedRectTextView, BorderedRectTextField and BorderedRectView
-            /// Note: Transparancy with a solid border doesn't work, because I can't get the stroke'd border to render
+            /// Note: A transparent center with a colored border doesn't work, because I can't get the stroke'd border to render
             /// like i need it to, and i need to move on to other stuff. Just set the color to the BG color and be done.
             /// </summary>
             internal class BorderedRectPaintDrawable : PaintDrawable
@@ -51,6 +51,9 @@ namespace Rock.Mobile
                     {
                         _BorderWidthDP = value;
                         _BorderWidth = TypedValue.ApplyDimension(ComplexUnitType.Dip, value, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
+
+                        // create a shape that will represent the border
+                        UpdateShape( );
                     }
                 }
 
@@ -84,14 +87,31 @@ namespace Rock.Mobile
                         _Radius = TypedValue.ApplyDimension(ComplexUnitType.Dip, value, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics);
 
                         // create a shape with the new radius
-                        Shape = new RoundRectShape( new float[] { _Radius, 
-                            _Radius, 
-                            _Radius, 
-                            _Radius, 
-                            _Radius, 
-                            _Radius, 
-                            _Radius, 
-                            _Radius }, null, null );
+                        UpdateShape( );
+                    }
+                }
+
+                void UpdateShape( )
+                {
+                    // if there's a border width, create a shape to render that represents the border.
+                    if ( _BorderWidth > 0 )
+                    {
+                        Shape = new RoundRectShape( new float[]
+                            { 
+                                _Radius, 
+                                _Radius, 
+                                _Radius, 
+                                _Radius, 
+                                _Radius, 
+                                _Radius, 
+                                _Radius, 
+                                _Radius 
+                            }, null, null );
+                    }
+                    else
+                    {
+                        // otherwise, delete our shape so we don't render anything for a border.
+                        Shape = null;
                     }
                 }
 
@@ -103,16 +123,6 @@ namespace Rock.Mobile
                     BorderPaint.Color = Color.Transparent;
                     BorderPaint.SetStyle( Paint.Style.Fill );
                     BorderPaint.StrokeWidth = 0;
-
-                    // create a shape with the new radius
-                    Shape = new RoundRectShape( new float[] { 0, 
-                        0, 
-                        0, 
-                        0, 
-                        0, 
-                        0, 
-                        0, 
-                        0 }, null, null );
                 }
 
                 protected override void OnDraw( Shape shape, Canvas canvas, Paint paint )
@@ -350,7 +360,7 @@ namespace Rock.Mobile
                         canvas.Translate( 0, borderWidth );
 
                         // create a scalar to uniformly scale down the text so it fits within the border
-                        float scalar = ( canvas.Width - (borderWidth * 2) ) / canvas.Width;
+                        float scalar = ( canvas.Width - ( borderWidth * 2 ) ) / canvas.Width;
                         canvas.Scale( scalar, scalar ); 
                     }
 
