@@ -41,6 +41,8 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         public delegate void PageLoaded( bool result );
         PageLoaded PageLoadedHandler { get; set; }
 
+        //disable CS0618, "This method is obsolete on Android". CookieSyncManager.CreateInstance is causing it, but we need it on older Android versions.
+#pragma warning disable 0618
         public WebLayout( global::Android.Content.Context context ) : base( context )
         {
             // required for pre-21 android
@@ -72,6 +74,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             AddView( ProgressBar );
             ProgressBar.BringToFront();
         }
+#pragma warning restore 0618
 
         public void ResetCookies( )
         {
