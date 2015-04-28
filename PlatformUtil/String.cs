@@ -97,6 +97,27 @@ namespace Rock.Mobile.Util.Strings
             return numericString;
         }
 
+        public static bool IsEmailFormat( this string source )
+        {
+            // email format is x@x.x
+
+            // this does a VERY basic format check. It's by no means completely bullet proof
+
+            // is the @ symbol in a safe place? (can't be at the start or end)
+            int atSymbolIndex = source.IndexOf( '@' );
+            if ( atSymbolIndex > 0 && atSymbolIndex < source.Length - 1 )
+            {
+                // make sure there's at least one . after the @ symbol
+                int dotSymbolIndex = source.LastIndexOf( '.' );
+                if ( dotSymbolIndex > atSymbolIndex && dotSymbolIndex < source.Length - 1 )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Takes a string assumed to be only digits and formats it as a phone number.
         /// </summary>

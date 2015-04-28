@@ -38,7 +38,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         ProgressBar ProgressBar { get; set; }
         Button CloseButton { get; set; }
 
-        public delegate void PageLoaded( bool result );
+        public delegate void PageLoaded( bool result, string forwardUrl );
         PageLoaded PageLoadedHandler { get; set; }
 
         //disable CS0618, "This method is obsolete on Android". CookieSyncManager.CreateInstance is causing it, but we need it on older Android versions.
@@ -92,7 +92,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         public void OnReceivedError( ClientError errorCode, string description, string failingUrl )
         {
             ProgressBar.Visibility = ViewStates.Invisible;
-            PageLoadedHandler( false );
+            PageLoadedHandler( false, failingUrl );
         }
 
         public void OnPageFinished( WebView view, string url )
@@ -101,7 +101,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             imm.HideSoftInputFromWindow( view.WindowToken, 0 );
 
             ProgressBar.Visibility = ViewStates.Invisible;
-            PageLoadedHandler( true );
+            PageLoadedHandler( true, url );
         }
     }
 
