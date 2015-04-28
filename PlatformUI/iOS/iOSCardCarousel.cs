@@ -39,6 +39,8 @@ namespace Rock.Mobile
             /// </summary>
             CGPoint PanLastPos { get; set; }
 
+            UIPanGestureRecognizer PanGesture { get; set; } 
+
             public iOSCardCarousel( object parentView, float cardWidth, float cardHeight, RectangleF boundsInParent, float animationDuration ) : base( parentView, cardWidth, cardHeight, boundsInParent, animationDuration )
             {
                 foreach ( Card card in Cards )
@@ -47,16 +49,18 @@ namespace Rock.Mobile
                 }
 
                 // setup our pan gesture
-                UIPanGestureRecognizer panGesture = new UIPanGestureRecognizer( iOSPanGesture );
-                panGesture.MinimumNumberOfTouches = 1;
-                panGesture.MaximumNumberOfTouches = 1;
+                PanGesture = new UIPanGestureRecognizer( iOSPanGesture );
+                PanGesture.MinimumNumberOfTouches = 1;
+                PanGesture.MaximumNumberOfTouches = 1;
 
                 // add the gesture and all cards to our view
-                ((UIView)ParentView).AddGestureRecognizer( panGesture );
+                ((UIView)ParentView).AddGestureRecognizer( PanGesture );
             }
 
             public void iOSPanGesture( UIPanGestureRecognizer obj)
             {
+                Console.WriteLine( "Panning" );
+
                 // get the required data from the gesture and call our base function
                 CGPoint currVelocity = obj.VelocityInView( (UIView)ParentView );
                 CGPoint deltaPan = new CGPoint( 0, 0 );
@@ -67,6 +71,8 @@ namespace Rock.Mobile
                     case UIGestureRecognizerState.Began:
                     {
                         PanLastPos = new PointF( 0, 0 );
+
+                        CommitCardPositions( );
 
                         state = PlatformCardCarousel.PanGestureState.Began;
                         break;
@@ -110,10 +116,8 @@ namespace Rock.Mobile
                 }
             }
 
-            public override void TouchesBegan( )
+            void CommitCardPositions( )
             {
-                Console.WriteLine( "Touches Began" );
-
                 // when touch begins, remove all animations
                 foreach ( Card card in Cards )
                 {
@@ -132,9 +136,18 @@ namespace Rock.Mobile
                 // we'll know it was stopped manually
             }
 
+            public override void TouchesBegan( )
+            {
+                Console.WriteLine( "Touches Began" );
+
+                CommitCardPositions( );
+            }
+
             public override void TouchesEnded()
             {
                 UpdateCardPositions( );
+
+                Console.WriteLine( "Touches Ended" );
 
                 base.TouchesEnded();
             }
