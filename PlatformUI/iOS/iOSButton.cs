@@ -55,10 +55,16 @@ namespace Rock.Mobile
                 Button.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
+            protected override uint getBorderColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( Button.Layer.BorderColor );
+            }
+
             protected override float getBorderWidth()
             {
                 return (float) Button.Layer.BorderWidth;
             }
+
             protected override void setBorderWidth( float width )
             {
                 Button.Layer.BorderWidth = width;

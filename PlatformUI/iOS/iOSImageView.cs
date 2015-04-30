@@ -81,6 +81,11 @@ namespace Rock.Mobile
                 ImageView.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
+            protected override uint getBorderColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( ImageView.Layer.BorderColor );
+            }
+
             protected override float getBorderWidth()
             {
                 return (float) ImageView.Layer.BorderWidth;

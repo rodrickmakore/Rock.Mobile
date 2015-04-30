@@ -26,6 +26,7 @@ namespace Rock.Mobile
         {
             protected BorderedRectButton Button { get; set; }
             protected uint _BackgroundColor { get; set; }
+            protected uint _BorderColor { get; set; }
 
             public DroidButton( )
             {
@@ -70,7 +71,14 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
+                _BorderColor = borderColor;
                 Button.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
+                Button.Invalidate( );
+            }
+
+            protected override uint getBorderColor( )
+            {
+                return _BorderColor;
             }
 
             protected override float getBorderWidth()

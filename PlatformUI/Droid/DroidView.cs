@@ -21,6 +21,7 @@ namespace Rock.Mobile
         {
             protected BorderedRectView View { get; set; }
             protected uint _BackgroundColor { get; set; }
+            protected uint _BorderColor { get; set; }
 
             public DroidView( )
             {
@@ -43,7 +44,14 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
+                _BorderColor = borderColor;
                 View.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
+                View.Invalidate( );
+            }
+
+            protected override uint getBorderColor( )
+            {
+                return _BorderColor;
             }
 
             protected override float getBorderWidth()

@@ -29,6 +29,7 @@ namespace Rock.Mobile
             protected static Field CursorResource { get; set; }
 
             protected uint _BackgroundColor { get; set; }
+            protected uint _BorderColor { get; set; }
 
             public DroidTextField( )
             {
@@ -125,7 +126,14 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
+                _BorderColor = borderColor;
                 TextField.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
+                TextField.Invalidate( );
+            }
+
+            protected override uint getBorderColor( )
+            {
+                return _BorderColor;
             }
 
             protected override float getBorderWidth()

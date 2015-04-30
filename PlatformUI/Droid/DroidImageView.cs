@@ -23,6 +23,7 @@ namespace Rock.Mobile
             protected BorderedRectImageView ImageView { get; set; }
             protected Bitmap ImageRef { get; set; }
             protected uint _BackgroundColor { get; set; }
+            protected uint _BorderColor { get; set; }
 
             public DroidImageView( )
             {
@@ -97,7 +98,14 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
+                _BorderColor = borderColor;
                 ImageView.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
+                ImageView.Invalidate( );
+            }
+
+            protected override uint getBorderColor( )
+            {
+                return _BorderColor;
             }
 
             protected override float getBorderWidth()

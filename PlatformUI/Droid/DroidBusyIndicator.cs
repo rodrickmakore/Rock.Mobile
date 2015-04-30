@@ -58,6 +58,11 @@ namespace Rock.Mobile
                 // not supported for progress bars
             }
 
+            protected override uint getBorderColor( )
+            {
+                return 0;
+            }
+
             protected override float getBorderWidth()
             {
                 // not supported for progress bars

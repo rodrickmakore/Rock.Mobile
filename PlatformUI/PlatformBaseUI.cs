@@ -46,8 +46,10 @@ namespace Rock.Mobile
             public uint BorderColor
             {
                 set { setBorderColor( value ); }
+                get { return getBorderColor( ); }
             }
             protected abstract void setBorderColor( uint borderColor );
+            protected abstract uint getBorderColor( );
 
             public float BorderWidth
             {

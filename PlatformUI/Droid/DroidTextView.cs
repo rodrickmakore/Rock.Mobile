@@ -52,6 +52,7 @@ namespace Rock.Mobile
         {
             protected BorderedRectEditText TextView { get; set; }
             protected uint _BackgroundColor { get; set; }
+            protected uint _BorderColor { get; set; }
 
             /// <summary>
             /// The size when the view isn't being animated
@@ -197,7 +198,14 @@ namespace Rock.Mobile
 
             protected override void setBorderColor( uint borderColor )
             {
+                _BorderColor = borderColor;
                 TextView.SetBorderColor( Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ) );
+                TextView.Invalidate( );
+            }
+
+            protected override uint getBorderColor( )
+            {
+                return _BorderColor;
             }
 
             protected override float getBorderWidth()

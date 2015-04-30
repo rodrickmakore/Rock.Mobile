@@ -42,6 +42,11 @@ namespace Rock.Mobile
                 BusyIndicator.Layer.BorderColor = Rock.Mobile.PlatformUI.Util.GetUIColor( borderColor ).CGColor;
             }
 
+            protected override uint getBorderColor( )
+            {
+                return Rock.Mobile.PlatformUI.Util.UIColorToInt( BusyIndicator.Layer.BorderColor );
+            }
+
             protected override uint getColor( )
             {
                 return Rock.Mobile.PlatformUI.Util.UIColorToInt( BusyIndicator.Color );

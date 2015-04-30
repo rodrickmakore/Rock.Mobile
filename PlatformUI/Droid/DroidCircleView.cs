@@ -48,6 +48,11 @@ namespace Rock.Mobile
                 // Not supported by circles
             }
 
+            protected override uint getBorderColor( )
+            {
+                return 0;
+            }
+
             protected override float getBorderWidth()
             {
                 return 0;
