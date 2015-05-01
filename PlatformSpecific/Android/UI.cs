@@ -10,9 +10,66 @@ using System.Drawing;
 using CCVApp.Shared.Config;
 using Rock.Mobile.PlatformSpecific.Android.Graphics;
 using Rock.Mobile.Animation;
+using System.Collections.Generic;
+using Android.Content;
 
 namespace Rock.Mobile.PlatformSpecific.Android.UI
 {
+    /// <summary>
+    /// Because list item references generally aren't stored by a list adapter,
+    /// properties of a list item can store references to objects like bitmaps that need to be freed.
+    /// This ListAdapter tracks all added items and exposes methods for calling Destroy and allowing
+    /// each list item to release any references its holding.
+    /// 
+    /// Bottom line, when implenting a list in Android, derive the adapter from this.
+    /// </summary>
+    public abstract class ListAdapter : BaseAdapter
+    {
+        protected HashSet<ListItemView> Items { get; set; }
+
+        public ListAdapter( ) : base( )
+        {
+            Items = new HashSet<ListItemView>( );
+        }
+
+        public override Java.Lang.Object GetItem (int position) 
+        {
+            return null;
+        }
+
+        public override long GetItemId (int position) 
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// This needs to be called by the derived "GetView" so we can track the items created.
+        /// </summary>
+        public View AddView( ListItemView newView )
+        {
+            Items.Add( newView );
+
+            return newView;
+        }
+        
+        public virtual void Destroy( )
+        {
+            foreach ( ListItemView item in Items )
+            {
+                item.Destroy( );
+            }
+        }
+        
+        public abstract class ListItemView : LinearLayout
+        {
+            public ListItemView( Context context ) : base( context )
+            {
+            }
+
+            public abstract void Destroy( );
+        }
+    }
+    
     class WebLayout : RelativeLayout
     {
         class WebViewLayoutClient : WebViewClient

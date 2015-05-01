@@ -199,6 +199,9 @@ namespace CCVApp.Shared
 
                         // if an exception occurs we won't set result to true
                         result = true;
+
+                        writer.Close( );
+                        writer.Dispose( );
                     }
                 }
                 catch ( Exception )
@@ -227,6 +230,9 @@ namespace CCVApp.Shared
 
                     object loadedObj = formatter.Deserialize( mapStream.BaseStream );
                     mapStream.Dispose( );
+
+                    reader.Close( );
+                    reader.Dispose( );
 
                     return loadedObj;
                 }
