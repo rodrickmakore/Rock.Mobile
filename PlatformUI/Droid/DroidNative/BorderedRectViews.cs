@@ -180,7 +180,7 @@ namespace Rock.Mobile
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
                     BorderedPaintDrawable.Paint.Color = Color.Transparent;
 
-                    SetBackgroundDrawable( BorderedPaintDrawable );
+                    Background = BorderedPaintDrawable;
                 }
 
                 public override void SetBackgroundColor( Android.Graphics.Color color )
@@ -259,7 +259,7 @@ namespace Rock.Mobile
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
                     BorderedPaintDrawable.Paint.Color = Color.Transparent;
 
-                    SetBackgroundDrawable( BorderedPaintDrawable );
+                    Background = BorderedPaintDrawable;
                 }
 
                 public override void SetBackgroundColor( Android.Graphics.Color color )
@@ -333,7 +333,7 @@ namespace Rock.Mobile
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
                     BorderedPaintDrawable.Paint.Color = Color.Transparent;
 
-                    SetBackgroundDrawable( BorderedPaintDrawable );
+                    Background = BorderedPaintDrawable;
                 }
 
                 public override void SetBackgroundColor( Android.Graphics.Color color )
@@ -407,7 +407,7 @@ namespace Rock.Mobile
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
                     BorderedPaintDrawable.Paint.Color = Color.Transparent;
 
-                    SetBackgroundDrawable( BorderedPaintDrawable );
+                    Background = BorderedPaintDrawable;
                 }
 
                 public override void SetBackgroundColor( Android.Graphics.Color color )
@@ -481,7 +481,7 @@ namespace Rock.Mobile
                     BorderedPaintDrawable.Paint.SetStyle( Android.Graphics.Paint.Style.Fill );
                     BorderedPaintDrawable.Paint.Color = Color.Transparent;
 
-                    SetBackgroundDrawable( BorderedPaintDrawable );
+                    Background = BorderedPaintDrawable;
                 }
 
                 public override void SetBackgroundColor( Android.Graphics.Color color )

@@ -131,12 +131,12 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             AddView( ProgressBar );
             ProgressBar.BringToFront();
         }
-#pragma warning restore 0618
 
         public void ResetCookies( )
         {
             CookieManager.Instance.RemoveAllCookie( );
         }
+#pragma warning restore 0618
 
         public void LoadUrl( string url, PageLoaded loadedHandler )
         {
@@ -263,7 +263,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         {
             DismissButton = new Button( context );
             DismissButton.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent );
-            DismissButton.SetBackgroundDrawable( null );
+            DismissButton.Background = null;
             AddView( DismissButton );
 
             LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent );
@@ -299,7 +299,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             // create the button that wraps the layout and handles input
             OverlayButton = new Button( context );
             OverlayButton.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
-            OverlayButton.SetBackgroundDrawable( null );
+            OverlayButton.Background = null;
             BannerLayout.AddView( OverlayButton );
 
             ScreenWidth = deviceWidth;

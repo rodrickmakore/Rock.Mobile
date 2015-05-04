@@ -55,7 +55,7 @@ namespace Rock.Mobile
 
                     UnderlineView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                     UnderlineView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
-                    UnderlineView.SetBackgroundDrawable( border );
+                    UnderlineView.Background = border;
 
                     UnderlineView.LayoutParameters.Height = 2;
                 }
