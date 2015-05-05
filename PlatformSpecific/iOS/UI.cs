@@ -15,14 +15,14 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     {
         public static void AnimateViewColor( uint targetColor, UIView uiView )
         {
-            uint currBGColor = Rock.Mobile.PlatformUI.Util.UIColorToInt( uiView.BackgroundColor );
+            uint currBGColor = Rock.Mobile.UI.Util.UIColorToInt( uiView.BackgroundColor );
 
             // if they left the name field blank and didn't turn on Anonymous, flag the field.
             uint targetBGColor = targetColor;
 
             SimpleAnimator_Color lastNameAnimator = new SimpleAnimator_Color( currBGColor, targetBGColor, .15f, delegate(float percent, object value )
                 {
-                    uiView.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( (uint)value );
+                    uiView.BackgroundColor = Rock.Mobile.UI.Util.GetUIColor( (uint)value );
                 }
                 , null );
             lastNameAnimator.Start( );
@@ -132,7 +132,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
         public void SetCancelButtonColor( uint color )
         {
-            CancelButton.SetTitleColor( Rock.Mobile.PlatformUI.Util.GetUIColor( color ), UIControlState.Normal );
+            CancelButton.SetTitleColor( Rock.Mobile.UI.Util.GetUIColor( color ), UIControlState.Normal );
         }
     }
 
@@ -292,12 +292,12 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             // setup the icon
             Icon.Text = iconStr;
             Icon.Font = FontManager.GetFont( iconFont, iconSize );
-            Icon.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( textColor );
+            Icon.TextColor = Rock.Mobile.UI.Util.GetUIColor( textColor );
             Icon.SizeToFit( );
 
             // setup the label
             Label.Text = labelStr;
-            Label.TextColor = Rock.Mobile.PlatformUI.Util.GetUIColor( textColor );
+            Label.TextColor = Rock.Mobile.UI.Util.GetUIColor( textColor );
             Label.Font = FontManager.GetFont( labelFont, labelSize );
             Label.SizeToFit( );
 
@@ -307,7 +307,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
             // setup the banner
             Banner.UserInteractionEnabled = false;
-            Banner.BackgroundColor = Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor );
+            Banner.BackgroundColor = Rock.Mobile.UI.Util.GetUIColor( bgColor );
             Banner.Bounds = new CGRect( 0, 0, totalTextWidth + ( totalTextWidth * .25f ), totalTextHeight * 2 );
             Banner.Layer.Position = new CGPoint( ScreenSize.Width - Banner.Bounds.Width, 0 );
 

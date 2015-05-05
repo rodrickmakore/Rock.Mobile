@@ -7,7 +7,6 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Util;
 using System.Drawing;
-using CCVApp.Shared.Config;
 using Rock.Mobile.PlatformSpecific.Android.Graphics;
 using Rock.Mobile.Animation;
 using System.Collections.Generic;
@@ -125,7 +124,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
             ProgressBar = new ProgressBar( Rock.Mobile.PlatformSpecific.Android.Core.Context );
             ProgressBar.Indeterminate = true;
-            ProgressBar.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( 0 ) );
+            ProgressBar.SetBackgroundColor( Rock.Mobile.UI.Util.GetUIColor( 0 ) );
             ProgressBar.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
             ( (RelativeLayout.LayoutParams)ProgressBar.LayoutParameters ).AddRule( LayoutRules.CenterInParent );
             AddView( ProgressBar );
@@ -311,19 +310,19 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             if ( Animating == false )
             {
                 // setup the banner
-                BannerLayout.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( bgColor ) );
+                BannerLayout.SetBackgroundColor( Rock.Mobile.UI.Util.GetUIColor( bgColor ) );
 
                 // setup the icon
                 Icon.Text = iconStr;
                 Icon.SetTypeface( FontManager.Instance.GetFont( iconFont ), global::Android.Graphics.TypefaceStyle.Normal );
                 Icon.SetTextSize( ComplexUnitType.Dip, iconSize );
-                Icon.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( textColor ) );
+                Icon.SetTextColor( Rock.Mobile.UI.Util.GetUIColor( textColor ) );
 
                 // setup the label
                 Label.Text = labelStr;
                 Label.SetTypeface( FontManager.Instance.GetFont( labelFont ), global::Android.Graphics.TypefaceStyle.Normal );
                 Label.SetTextSize( ComplexUnitType.Dip, labelSize );
-                Label.SetTextColor( Rock.Mobile.PlatformUI.Util.GetUIColor( textColor ) );
+                Label.SetTextColor( Rock.Mobile.UI.Util.GetUIColor( textColor ) );
 
                 if ( OnClickAction != null )
                 {
@@ -377,7 +376,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         {
             SimpleAnimator_Color viewAnimator = new SimpleAnimator_Color( currColor, targetColor, .15f, delegate(float percent, object value )
                 {
-                    uiView.SetBackgroundColor( Rock.Mobile.PlatformUI.Util.GetUIColor( (uint)value ) );
+                    uiView.SetBackgroundColor( Rock.Mobile.UI.Util.GetUIColor( (uint)value ) );
                 }
                 ,
                 delegate

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Android.Widget;
 using Android.Content;
 using Android.Views;
-using Rock.Mobile.PlatformUI;
+using Rock.Mobile.UI;
 using Android.Animation;
 
 namespace Rock.Mobile.PlatformSpecific.Android.Graphics
