@@ -119,7 +119,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             WebView.LoadRequest( new NSUrlRequest( new NSUrl( url ) ) );
         }
 
-        public void DeleteCacheandCookies ()
+        public void DeleteCacheAndCookies ()
         {
             NSUrlCache.SharedCache.RemoveAllCachedResponses ();
             NSHttpCookieStorage storage = NSHttpCookieStorage.SharedStorage;
@@ -526,69 +526,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         }
     }
 
-    /*class BlockerView : UIView
-    {
-        public UIActivityIndicatorView ActivityIndicator { get; set; }
-
-        public BlockerView( CGRect frame ) : base( frame )
-        {
-            ActivityIndicator = new UIActivityIndicatorView( );
-            ActivityIndicator.ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge;
-            ActivityIndicator.StartAnimating( );
-            ActivityIndicator.SizeToFit( );
-            ActivityIndicator.Layer.AnchorPoint = CGPoint.Empty;
-            ActivityIndicator.Layer.Position = new CGPoint( ( frame.Width - ActivityIndicator.Bounds.Width ) / 2, ( frame.Height - ActivityIndicator.Bounds.Height ) / 2 );
-
-            AddSubview( ActivityIndicator );
-
-            BackgroundColor = UIColor.Black;
-
-            Layer.Opacity = 0.00f;
-            ActivityIndicator.Hidden = true;
-        }
-
-        public delegate void OnAnimComplete( );
-        public void FadeIn( OnAnimComplete onCompletion )
-        {
-            ActivityIndicator.Hidden = false;
-
-            UIView.Animate( .5f, 0, UIViewAnimationOptions.CurveEaseInOut, 
-                new Action( delegate 
-                    { 
-                        Layer.Opacity = .80f; 
-                    } )
-                , new Action( delegate 
-                    { 
-                        // if provided, call their completion handler
-                        if( onCompletion != null )
-                        {
-                            onCompletion( );
-                        }
-                    } )
-            );
-        }
-
-        public void FadeOut( OnAnimComplete onCompletion )
-        {
-            UIView.Animate( .5f, 0, UIViewAnimationOptions.CurveEaseInOut, 
-                new Action( delegate 
-                    { 
-                        Layer.Opacity = 0.00f;
-                    } )
-                , new Action( delegate 
-                    { 
-                        ActivityIndicator.Hidden = true;
-
-                        // if provided, call their completion handler
-                        if( onCompletion != null )
-                        {
-                            onCompletion( );
-                        }
-                    } )
-            );
-        }
-    }*/
-
     /// <summary>
     /// Utility class that makes sure a TargetView isn't obstructed by a picker.
     /// Usage: Instantiate and pass in the parent view and child scroll view (Hierarchy must be View->UIScrollView->Whatever)
@@ -787,20 +724,57 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// Utility class that makes sure a text field being edited is in view and not obstructed
     /// by the software keyboard. 
     /// Usage: Instantiate and pass in the parent view and child scroll view (Hierarchy must be View->UIScrollView->Whatever)
-    /// Your class should add notification handlers for the following:
-    /// For text fields: 
-    /// KeyboardAdjustManager.TextFieldDidBeginEditingNotification -> KeyboardAdjustManager.OnTextFieldDidBeginEditing
-    /// KeyboardAdjustManager.TextFieldChangedNotification -> KeyboardAdjustManager.OnTextFieldChanged
-    /// Text fields of interest need to send the two TextField notifications.
-    /// 
-    /// For the software keyboard:
-    /// UIKeyboard.WillShowNotification -> KeyboardAdjustManager.OnKeyboardChanged
-    /// UIKeyboard.WillHideNotification -> KeyboardAdjustManager.OnKeyboardChanged
-    /// 
-    /// Lastly, in the handlers simply pass the notifications to the keyboard manager. That's it!
+
+    // The KeyboardAdjustManager is event driven. This means that it needs to know when text is being changed in the UITextView.
+    // The UITextView of interest should have its delegate set to
+    // KeyboardAdjustManager.TextViewDelegate. (You may override this and call the base if needed.)
+
+
+    // The KeyboardAdjustManager will now send four notifications, and expects four equivalent methods to be called on itself. 
+    // It cannot handle this internally, because if you need to perform code on these events, you wouldn’t be able to.
+
+    //If you don't need any custom behavior, you can literally copy / paste this into your parent view. (Don't forget to store and release the 
+    // observer handles(
+
+    // The basic code is as follows:
+    // NSNotificationCenter.DefaultCenter.AddObserver (
+    //    KeyboardAdjustManager.TextFieldDidBeginEditingNotification, 
+    //    KeyboardAdjustManager.OnTextFieldDidBeginEditing);
+          
+    // NSNotificationCenter.DefaultCenter.AddObserver (
+    //    KeyboardAdjustManager.TextFieldChangedNotification, 
+    //    KeyboardAdjustManager.OnTextFieldChanged );
+            
+    // NSNotificationCenter.DefaultCenter.AddObserver (
+    //    UIKeyboard.WillHideNotification, 
+    //    KeyboardAdjustManager.OnKeyboardNotification);
+
+    // NSNotificationCenter.DefaultCenter.AddObserver (
+    //    UIKeyboard.WillShowNotification, 
+    //    KeyboardAdjustManager.OnKeyboardNotification);
+
+    // If you need to perform functionality, simply replace the Notification method call with your own, and in that, 
+    // call the KeyboardAdjustManager’s corresponding method.
+
+
     /// </summary>
     public class KeyboardAdjustManager
     {
+        // setup a delegate to manage text editing notifications
+        public class TextViewDelegate : UITextViewDelegate
+        {
+            public override bool ShouldBeginEditing(UITextView textView)
+            {
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
+                return true;
+            }
+
+            public override void Changed(UITextView textView)
+            {
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromCGRect( textView.Frame ) );
+            }
+        }
+
         public static NSString TextFieldDidBeginEditingNotification = new NSString( "TextFieldDidBeginEditing" );
 
         public static NSString TextFieldChangedNotification = new NSString( "TextFieldChanged" );

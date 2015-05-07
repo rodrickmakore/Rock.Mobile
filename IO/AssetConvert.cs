@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Rock.Mobile.Util.FileIO
+namespace Rock.Mobile.IO
 {
     public static class AssetConvert
     {
