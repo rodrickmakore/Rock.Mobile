@@ -25,7 +25,7 @@ namespace Rock.Mobile.IO
         /// The length of time a file should remain cached. After this, it will be deleted
         /// from cache. (30 days)
         /// </summary>
-        public static TimeSpan CacheFileDefaultExpiration = new TimeSpan( 30, 0, 0, 0 );
+        static TimeSpan CacheFileDefaultExpiration = new TimeSpan( 30, 0, 0, 0 );
 
         /// <summary>
         /// Ok, it's not technically NONE, but it's 10 years. Come on...
@@ -40,7 +40,7 @@ namespace Rock.Mobile.IO
 
         object locker = new object();
 
-        public FileCache( )
+        FileCache( )
         {
             // ensure the cache directory exists
             if ( Directory.Exists( CachePath ) == false )
@@ -51,7 +51,7 @@ namespace Rock.Mobile.IO
             LoadCacheMap( );
         }
 
-        public void LoadCacheMap( )
+        void LoadCacheMap( )
         {
             // attemp to read the cache map
             try
