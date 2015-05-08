@@ -8,7 +8,7 @@ namespace Rock.Mobile
     {
         /// <summary>
         /// Reusable "carousel" that gives the illusion of an infinitely long list.
-        /// All you have to do is create it, and set views for its 5 "cards". Each
+        /// All you have to do is create it, and set views for each "card". Each
         /// "card" should be the same dimensions, as these are the repeating items.
         /// </summary>
         public abstract class PlatformCardCarousel
@@ -24,7 +24,7 @@ namespace Rock.Mobile
                 #endif
             }
 
-            public enum PanGestureState
+            protected enum PanGestureState
             {
                 Began,
                 Changed,
@@ -40,12 +40,12 @@ namespace Rock.Mobile
             /// </summary>
             const int CardPanRange = 2;
 
-            public class Card
+            protected class Card
             {
                 public int PositionIndex { get; set; }
                 public PlatformView View { get; set; }
             }
-            public List<Card> Cards { get; set; }
+            protected List<Card> Cards { get; set; }
 
             PointF CenterCardPos { get; set; }
 
@@ -66,7 +66,8 @@ namespace Rock.Mobile
 
             float CardXSpacing { get; set; }
 
-            public int CenterCardIndex { get; set; }
+
+            public int CenterCardIndex { get; protected set; }
 
             bool _Hidden { get; set; }
             public bool Hidden
@@ -153,7 +154,7 @@ namespace Rock.Mobile
             //int numSamples { get; set; }
             //PointF mAvgPan = new PointF( );
 
-            public void OnPanGesture(PanGestureState state, PointF currVelocity, PointF deltaPan) 
+            protected void OnPanGesture(PanGestureState state, PointF currVelocity, PointF deltaPan) 
             {
                 switch( state )
                 {

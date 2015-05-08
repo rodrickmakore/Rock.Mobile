@@ -191,6 +191,11 @@ namespace Rock.Mobile
                 }
             }
 
+            protected override uint getTextColor( )
+            {
+                return Rock.Mobile.UI.Util.UIColorToInt( Label.TextColor );
+            }
+
             protected override void setTextColor( uint color )
             {
                 Label.TextColor = Rock.Mobile.UI.Util.GetUIColor( color );

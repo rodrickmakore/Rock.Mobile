@@ -25,11 +25,12 @@ namespace Rock.Mobile
         public class DroidTextField : PlatformTextField
         {
             protected BorderedRectEditText TextField { get; set; }
-
-            protected static Field CursorResource { get; set; }
-
             protected uint _BackgroundColor { get; set; }
             protected uint _BorderColor { get; set; }
+            protected uint _TextColor { get; set; }
+            protected uint _PlaceholderTextColor { get; set; }
+
+            protected static Field CursorResource { get; set; }
 
             public DroidTextField( )
             {
@@ -244,6 +245,11 @@ namespace Rock.Mobile
                 TextField.Focusable = enabled;
             }
 
+            protected override uint getTextColor( )
+            {
+                return _TextColor;
+            }
+
             protected override void setTextColor( uint color )
             {
                 TextField.SetTextColor( Rock.Mobile.UI.Util.GetUIColor( color ) );
@@ -257,6 +263,11 @@ namespace Rock.Mobile
             protected override void setText( string text )
             {
                 TextField.Text = text;
+            }
+
+            protected override uint getPlaceholderTextColor( )
+            {
+                return _PlaceholderTextColor;
             }
 
             protected override void setPlaceholderTextColor( uint color )

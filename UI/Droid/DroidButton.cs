@@ -27,6 +27,7 @@ namespace Rock.Mobile
             protected BorderedRectButton Button { get; set; }
             protected uint _BackgroundColor { get; set; }
             protected uint _BorderColor { get; set; }
+            protected uint _TextColor { get; set; }
 
             public DroidButton( )
             {
@@ -186,8 +187,14 @@ namespace Rock.Mobile
                 Button.Enabled = enabled;
             }
 
+            protected override uint getTextColor( )
+            {
+                return _TextColor;
+            }
+
             protected override void setTextColor( uint color )
             {
+                _TextColor = color;
                 Button.SetTextColor( Rock.Mobile.UI.Util.GetUIColor( color ) );
             }
 

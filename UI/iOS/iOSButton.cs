@@ -159,6 +159,11 @@ namespace Rock.Mobile
                 Button.UserInteractionEnabled = enabled;
             }
 
+            protected override uint getTextColor( )
+            {
+                return Rock.Mobile.UI.Util.UIColorToInt( Button.TitleColor( UIControlState.Normal ) );
+            }
+
             protected override void setTextColor( uint color )
             {
                 Button.SetTitleColor( Rock.Mobile.UI.Util.GetUIColor( color ), UIControlState.Normal );

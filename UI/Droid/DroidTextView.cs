@@ -20,32 +20,6 @@ namespace Rock.Mobile
     namespace UI
     {
         /// <summary>
-        /// Subclassed length filter to allow us to prevent the TextView
-        /// from growing larger than our limit.
-        /// </summary>
-        public class HeightFilter : InputFilterLengthFilter
-        {
-            public DroidTextView Parent { get; set; }
-
-            public HeightFilter( int max ) : base (max)
-            {
-            }
-
-            public override Java.Lang.ICharSequence FilterFormatted(Java.Lang.ICharSequence source, int start, int end, ISpanned dest, int dstart, int dend)
-            {
-                //JHM 1-15-15: Don't limit the text anymore.
-                //if( Parent.AllowInput( source ) )
-                {
-                    return base.FilterFormatted(source, start, end, dest, dstart, dend);
-                }
-                /*else
-                {
-                    return new Java.Lang.String("");
-                }*/
-            }
-        }
-
-        /// <summary>
         /// Android implementation of a text view.
         /// </summary>
         public class DroidTextView : PlatformTextView
@@ -53,6 +27,8 @@ namespace Rock.Mobile
             protected BorderedRectEditText TextView { get; set; }
             protected uint _BackgroundColor { get; set; }
             protected uint _BorderColor { get; set; }
+            protected uint _TextColor { get; set; }
+            protected uint _PlaceholderTextColor { get; set; }
 
             /// <summary>
             /// The size when the view isn't being animated
@@ -73,20 +49,6 @@ namespace Rock.Mobile
             View DummyView { get; set; }
 
             bool mScaleHeightForText = false;
-            float mDynamicTextMaxHeight = float.MaxValue;
-
-            public bool AllowInput( Java.Lang.ICharSequence source )
-            {
-                // allow it as long as we're within the height limit
-                if( TextView.Height < mDynamicTextMaxHeight || source.Length( ) == 0 )
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
 
             static Field CursorResource { get; set; }
 
@@ -97,7 +59,6 @@ namespace Rock.Mobile
                 TextView.SetScrollContainer( true );
                 TextView.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
                 TextView.SetHorizontallyScrolling( false );
-                TextView.SetFilters( new IInputFilter[] { new HeightFilter(int.MaxValue) { Parent = this } } );
 
                 // create a dummy view that can take focus to de-select the text field
                 DummyView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
@@ -329,6 +290,11 @@ namespace Rock.Mobile
                 TextView.Focusable = enabled;
             }
 
+            protected override uint getTextColor( )
+            {
+                return _TextColor;
+            }
+
             protected override void setTextColor( uint color )
             {
                 TextView.SetTextColor( Rock.Mobile.UI.Util.GetUIColor( color ) );
@@ -344,8 +310,14 @@ namespace Rock.Mobile
                 TextView.Text = text;
             }
 
+            protected override uint getPlaceholderTextColor( )
+            {
+                return _PlaceholderTextColor;
+            }
+
             protected override void setPlaceholderTextColor( uint color )
             {
+                _PlaceholderTextColor = color;
                 TextView.SetHintTextColor( Rock.Mobile.UI.Util.GetUIColor( color ) );
             }
 
@@ -408,16 +380,6 @@ namespace Rock.Mobile
             protected override bool getScaleHeightForText( )
             {
                 return mScaleHeightForText;
-            }
-
-            protected override void setDynamicTextMaxHeight( float height )
-            {
-                mDynamicTextMaxHeight = height;
-            }
-
-            protected override float getDynamicTextMaxHeight( )
-            {
-                return mDynamicTextMaxHeight;
             }
 
             public override void AddAsSubview( object masterView )

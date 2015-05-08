@@ -13,10 +13,10 @@ namespace Rock.Mobile
 
             public uint TextColor
             {
-                //get { return getTextColor(); }
+                get { return getTextColor(); }
                 set { setTextColor( value ); }
             }
-            //protected abstract uint getTextColor();
+            protected abstract uint getTextColor();
             protected abstract void setTextColor( uint color );
 
             public string Text

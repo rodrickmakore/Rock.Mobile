@@ -35,10 +35,10 @@ namespace Rock.Mobile
 
             public uint TextColor
             {
-                //get { return getTextColor(); }
+                get { return getTextColor(); }
                 set { setTextColor( value ); }
             }
-            //protected abstract uint getTextColor();
+            protected abstract uint getTextColor();
             protected abstract void setTextColor( uint color );
 
             public string Text
@@ -46,9 +46,7 @@ namespace Rock.Mobile
                 get { return getText( ); }
                 set { setText( value ); }
             }
-
             protected abstract string getText( );
-
             protected abstract void setText( string text );
 
             public abstract void SizeToFit( );

@@ -44,8 +44,10 @@ namespace Rock.Mobile
 
             public uint PlaceholderTextColor
             {
+                get { return getPlaceholderTextColor( ); }
                 set { setPlaceholderTextColor( value ); }
             }
+            protected abstract uint getPlaceholderTextColor( );
             protected abstract void setPlaceholderTextColor( uint color );
 
             public KeyboardAppearanceStyle KeyboardAppearance

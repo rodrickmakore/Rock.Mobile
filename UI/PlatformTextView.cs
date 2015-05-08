@@ -76,8 +76,10 @@ namespace Rock.Mobile
 
             public uint PlaceholderTextColor
             {
+                get { return getPlaceholderTextColor( ); }
                 set { setPlaceholderTextColor( value ); }
             }
+            protected abstract uint getPlaceholderTextColor( );
             protected abstract void setPlaceholderTextColor( uint color );
 
             public bool ScaleHeightForText
@@ -87,14 +89,6 @@ namespace Rock.Mobile
             }
             protected abstract bool getScaleHeightForText( );
             protected abstract void setScaleHeightForText( bool scale );
-
-            public float DynamicTextMaxHeight
-            {
-                get { return getDynamicTextMaxHeight( ); }
-                set { setDynamicTextMaxHeight( value ); }
-            }
-            protected abstract float getDynamicTextMaxHeight( );
-            protected abstract void setDynamicTextMaxHeight( float height );
 
             public KeyboardAppearanceStyle KeyboardAppearance
             {

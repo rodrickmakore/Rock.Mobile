@@ -14,39 +14,6 @@ namespace Rock.Mobile
     {
         namespace iOSNative
         {
-            // setup a delegate to manage text editing notifications
-            public class TextViewDelegate : UITextViewDelegate
-            {
-                public float DynamicTextMaxHeight { get; set; }
-
-                public TextViewDelegate( ) : base( )
-                {
-                    // default to WAY over the limit
-                    DynamicTextMaxHeight = float.MaxValue;
-                }
-
-                public override bool ShouldBeginEditing(UITextView textView)
-                {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
-                    return true;
-                }
-
-                public override bool ShouldChangeText(UITextView textView, NSRange range, string text)
-                {
-                    // don't allow lengths past the height limit imposed.
-                    /*if( text.Length > 0 && textView.Frame.Height > DynamicTextMaxHeight )
-                    {
-                        return false;
-                    }*/
-                    return true;
-                }
-
-                public override void Changed(UITextView textView)
-                {
-                    NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromCGRect( textView.Frame ) );
-                }
-            }
-
             /// <summary>
             /// A subclassed text view that grows vertically as text is added.
             /// </summary>
@@ -82,27 +49,10 @@ namespace Rock.Mobile
                 /// <value><c>true</c> if animating; otherwise, <c>false</c>.</value>
                 public bool Animating { get; set; }
 
-                /// <summary>
-                /// Limits the height of the dynamic text box
-                /// </summary>
-                /// <value>The height of the dynamic text max.</value>
-                public float DynamicTextMaxHeight 
-                { 
-                    get 
-                    { 
-                        return ((TextViewDelegate)Delegate).DynamicTextMaxHeight; 
-                    } 
-
-                    set 
-                    {
-                        ((TextViewDelegate)Delegate).DynamicTextMaxHeight = value;
-                    }
-                }
-
                 public DynamicUITextView( ) : base( )
                 {
                     NSNotificationCenter.DefaultCenter.AddObserver( UITextView.TextDidChangeNotification, OnTextChanged );
-                    Delegate = new TextViewDelegate();
+                    Delegate = new Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextViewDelegate();
 
                     Layer.BackgroundColor = UIColor.Clear.CGColor;
 

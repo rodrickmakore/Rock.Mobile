@@ -188,9 +188,19 @@ namespace Rock.Mobile
                 TextField.UserInteractionEnabled = enabled;
             }
 
+            protected override uint getTextColor( )
+            {
+                return Rock.Mobile.UI.Util.UIColorToInt( TextField.TextColor );
+            }
+
             protected override void setTextColor( uint color )
             {
                 TextField.TextColor = Rock.Mobile.UI.Util.GetUIColor( color );
+            }
+
+            protected override uint getPlaceholderTextColor( )
+            {
+                return Rock.Mobile.UI.Util.UIColorToInt( _PlaceholderTextColor );
             }
 
             protected override void setPlaceholderTextColor( uint color )

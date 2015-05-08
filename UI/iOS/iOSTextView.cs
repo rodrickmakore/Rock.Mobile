@@ -191,9 +191,19 @@ namespace Rock.Mobile
                 TextView.UserInteractionEnabled = enabled;
             }
 
+            protected override uint getTextColor( )
+            {
+                return Rock.Mobile.UI.Util.UIColorToInt( TextView.TextColor );
+            }
+
             protected override void setTextColor( uint color )
             {
                 TextView.TextColor = Rock.Mobile.UI.Util.GetUIColor( color );
+            }
+
+            protected override uint getPlaceholderTextColor( )
+            {
+                return Rock.Mobile.UI.Util.UIColorToInt( TextView.PlaceholderTextColor );
             }
 
             protected override void setPlaceholderTextColor( uint color )
@@ -244,16 +254,6 @@ namespace Rock.Mobile
             public override void ResignFirstResponder( )
             {
                 TextView.ResignFirstResponder( );
-            }
-
-            protected override void setDynamicTextMaxHeight( float height )
-            {
-                TextView.DynamicTextMaxHeight = height;
-            }
-
-            protected override float getDynamicTextMaxHeight( )
-            {
-                return TextView.DynamicTextMaxHeight;
             }
 
             public override void AddAsSubview( object masterView )
