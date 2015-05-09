@@ -114,9 +114,10 @@ namespace Rock.Mobile
             protected abstract AutoCapitalizationType getAutoCapitalizationType( );
             protected abstract void setAutoCapitalizationType( AutoCapitalizationType style );
 
+            public abstract void BecomeFirstResponder( );
             public abstract void ResignFirstResponder( );
 
-            public abstract void AnimateOpen( );
+            public abstract void AnimateOpen( bool becomeFirstResponder );
             public abstract void AnimateClosed( );
         }
     }

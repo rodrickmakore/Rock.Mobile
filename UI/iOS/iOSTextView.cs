@@ -256,6 +256,11 @@ namespace Rock.Mobile
                 TextView.ResignFirstResponder( );
             }
 
+            public override void BecomeFirstResponder( )
+            {
+                TextView.BecomeFirstResponder( );
+            }
+
             public override void AddAsSubview( object masterView )
             {
                 // we know that masterView will be an iOS View.
@@ -279,7 +284,7 @@ namespace Rock.Mobile
                 TextView.SizeToFit( );
             }
 
-            public override void AnimateOpen( )
+            public override void AnimateOpen( bool becomeFirstResponder )
             {
                 if ( TextView.Animating == false && TextView.Hidden == true )
                 {
@@ -300,6 +305,10 @@ namespace Rock.Mobile
                         delegate
                         {
                             TextView.Animating = false;
+                            if( becomeFirstResponder == true )
+                            {
+                                BecomeFirstResponder( );
+                            }
                         } );
 
                     animator.Start( );

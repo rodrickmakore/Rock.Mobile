@@ -46,7 +46,7 @@ namespace Rock.Mobile
             /// A dummy view that absorbs focus when the text field isn't being edited.
             /// </summary>
             /// <value>The dummy view.</value>
-            View DummyView { get; set; }
+            //View DummyView { get; set; }
 
             bool mScaleHeightForText = false;
 
@@ -59,14 +59,15 @@ namespace Rock.Mobile
                 TextView.SetScrollContainer( true );
                 TextView.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
                 TextView.SetHorizontallyScrolling( false );
+                TextView.Gravity = GravityFlags.Top | GravityFlags.Left;
 
                 // create a dummy view that can take focus to de-select the text field
-                DummyView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
+                /*DummyView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 DummyView.Focusable = true;
                 DummyView.FocusableInTouchMode = true;
 
                 // let the dummy request focus so that the edit field doesn't get it and bring up the keyboard.
-                DummyView.RequestFocus();
+                DummyView.RequestFocus();*/
 
                 // use reflection to get a reference to the TextView's cursor resource
                 if ( CursorResource == null )
@@ -391,7 +392,7 @@ namespace Rock.Mobile
                 }
 
                 view.AddView( TextView );
-                view.AddView( DummyView );
+                //view.AddView( DummyView );
             }
 
             public override void RemoveAsSubview( object masterView )
@@ -403,7 +404,7 @@ namespace Rock.Mobile
                 }
 
                 view.RemoveView( TextView );
-                view.RemoveView( DummyView );
+                //view.RemoveView( DummyView );
             }
 
             public override void SizeToFit( )
@@ -426,6 +427,20 @@ namespace Rock.Mobile
                 }
             }
 
+            public override void BecomeFirstResponder( )
+            {
+                InputMethodManager imm = ( InputMethodManager )Rock.Mobile.PlatformSpecific.Android.Core.Context.GetSystemService( Android.Content.Context.InputMethodService );
+
+                //Activity activity = ( Activity )Rock.Mobile.PlatformSpecific.Android.Core.Context;
+                //imm.HideSoftInputFromWindow( activity.CurrentFocus.WindowToken, 0 );
+
+                TextView.FocusableInTouchMode = true;
+                TextView.RequestFocus( );
+
+                imm.ShowSoftInput( TextView, ShowFlags.Implicit );
+                //imm.ShowSoftInputFromInputMethod( TextView.WindowToken, 0 );
+            }
+
             public override void ResignFirstResponder( )
             {
                 // only allow this text edit to hide the keyboard if it's the text field with focus.
@@ -438,7 +453,7 @@ namespace Rock.Mobile
 
                     // yeild focus to the dummy view so the text field clears it's caret and the selected outline
                     TextView.ClearFocus( );
-                    DummyView.RequestFocus( );
+                    //DummyView.RequestFocus( );
                 }
             }
 
@@ -452,7 +467,7 @@ namespace Rock.Mobile
                 TextView.Measure( widthMeasureSpec, heightMeasureSpec );
             }
 
-            public override void AnimateOpen( )
+            public override void AnimateOpen( bool becomeFirstResponder )
             {
                 if ( Animating == false && Hidden == true )
                 {
@@ -488,6 +503,11 @@ namespace Rock.Mobile
                             // restore the original settings for dimensions
                             TextView.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
                             TextView.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+
+                            if( becomeFirstResponder == true )
+                            {
+                                BecomeFirstResponder( );
+                            }
                         } );
 
                     animator.Start( );

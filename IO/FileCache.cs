@@ -237,8 +237,9 @@ namespace Rock.Mobile.IO
                     return loadedObj;
                 }
             }
-            catch( Exception )
+            catch( Exception e )
             {
+                Console.WriteLine( "{0} failed to load. Exception {1}", filename, e );
             }
 
             return null;
