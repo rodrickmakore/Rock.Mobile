@@ -348,6 +348,26 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                 SetX( ScreenWidth );
             }
         }
+
+        public override bool DispatchTouchEvent(MotionEvent e)
+        {
+            // get the tapped position and the bannerPos's bounding box
+            PointF tappedPos = new PointF( e.GetX( ), e.GetY( ) );
+            RectangleF bannerBB = new RectangleF( BannerLayout.GetX( ), BannerLayout.GetY( ), BannerLayout.GetX( ) + BannerLayout.Width, BannerLayout.GetY( ) + BannerLayout.Height );
+
+            // if they tapped inside the banner, send the click notification
+            if ( bannerBB.Contains( tappedPos ) )
+            {
+                if ( Visibility == ViewStates.Visible )
+                {
+                    OnClickAction( null, null );
+                }
+            }
+
+            // either way dismiss the banner and let the touch input continue
+            Hide( );
+            return false;
+        }
     }
 
     public class Util

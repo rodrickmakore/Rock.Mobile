@@ -239,7 +239,11 @@ namespace Rock.Mobile.IO
             }
             catch( Exception e )
             {
-                Console.WriteLine( "{0} failed to load. Exception {1}", filename, e );
+                // only print the exception if it's something other than file not found.
+                if( e as FileNotFoundException == null )
+                {
+                    Console.WriteLine( "{0} failed to load. Exception {1}", filename, e );
+                }
             }
 
             return null;

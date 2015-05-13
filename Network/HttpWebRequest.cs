@@ -9,6 +9,7 @@ using RestSharp.Deserializers;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Linq;
 
 
 namespace Rock.Mobile
@@ -23,12 +24,92 @@ namespace Rock.Mobile
             const int RequestTimeoutMS = 15000;
 
             /// <summary>
+            /// Interface that allows us to store multiple result handlers of varying generic types
+            /// </summary>
+            internal interface IResultHandler
+            {
+                void Invoke( HttpStatusCode statusCode, string statusDesc, IRestResponse response );
+            }
+
+            // Define the request result object. This is responsible for calling back
+            // the appropriate delegate when the request is complete
+            internal class RequestResultObject<TModel> : IResultHandler where TModel : new( )
+            {
+                /// <summary>
+                /// The handler to call when the request is complete
+                /// </summary>
+                HttpRequest.RequestResult<TModel> ResultHandler { get; set; }
+
+                public RequestResultObject( HttpRequest.RequestResult<TModel> resultHandler )
+                {
+                    ResultHandler = resultHandler;
+                }
+
+                TModel Deserialize( IRestResponse response )
+                {
+                    string contentType = response.ContentType.ToLower( );
+                    if ( contentType.Contains( "application/json" ) || contentType.Contains( "text/json" ) )
+                    {
+                        JsonDeserializer deserializer = new JsonDeserializer();
+                        return (TModel)deserializer.Deserialize<TModel>( response );
+                    }
+
+                    if ( contentType.Contains( "application/xml" ) || contentType.Contains( "text/xml" ) )
+                    {
+                        XmlDeserializer deser = new XmlDeserializer();
+                        return (TModel) deser.Deserialize<TModel>( response );
+                    }
+
+                    throw new Exception( string.Format( "Unknown ContentType received from RestSharp. {0}", contentType ) );
+                }
+
+                public void Invoke( HttpStatusCode statusCode, string statusDesc, IRestResponse response )
+                {
+                    TModel obj = default(TModel);
+
+                    // if they want the actual RestResponse
+                    if ( typeof( TModel ) == typeof( RestResponse ) )
+                    {
+                        // just cast and return it.
+                        obj = (TModel)response;
+                    }
+                    // or if they wanted a particular type
+                    else
+                    {
+                        // either deserialize to that type
+                        if ( string.IsNullOrEmpty( response.ContentType ) == false )
+                        {
+                            // deserialize this ourselves according to our generic type.
+                            obj = Deserialize( response );
+                        }
+                        else
+                        {
+                            // or provide them with a new object of their desired type
+                            obj = new TModel();
+                        }
+                    }
+
+                    // exception or not, notify the caller of the desponse
+                    Rock.Mobile.Threading.Util.PerformOnUIThread( delegate
+                        { 
+                            ResultHandler( statusCode, 
+                                statusDesc,
+                                obj );
+                        } );
+                }
+            }
+
+
+            /// <summary>
             /// Common interface to allow different generics in the same queue
             /// </summary>
             internal interface IWebRequestObject
             {
                 void ProcessRequest( );
+                string GetRequestUrl( );
+                void AttachResultHandler( IResultHandler resultHandler );
             }
+
 
             /// <summary>
             /// Implementation of our request object. Stores the URL, request and handler to be executed later
@@ -47,9 +128,9 @@ namespace Rock.Mobile
                 RestRequest Request { get; set; }
 
                 /// <summary>
-                /// The handler to call when the request is complete
+                /// The handlers to call when the request is complete
                 /// </summary>
-                HttpRequest.RequestResult<TModel> ResultHandler { get; set; }
+                List<IResultHandler> ResultHandlers { get; set; }
 
                 /// <summary>
                 /// If relavant, the cookie container this request should use.
@@ -61,8 +142,21 @@ namespace Rock.Mobile
                 {
                     RequestUrl = requestUrl;
                     Request = request;
-                    ResultHandler = callback;
                     CookieContainer = cookieContainer;
+
+                    ResultHandlers = new List<IResultHandler>( );
+
+                    AttachResultHandler( new RequestResultObject<TModel>( callback ) );
+                }
+
+                public void AttachResultHandler( IResultHandler resultHandler )
+                {
+                    ResultHandlers.Add( resultHandler );
+                }
+
+                public string GetRequestUrl( )
+                {
+                    return RequestUrl;
                 }
 
                 public void ProcessRequest( )
@@ -79,36 +173,22 @@ namespace Rock.Mobile
                     #endif
 
                     // replace the existing json deserializer with Json.Net
-                    restClient.AddHandler( "application/json", new JsonDeserializer() );
+                    //restClient.AddHandler( "application/json", new JsonDeserializer() );
 
 
                     // don't wait longer than 15 seconds
                     Request.Timeout = RequestTimeoutMS;
 
-                    // if the TModel is RestResponse, that implies they want the actual response, and no parsing.
-                    if ( typeof( TModel ) == typeof( RestResponse ) )
-                    {
-                        IRestResponse response = restClient.Execute( Request );
+                    // execute the request and get the response
+                    IRestResponse response = restClient.Execute( Request );
 
-                        // exception or not, notify the caller of the desponse
-                        Rock.Mobile.Threading.Util.PerformOnUIThread( delegate
-                            { 
-                                ResultHandler( response != null ? response.StatusCode : HttpStatusCode.RequestTimeout, 
-                                    response != null ? response.StatusDescription : "Client has no connection.", 
-                                    (TModel)response );
-                            } );
-                    }
-                    else
+                    // now invoke each handler, and give it the response. It will manage deserializing according
+                    // to the type of wants.
+                    foreach ( IResultHandler handler in ResultHandlers )
                     {
-                        IRestResponse<TModel> response = restClient.Execute<TModel>( Request );
-
-                        // exception or not, notify the caller of the desponse
-                        Rock.Mobile.Threading.Util.PerformOnUIThread( delegate
-                            { 
-                                ResultHandler( response != null ? response.StatusCode : HttpStatusCode.RequestTimeout, 
-                                    response != null ? response.StatusDescription : "Client has no connection.", 
-                                    response != null ? response.Data : new TModel() );
-                            } );       
+                        handler.Invoke( response != null ? response.StatusCode : HttpStatusCode.RequestTimeout, 
+                            response != null ? response.StatusDescription : "Client has no connection.", 
+                            response );
                     }
                 }
             }
@@ -129,7 +209,13 @@ namespace Rock.Mobile
             /// </summary>
             System.Threading.Thread DownloadThread { get; set; }
 
-            EventWaitHandle WaitHandle { get; set; }
+            /// <summary>
+            /// Simply lets the download thread sleep while the queue is empty.
+            /// </summary>
+            /// <value>The queue process handle.</value>
+            EventWaitHandle QueueProcessHandle { get; set; }
+
+            EventWaitHandle RequestUpdateHandle { get; set; }
 
             public WebRequestManager( )
             {
@@ -139,18 +225,36 @@ namespace Rock.Mobile
                 DownloadThread = new System.Threading.Thread( ThreadProc );
                 DownloadThread.Start( );
 
-                WaitHandle = new EventWaitHandle( false, EventResetMode.AutoReset );
+                QueueProcessHandle = new EventWaitHandle( false, EventResetMode.AutoReset );
+                RequestUpdateHandle = new EventWaitHandle( true, EventResetMode.AutoReset );
             }
+
 
             /// <summary>
             /// The one entry point, this is where requests should be sent
             /// </summary>
-            public void PushRequest( IWebRequestObject requestObj )
+            public void TryPushRequest( IWebRequestObject requestObj, IResultHandler resultHandler )
             {
-                RequestQueue.Enqueue( requestObj );
+                // first, lock the queue
+                RequestUpdateHandle.WaitOne( );
 
-                Console.WriteLine( "Setting Wait Handle" );
-                WaitHandle.Set( );
+                // now we can be sure that it won't be pulled out and processed while we're trying to attach a handler.
+                IWebRequestObject currObj = RequestQueue.Where( r => r.GetRequestUrl( ) == requestObj.GetRequestUrl( ) ).SingleOrDefault( );
+                if ( currObj != null )
+                {
+                    Console.WriteLine( "{0} already requested. Not queueing.", currObj.GetRequestUrl( ) );
+                    currObj.AttachResultHandler( resultHandler );
+                }
+                else
+                {
+                    RequestQueue.Enqueue( requestObj );
+
+                    Console.WriteLine( "Setting Wait Handle" );
+                    QueueProcessHandle.Set( );
+                }
+
+                // notify the thread it's ok to pull out more queue objects
+                RequestUpdateHandle.Set( );
             }
 
             void ThreadProc( )
@@ -158,7 +262,7 @@ namespace Rock.Mobile
                 while ( true )
                 {
                     Console.WriteLine( "ThreadProc: Sleeping..." );
-                    WaitHandle.WaitOne( );
+                    QueueProcessHandle.WaitOne( );
                     Console.WriteLine( "ThreadProc: Waking for work" );
 
                     // while there are requests pending, process them
@@ -167,8 +271,10 @@ namespace Rock.Mobile
                         Console.WriteLine( "ThreadProc: Processing Request" );
 
                         // get the web request out of the queue
+                        RequestUpdateHandle.WaitOne( ); //Wait to make sure no other thread is using the Queue
                         IWebRequestObject requestObj = null;
-                        RequestQueue.TryDequeue( out requestObj );
+                        RequestQueue.TryDequeue( out requestObj ); //yank it out
+                        RequestUpdateHandle.Set( ); // all clear
 
                         if( requestObj != null )
                         {
@@ -229,7 +335,27 @@ namespace Rock.Mobile
             public void ExecuteAsync<TModel>( string requestUrl, RestRequest request, RequestResult<TModel> resultHandler ) where TModel : new( )
             {
                 WebRequestManager.WebRequestObject<TModel> requestObj = new WebRequestManager.WebRequestObject<TModel>( requestUrl, request, resultHandler, CookieContainer );
-                WebRequestManager.Instance.PushRequest( requestObj );
+
+                WebRequestManager.Instance.TryPushRequest( requestObj, new WebRequestManager.RequestResultObject<TModel>( resultHandler ) );
+
+                // don't allow duplicate URL requests in the queue. That will majorly bog things down.
+                // so, see if it's already there.
+                /*WebRequestManager.IWebRequestObject existingRequestObj = WebRequestManager.Instance.TryGetRequest( requestObj );
+
+                if ( existingRequestObj == null )
+                {
+                    WebRequestManager.Instance.TryPushRequest( requestObj, new WebRequestManager.RequestResultObject<TModel>( resultHandler ) );
+                }
+                else
+                {
+                    // before we allow this to be queued, make sure it isn't already in the queue.
+                    Console.WriteLine( "{0} already requested. Not queueing.", requestUrl );
+
+                    // attach this guy's caller
+                    // problem: Because the result is parsed in the RestResult invoker, 
+                    // this won't be compatible with requests that mix TModel and raw RestResponse
+                    existingRequestObj.AttachResultHandler(  );
+                }*/
             }
         }
 
@@ -296,4 +422,3 @@ namespace Rock.Mobile
         }
     }
 }
-
