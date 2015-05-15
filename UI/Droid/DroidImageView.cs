@@ -24,11 +24,14 @@ namespace Rock.Mobile
             protected Bitmap ImageRef { get; set; }
             protected uint _BackgroundColor { get; set; }
             protected uint _BorderColor { get; set; }
+            protected bool _ScaleForDPI { get; set; }
 
-            public DroidImageView( )
+            public DroidImageView( bool scaleForDPI )
             {
                 ImageView = new BorderedRectImageView( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 ImageView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+
+                _ScaleForDPI = scaleForDPI;
             }
 
             protected override void setImageScaleType( ScaleType scaleType )
@@ -76,7 +79,15 @@ namespace Rock.Mobile
 
             protected override void setImage( MemoryStream imageStream )
             {
-                ImageRef = BitmapFactory.DecodeStream( imageStream );
+                // if they requsted it, scale the image by the device's density so we get
+                // an image that isn't overly large.
+                BitmapFactory.Options decodeOptions = new BitmapFactory.Options( );
+                if ( _ScaleForDPI )
+                {
+                    decodeOptions.InSampleSize = (int)Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density;
+                }
+
+                ImageRef = BitmapFactory.DecodeStream( imageStream, null, decodeOptions );
 
                 ImageView.SetImageBitmap( ImageRef );
                 ImageView.LayoutParameters.Width = ImageRef.Width;
@@ -134,6 +145,11 @@ namespace Rock.Mobile
             protected override void setOpacity( float opacity )
             {
                 ImageView.Alpha = opacity;
+            }
+
+            protected override bool getScaleForDPI( )
+            {
+                return _ScaleForDPI;    
             }
 
             protected override float getZPosition( )

@@ -261,6 +261,13 @@ namespace Rock.Mobile.PlatformSpecific.Android.Graphics
                 int width = MeasureSpec.GetSize( widthMeasureSpec );
                 int height = (int)System.Math.Ceiling( width * ( (float)Drawable.IntrinsicHeight / (float)Drawable.IntrinsicWidth ) );
 
+                // respect the requested limits to width / height
+                // not sure if I shuld tho, doesn't this defeat hte purpose of a height wrapping thingy?
+
+                //width = System.Math.Max( this.MinimumWidth, System.Math.Min( width, this.MaxWidth ) );
+
+                //height = System.Math.Max( this.MinimumHeight, System.Math.Min( height, this.MaxHeight ) );
+
                 SetMeasuredDimension( width, height );
             }
             else

@@ -11,6 +11,7 @@ using Rock.Mobile.PlatformSpecific.Android.Graphics;
 using Rock.Mobile.Animation;
 using System.Collections.Generic;
 using Android.Content;
+using Android;
 
 namespace Rock.Mobile.PlatformSpecific.Android.UI
 {
@@ -92,7 +93,6 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
         WebView WebView { get; set; }
         ProgressBar ProgressBar { get; set; }
-        Button CloseButton { get; set; }
 
         public delegate void PageLoaded( bool result, string forwardUrl );
         PageLoaded PageLoadedHandler { get; set; }
@@ -106,7 +106,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
             CookieManager.Instance.RemoveAllCookie( );
 
-            WebView = new WebView( Rock.Mobile.PlatformSpecific.Android.Core.Context );
+            WebView = new WebView( context );
             WebView.Settings.SaveFormData = false;
 
             WebView.ClearFormData( );
@@ -122,7 +122,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             WebView.HorizontalScrollBarEnabled = true;
             AddView( WebView );
 
-            ProgressBar = new ProgressBar( Rock.Mobile.PlatformSpecific.Android.Core.Context );
+            ProgressBar = new ProgressBar( context );
             ProgressBar.Indeterminate = true;
             ProgressBar.SetBackgroundColor( Rock.Mobile.UI.Util.GetUIColor( 0 ) );
             ProgressBar.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
@@ -384,6 +384,26 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
                     complete( );
                 } );
             viewAnimator.Start( );
+        }
+
+        public static void FadeView( View view, bool fadeIn, SimpleAnimator.AnimationComplete onComplete )
+        {
+            float startAlpha = fadeIn == true ? 0.00f : 1.00f;
+            float endAlpha = fadeIn == true ? 1.00f : 0.00f;
+
+            SimpleAnimator_Float floatAnim = new SimpleAnimator_Float( startAlpha, endAlpha, .15f, 
+                                                 delegate(float percent, object value )
+                {
+                    view.Alpha = (float)value;
+                }, 
+                                                 delegate
+                {
+                    if ( onComplete != null )
+                    {
+                        onComplete( );
+                    }
+                } );
+            floatAnim.Start( );
         }
     }
 }

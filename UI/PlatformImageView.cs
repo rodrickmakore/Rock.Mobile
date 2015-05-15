@@ -17,14 +17,14 @@ namespace Rock.Mobile
                 ScaleAspectFit
             }
             
-            public static PlatformImageView Create( )
+            public static PlatformImageView Create( bool scaleForDPI )
             {
                 #if __IOS__
-                return new iOSImageView( );
+                return new iOSImageView( scaleForDPI );
                 #endif
 
                 #if __ANDROID__
-                return new DroidImageView( );
+                return new DroidImageView( scaleForDPI );
                 #endif
             }
 
@@ -48,6 +48,12 @@ namespace Rock.Mobile
             }
             protected abstract float getCornerRadius( );
             protected abstract void setCornerRadius( float width );
+
+            public bool ScaleForDPI
+            {
+                get { return getScaleForDPI( ); }
+            }
+            protected abstract bool getScaleForDPI( );
 
             public MemoryStream Image
             {

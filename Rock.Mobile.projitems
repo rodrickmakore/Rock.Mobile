@@ -89,6 +89,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Droid\DroidImageView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\String.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IO\AssetConvert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)UI\.gitignore" />

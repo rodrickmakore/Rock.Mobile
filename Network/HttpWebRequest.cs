@@ -337,25 +337,6 @@ namespace Rock.Mobile
                 WebRequestManager.WebRequestObject<TModel> requestObj = new WebRequestManager.WebRequestObject<TModel>( requestUrl, request, resultHandler, CookieContainer );
 
                 WebRequestManager.Instance.TryPushRequest( requestObj, new WebRequestManager.RequestResultObject<TModel>( resultHandler ) );
-
-                // don't allow duplicate URL requests in the queue. That will majorly bog things down.
-                // so, see if it's already there.
-                /*WebRequestManager.IWebRequestObject existingRequestObj = WebRequestManager.Instance.TryGetRequest( requestObj );
-
-                if ( existingRequestObj == null )
-                {
-                    WebRequestManager.Instance.TryPushRequest( requestObj, new WebRequestManager.RequestResultObject<TModel>( resultHandler ) );
-                }
-                else
-                {
-                    // before we allow this to be queued, make sure it isn't already in the queue.
-                    Console.WriteLine( "{0} already requested. Not queueing.", requestUrl );
-
-                    // attach this guy's caller
-                    // problem: Because the result is parsed in the RestResult invoker, 
-                    // this won't be compatible with requests that mix TModel and raw RestResponse
-                    existingRequestObj.AttachResultHandler(  );
-                }*/
             }
         }
 

@@ -18,11 +18,14 @@ namespace Rock.Mobile
         public class iOSImageView : PlatformImageView
         {
             protected UIImageView ImageView { get; set; }
+            protected bool _ScaleForDPI { get; set; }
 
-            public iOSImageView( )
+            public iOSImageView( bool scaleForDPI )
             {
                 ImageView = new UIImageView( );
                 ImageView.Layer.AnchorPoint = new PointF( 0, 0 );
+
+                _ScaleForDPI = scaleForDPI;
             }
 
             protected override void setImageScaleType(ScaleType scaleType)
@@ -63,7 +66,15 @@ namespace Rock.Mobile
             protected override void setImage( MemoryStream imageStream )
             {
                 NSData imageData = NSData.FromStream( imageStream );
-                ImageView.Image = new UIImage( imageData, UIKit.UIScreen.MainScreen.Scale );
+
+                if ( _ScaleForDPI == true )
+                {
+                    ImageView.Image = new UIImage( imageData, UIKit.UIScreen.MainScreen.Scale );
+                }
+                else
+                {
+                    ImageView.Image = new UIImage( imageData );
+                }
             }
 
             protected override void setBackgroundColor( uint backgroundColor )
@@ -112,6 +123,11 @@ namespace Rock.Mobile
             protected override void setOpacity( float opacity )
             {
                 ImageView.Layer.Opacity = opacity;
+            }
+
+            protected override bool getScaleForDPI( )
+            {
+                return _ScaleForDPI;    
             }
 
             protected override float getZPosition( )

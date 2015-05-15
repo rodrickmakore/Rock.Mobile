@@ -38,7 +38,7 @@ namespace Rock.Mobile.IO
 
         System.Collections.Hashtable CacheMap { get; set; }
 
-        object locker = new object();
+        private object locker = new object();
 
         FileCache( )
         {
@@ -132,7 +132,7 @@ namespace Rock.Mobile.IO
 
                     // if it's older than our expiration time, delete it
                     TimeSpan deltaTime = ( DateTime.Now - entryValue );
-                    if ( DateTime.Now >= entryValue || forceEraseAll == true)
+                    if ( DateTime.Now >= entryValue || forceEraseAll == true )
                     {
                         // delete the entry
                         File.Delete( CachePath + "/" + entry.Key );
@@ -161,7 +161,7 @@ namespace Rock.Mobile.IO
         {
             // sync point so we don't read multiple times at once.
             // Note: If we ever need to support multiple threads reading from the cache at once, we'll need
-            // a table to hash multiple locks per filename
+            // a table to hash multiple locks per filename. This serializes all file loads across all threads.
             lock ( locker )
             {
                 bool result = false;
@@ -216,7 +216,30 @@ namespace Rock.Mobile.IO
 
         public bool FileExists( string filename )
         {
-            return File.Exists( CachePath + "/" + filename );
+            // get our lock
+            lock ( locker )
+            {
+                // first make sure it's in our cahce. If not,
+                // we want to consider it not existing. It was orphaned.
+                // (Maybe we crashed before we could save?)
+                if ( CacheMap.ContainsKey( filename ) )
+                {
+                    // validate it does exist on disk
+                    if ( File.Exists( CachePath + "/" + filename ) )
+                    {
+                        // and return
+                        return true;
+                    }
+                    else
+                    {
+                        // otherwise, it didn't exist on disk, but
+                        // was somehow in our cache. Get rid of it.
+                        CacheMap.Remove( filename );
+                    }
+                }
+
+                return false;
+            }
         }
 
         public object LoadFile( string filename )
@@ -240,9 +263,10 @@ namespace Rock.Mobile.IO
             catch( Exception e )
             {
                 // only print the exception if it's something other than file not found.
-                if( e as FileNotFoundException == null )
+                if ( e as FileNotFoundException == null )
                 {
-                    Console.WriteLine( "{0} failed to load. Exception {1}", filename, e );
+                    Console.WriteLine( "{0} failed to load. Exception {1}. Removing from Cache.", filename, e );
+                    RemoveFile( filename );
                 }
             }
 
@@ -251,9 +275,13 @@ namespace Rock.Mobile.IO
 
         public void RemoveFile( string filename )
         {
-            // delete the entry
-            File.Delete( CachePath + "/" + filename );
-            CacheMap.Remove( filename );
+            // take our lock
+            lock ( locker )
+            {
+                // delete the entry
+                File.Delete( CachePath + "/" + filename );
+                CacheMap.Remove( filename );
+            }
         }
 
         public delegate void ImageDownloaded( string imageUrl, string cachedFilename, bool result );
@@ -271,7 +299,7 @@ namespace Rock.Mobile.IO
                     {
                         bool result = false;
 
-                        if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
+                        if ( model != null && Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
                         {
                             // write it to cache
                             MemoryStream imageBuffer = new MemoryStream( model );
