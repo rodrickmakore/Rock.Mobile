@@ -53,7 +53,7 @@ namespace Rock.Mobile
 
             public override void TouchesBegan( )
             {
-                Console.WriteLine( "TouchesBegan (OnDown)" );
+                Rock.Mobile.Util.Debug.WriteLine( "TouchesBegan (OnDown)" );
 
                 foreach(CardValueAnimator animator in ActiveAnimators )
                 {
@@ -70,20 +70,20 @@ namespace Rock.Mobile
 
                 if( IsPanning == true )
                 {
-                    //Console.WriteLine( "Was panning. Don't call base.TouchesEnded" );
+                    //Rock.Mobile.Util.Debug.WriteLine( "Was panning. Don't call base.TouchesEnded" );
                     IsPanning = false;
                     base.OnPanGesture( PanGestureState.Ended, new PointF( 0, 0 ), new PointF( 0, 0 ) );
                 }
                 else
                 {
-                    //Console.WriteLine( "TouchesEnded" );
+                    //Rock.Mobile.Util.Debug.WriteLine( "TouchesEnded" );
                     base.TouchesEnded();
                 }
             }
 
             public bool OnFling( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY )
             {
-                //Console.WriteLine( "OnFling: distanceX {0}", velocityX );
+                //Rock.Mobile.Util.Debug.WriteLine( "OnFling: distanceX {0}", velocityX );
 
                 IsPanning = true;
                 return false;
@@ -91,7 +91,7 @@ namespace Rock.Mobile
 
             public bool OnScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY )
             {
-                //Console.WriteLine( "OnScroll: distanceX {0}", distanceX );
+                //Rock.Mobile.Util.Debug.WriteLine( "OnScroll: distanceX {0}", distanceX );
 
                 // flip X so it's consistent with ios, where right is positive.
                 distanceX = -distanceX;
@@ -145,7 +145,7 @@ namespace Rock.Mobile
 
                 //UpdateCardPositions( );
 
-                //Console.WriteLine( "Animation Stopped" );
+                //Rock.Mobile.Util.Debug.WriteLine( "Animation Stopped" );
             }
         }
     }

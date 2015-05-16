@@ -62,7 +62,7 @@ namespace Rock.Mobile
 
                 if( printResult == true )
                 {
-                    Console.WriteLine( string.Format( "{0} completed in {1} ms", name, sample.Timer.Elapsed.TotalMilliseconds ) ); 
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} completed in {1} ms", name, sample.Timer.Elapsed.TotalMilliseconds ) ); 
                 }
                 return sample.Timer.ElapsedMilliseconds;
             }

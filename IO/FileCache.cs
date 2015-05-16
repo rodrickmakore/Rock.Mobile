@@ -121,7 +121,7 @@ namespace Rock.Mobile.IO
         {
             lock ( locker )
             {
-                Console.WriteLine( "Running cleanup" );
+                Rock.Mobile.Util.Debug.WriteLine( "Running cleanup" );
 
                 List< DictionaryEntry > expiredItems = new List< DictionaryEntry >( );
 
@@ -139,11 +139,11 @@ namespace Rock.Mobile.IO
 
                         expiredItems.Add( entry );
 
-                        Console.WriteLine( "{0} expired. Age: {1} minutes old.", (string)entry.Key, deltaTime.Minutes );
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} expired. Age: {1} minutes old.", (string)entry.Key, deltaTime.Minutes ) );
                     }
                     else
                     {
-                        Console.WriteLine( "{0} still fresh NOT REMOVING.", (string)entry.Key );
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} still fresh NOT REMOVING.", (string)entry.Key ) );
                     }
                 }
 
@@ -153,7 +153,7 @@ namespace Rock.Mobile.IO
                     CacheMap.Remove( entry.Key );
                 }
 
-                Console.WriteLine( "Cleanup complete" );
+                Rock.Mobile.Util.Debug.WriteLine( "Cleanup complete" );
             }
         }
 
@@ -182,11 +182,11 @@ namespace Rock.Mobile.IO
                         if( CacheMap.Contains( filename ) )
                         {
                             CacheMap.Remove( filename );
-                            Console.WriteLine( "{0} is already cached. Updating time to {1}", filename, DateTime.Now );
+                            Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} is already cached. Updating time to {1}", filename, DateTime.Now ) );
                         }
                         else
                         {
-                            Console.WriteLine( "Adding {0} to cache. Time {1}", filename, DateTime.Now );
+                            Rock.Mobile.Util.Debug.WriteLine( string.Format( "Adding {0} to cache. Time {1}", filename, DateTime.Now ) );
                         }
 
                         if( expirationTime.HasValue == false )
@@ -265,7 +265,7 @@ namespace Rock.Mobile.IO
                 // only print the exception if it's something other than file not found.
                 if ( e as FileNotFoundException == null )
                 {
-                    Console.WriteLine( "{0} failed to load. Exception {1}. Removing from Cache.", filename, e );
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} failed to load. Exception {1}. Removing from Cache.", filename, e ) );
                     RemoveFile( filename );
                 }
             }

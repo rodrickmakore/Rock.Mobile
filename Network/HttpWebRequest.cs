@@ -242,14 +242,14 @@ namespace Rock.Mobile
                 IWebRequestObject currObj = RequestQueue.Where( r => r.GetRequestUrl( ) == requestObj.GetRequestUrl( ) ).SingleOrDefault( );
                 if ( currObj != null )
                 {
-                    Console.WriteLine( "{0} already requested. Not queueing.", currObj.GetRequestUrl( ) );
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} already requested. Not queueing.", currObj.GetRequestUrl( ) ) );
                     currObj.AttachResultHandler( resultHandler );
                 }
                 else
                 {
                     RequestQueue.Enqueue( requestObj );
 
-                    Console.WriteLine( "Setting Wait Handle" );
+                    Rock.Mobile.Util.Debug.WriteLine( "Setting Wait Handle" );
                     QueueProcessHandle.Set( );
                 }
 
@@ -261,14 +261,14 @@ namespace Rock.Mobile
             {
                 while ( true )
                 {
-                    Console.WriteLine( "ThreadProc: Sleeping..." );
+                    Rock.Mobile.Util.Debug.WriteLine( "ThreadProc: Sleeping..." );
                     QueueProcessHandle.WaitOne( );
-                    Console.WriteLine( "ThreadProc: Waking for work" );
+                    Rock.Mobile.Util.Debug.WriteLine( "ThreadProc: Waking for work" );
 
                     // while there are requests pending, process them
                     while ( RequestQueue.Count != 0 )
                     {
-                        Console.WriteLine( "ThreadProc: Processing Request" );
+                        Rock.Mobile.Util.Debug.WriteLine( "ThreadProc: Processing Request" );
 
                         // get the web request out of the queue
                         RequestUpdateHandle.WaitOne( ); //Wait to make sure no other thread is using the Queue

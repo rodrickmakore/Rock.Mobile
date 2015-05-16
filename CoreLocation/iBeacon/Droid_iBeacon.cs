@@ -71,7 +71,7 @@ namespace Rock.Mobile
                 {
                     if( Region != null )
                     {
-                        Console.WriteLine( "Warning: NotifyOnEntry being set, but not supported on Android" );
+                        Rock.Mobile.Util.Debug.WriteLine( "Warning: NotifyOnEntry being set, but not supported on Android" );
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace Rock.Mobile
                 {
                     if( Region != null )
                     {
-                        Console.WriteLine( "Warning: NotifyOnExit being set, but not supported on Android" );
+                        Rock.Mobile.Util.Debug.WriteLine( "Warning: NotifyOnExit being set, but not supported on Android" );
                     }
                 }
 
@@ -99,7 +99,7 @@ namespace Rock.Mobile
                 {
                     if( Region != null )
                     {
-                        Console.WriteLine( "Warning: NotifyEntryStateOnDisplay being set, but not supported on Android" );
+                        Rock.Mobile.Util.Debug.WriteLine( "Warning: NotifyEntryStateOnDisplay being set, but not supported on Android" );
                     }
                 }
 
@@ -410,7 +410,7 @@ namespace Rock.Mobile
                     {
                         DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
 
-                        Console.WriteLine( "START ranging beacons with UUID: " + droidRegion.Region.ProximityUuid );
+                        Rock.Mobile.Util.Debug.WriteLine( "START ranging beacons with UUID: " + droidRegion.Region.ProximityUuid );
                         IBeaconManager.StartRangingBeaconsInRegion( droidRegion.Region );
                     }
                     else
@@ -426,7 +426,7 @@ namespace Rock.Mobile
                     {
                         DroidBeaconRegion droidRegion = region as DroidBeaconRegion;
 
-                        Console.WriteLine( "Stop ranging beacons with UUID: " + droidRegion.Region.ProximityUuid );
+                        Rock.Mobile.Util.Debug.WriteLine( "Stop ranging beacons with UUID: " + droidRegion.Region.ProximityUuid );
                         IBeaconManager.StopRangingBeaconsInRegion( droidRegion.Region );
                     }
                     else

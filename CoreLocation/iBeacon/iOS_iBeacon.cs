@@ -285,7 +285,7 @@ namespace Rock.Mobile
                 {
                     iOSBeaconRegion iosRegion = region as iOSBeaconRegion;
 
-                    Console.WriteLine( "START ranging beacons with UUID: " + iosRegion.CLBeaconRegion.ProximityUuid.AsString( ) );
+                    Rock.Mobile.Util.Debug.WriteLine( "START ranging beacons with UUID: " + iosRegion.CLBeaconRegion.ProximityUuid.AsString( ) );
                     CLLocationManager.StartRangingBeacons( iosRegion.CLBeaconRegion );
                 }
 
@@ -293,7 +293,7 @@ namespace Rock.Mobile
                 {
                     iOSBeaconRegion iosRegion = region as iOSBeaconRegion;
 
-                    Console.WriteLine( "STOP ranging beacons with UUID: " + iosRegion.CLBeaconRegion.ProximityUuid.AsString( ) );
+                    Rock.Mobile.Util.Debug.WriteLine( "STOP ranging beacons with UUID: " + iosRegion.CLBeaconRegion.ProximityUuid.AsString( ) );
                     CLLocationManager.StopRangingBeacons( iosRegion.CLBeaconRegion );
                 }
 

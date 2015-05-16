@@ -27,6 +27,27 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 , null );
             lastNameAnimator.Start( );
         }
+
+        public static void FadeView( UIView view, bool fadeIn, SimpleAnimator.AnimationComplete onComplete )
+        {
+            float startAlpha = fadeIn == true ? 0.00f : 1.00f;
+            float endAlpha = fadeIn == true ? 1.00f : 0.00f;
+
+            SimpleAnimator_Float floatAnim = new SimpleAnimator_Float( startAlpha, endAlpha, 4.15f, 
+                delegate(float percent, object value )
+                {
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "Alpha {0}", view.Layer.Opacity ) );
+                    view.Layer.Opacity = (float)value;
+                }, 
+                delegate
+                {
+                    if ( onComplete != null )
+                    {
+                        onComplete( );
+                    }
+                } );
+            floatAnim.Start( );
+        }
     }
     
     public class WebLayout
@@ -342,7 +363,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             {
                 // we're adding text to the END of the string. 
                 // Easy, we don't need to do anything to the caret
-                Console.WriteLine( "Appending" );
+                Rock.Mobile.Util.Debug.WriteLine( "Appending" );
 
                 // just append the new character(s)
                 newString = textField.Text.Insert( (int)range.Location, replacementString );
@@ -358,7 +379,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             {
                 // this means our text is going to shrink. No matter what we started with, we'll
                 // end up with less
-                Console.WriteLine( "Deleting" );
+                Rock.Mobile.Util.Debug.WriteLine( "Deleting" );
 
                 // See if we need to adjust the positioning to remove a number.
                 string deleteString = textField.Text.Substring( (int)range.Location, (int)range.Length );
@@ -368,7 +389,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 // delete the number nearest their cursor
                 if ( hasNumbers == false )
                 {
-                    Console.WriteLine( "No number for delete. Finding nearest.", hasNumbers );
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "No number for delete. Finding nearest.", hasNumbers ) );
 
                     // find the number they intended to delete
                     int nearestNumber = FindNearestNumber( textField.Text, (int)range.Location, -1 );
@@ -408,7 +429,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 // We're INSERTING text to somewhere within the string.
                 if ( range.Length == 0 )
                 {
-                    Console.WriteLine( "Inserting" );
+                    Rock.Mobile.Util.Debug.WriteLine( "Inserting" );
                     if ( range.Length > 0 )
                     {
                         // if there's a length, part of the existing string is being replaced
@@ -440,7 +461,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 {
                     // don't handle craziness of pasting WITHIN the field. Let them do that
                     // and then adjust it themselves.
-                    Console.WriteLine( "Pasting in. Ignoring" );
+                    Rock.Mobile.Util.Debug.WriteLine( "Pasting in. Ignoring" );
                     return true;
                 }
             }

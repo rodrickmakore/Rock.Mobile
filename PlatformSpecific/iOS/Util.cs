@@ -2,6 +2,9 @@
 using System;
 using Foundation;
 using CoreGraphics;
+using UIKit;
+using System.IO;
+using Rock.Mobile.IO;
 
 namespace Rock.Mobile.PlatformSpecific.Util
 {
@@ -38,6 +41,33 @@ namespace Rock.Mobile.PlatformSpecific.Util
         public static System.Drawing.RectangleF ToRectF( this CGRect rect )
         {
             return new System.Drawing.RectangleF( (float) rect.X, (float) rect.Y, (float) rect.Width, (float) rect.Height );
+        }
+    }
+
+    public static class ImageLoader
+    {
+        public static bool Load( string filename, ref UIImage rImage )
+        {
+            bool success = false;
+
+            MemoryStream imageStream = (MemoryStream)FileCache.Instance.LoadFile( filename );
+            if ( imageStream != null )
+            {
+                try
+                {
+                    NSData imageData = NSData.FromStream( imageStream );
+                    rImage = new UIImage( imageData, UIScreen.MainScreen.Scale );
+                    success = true;
+                }
+                catch ( Exception )
+                {
+                    FileCache.Instance.RemoveFile( filename );
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "Image {0} was corrupt. Removing.", filename ) );
+                }
+                imageStream.Dispose( );
+            }
+
+            return success;
         }
     }
 }

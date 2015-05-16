@@ -36,7 +36,7 @@ namespace Rock.Mobile
 
                 public override void OnOrientationChanged(int orientation)
                 {
-                    System.Console.WriteLine( "Orientation changed" );
+                    Rock.Mobile.Util.Debug.WriteLine( "Orientation changed" );
 
                     for ( int i = 0; i < Android.Hardware.Camera.NumberOfCameras; i++ )
                     {

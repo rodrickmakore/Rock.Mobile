@@ -189,7 +189,7 @@ namespace Rock.Mobile
                             PanDir = 1;
                         }
 
-                        //Console.WriteLine( "Delta Pan: {0}, {1}", deltaPan, filteredPan );
+                        //Rock.Mobile.Util.Debug.WriteLine( "Delta Pan: {0}, {1}", deltaPan, filteredPan );
 
                         // Update the positions of the cards
                         TryPanCards( deltaPan );
@@ -236,7 +236,7 @@ namespace Rock.Mobile
                 // will NOT be called if the user invoked the pan gesture. (which is a good thing)
                 AnimateCardsToNeutral( );
 
-                //Console.WriteLine( "Touches Ended" );
+                //Rock.Mobile.Util.Debug.WriteLine( "Touches Ended" );
             }
 
             /// <summary>

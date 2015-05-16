@@ -59,7 +59,7 @@ namespace Rock.Mobile
 
             public void iOSPanGesture( UIPanGestureRecognizer obj)
             {
-                Console.WriteLine( "Panning" );
+                Rock.Mobile.Util.Debug.WriteLine( "Panning" );
 
                 // get the required data from the gesture and call our base function
                 CGPoint currVelocity = obj.VelocityInView( (UIView)ParentView );
@@ -138,7 +138,7 @@ namespace Rock.Mobile
 
             public override void TouchesBegan( )
             {
-                Console.WriteLine( "Touches Began" );
+                Rock.Mobile.Util.Debug.WriteLine( "Touches Began" );
 
                 CommitCardPositions( );
             }
@@ -147,7 +147,7 @@ namespace Rock.Mobile
             {
                 UpdateCardPositions( );
 
-                Console.WriteLine( "Touches Ended" );
+                Rock.Mobile.Util.Debug.WriteLine( "Touches Ended" );
 
                 base.TouchesEnded();
             }
@@ -200,7 +200,7 @@ namespace Rock.Mobile
                 if( finished == true )
                 {
                     Animating = false;
-                    //Console.WriteLine( "Animation Stopped" );
+                    //Rock.Mobile.Util.Debug.WriteLine( "Animation Stopped" );
                 }
             }
         }

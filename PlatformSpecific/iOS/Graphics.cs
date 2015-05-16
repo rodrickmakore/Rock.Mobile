@@ -48,7 +48,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Graphics
             }
             else
             {
-                Console.WriteLine( "Already Loaded" );
+                Rock.Mobile.Util.Debug.WriteLine( "Already Loaded" );
             }
 
             return uiFont;

@@ -33,7 +33,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.Util
                         }
                         else
                         {
-                            Console.WriteLine( "ASYNCLOAD ERROR: Failed to load image {0}", imageName );
+                            Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
                         }
 
                     }
@@ -46,13 +46,13 @@ namespace Rock.Mobile.PlatformSpecific.Android.Util
                             imageBmp = BitmapFactory.DecodeStream( assetStream, null, decodeOptions );
                             if( imageBmp == null )
                             {
-                                Console.WriteLine( "ASYNCLOAD ERROR: Image loaded null. {0}", imageName);
+                                Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Image loaded null. {0}", imageName ) );
                             }
                             assetStream.Dispose( );
                         }
                         else
                         {
-                            Console.WriteLine( "ASYNCLOAD ERROR: Failed to load image {0}", imageName );
+                            Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
                         }
                     }
 
