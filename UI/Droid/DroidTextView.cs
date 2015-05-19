@@ -55,7 +55,7 @@ namespace Rock.Mobile
             public DroidTextView( )
             {
                 TextView = new BorderedRectEditText( Rock.Mobile.PlatformSpecific.Android.Core.Context );
-                TextView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                TextView.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 TextView.SetScrollContainer( true );
                 TextView.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
                 TextView.SetHorizontallyScrolling( false );
@@ -374,7 +374,7 @@ namespace Rock.Mobile
                 // if scaling is turned on, restore the content wrapping
                 if( scale == true )
                 {
-                    TextView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                    TextView.LayoutParameters = new RelativeLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
                 }
             }
 
@@ -414,6 +414,8 @@ namespace Rock.Mobile
                 // update its width
                 TextView.SetMinWidth( TextView.MeasuredWidth );
                 TextView.SetMaxWidth( TextView.MeasuredWidth );
+
+                TextView.LayoutParameters.Width = TextView.MeasuredWidth;
 
                 // set the height which will include the wrapped lines
                 if( mScaleHeightForText == false )
@@ -501,8 +503,8 @@ namespace Rock.Mobile
                             Animating = false;
 
                             // restore the original settings for dimensions
-                            TextView.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
-                            TextView.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Width = RelativeLayout.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Height = RelativeLayout.LayoutParams.WrapContent;
 
                             if( becomeFirstResponder == true )
                             {
@@ -545,8 +547,8 @@ namespace Rock.Mobile
                             Animating = false;
 
                             // restore the original settings for dimensions
-                            TextView.LayoutParameters.Width = ViewGroup.LayoutParams.WrapContent;
-                            TextView.LayoutParameters.Height = ViewGroup.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Width = RelativeLayout.LayoutParams.WrapContent;
+                            TextView.LayoutParameters.Height = RelativeLayout.LayoutParams.WrapContent;
                         } );
 
                     animator.Start( );

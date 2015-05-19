@@ -850,10 +850,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             UIView.SetAnimationDuration (UIKeyboard.AnimationDurationFromNotification (notification));
             UIView.SetAnimationCurve ((UIViewAnimationCurve)UIKeyboard.AnimationCurveFromNotification (notification));
 
-            // Check if the keyboard is becoming visible.
-            // Sometimes iOS is kind enough to send us this notification 3 times in a row, so make sure
-            // we haven't already handled it.
-            if( notification.Name == UIKeyboard.WillShowNotification && DisplayingKeyboard == false )
+            // JHM 5-18-15: Don't ignore the show notification if we think we're showing the keyboard.
+            // Instead, we'll simply 'reset' our potitioning. This is important in iOS 8
+            // in case they toggle the little "tips" panel open / closed
+            if( notification.Name == UIKeyboard.WillShowNotification )
             {
                 DisplayingKeyboard = true;
 
@@ -866,13 +866,13 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 CGRect keyboardFrame = UIKeyboard.FrameEndFromNotification (notification);
                 keyboardFrame = ParentView.ConvertRectToView( keyboardFrame, null );
 
-                // first, get the bottom point of the visible area.
-                Edit_VisibleAreaWithKeyboardBot = ParentView.Bounds.Height - keyboardFrame.Height;
+                // first, get the bottom point of the visible area. (Reduce the visible area slightly so we don't butt RIGHT against the textView)
+                Edit_VisibleAreaWithKeyboardBot = (ParentView.Bounds.Height - keyboardFrame.Height) * .98f;
 
                 // now get the dist between the bottom of the visible area and the text field (text field's pos also changes as we scroll)
                 MaintainEditTextVisibility( );
             }
-            else if ( DisplayingKeyboard == true )
+            else if ( notification.Name == UIKeyboard.WillHideNotification )
             {
                 // get the keyboard frame and transform it into our view's space
                 CGRect keyboardFrame = UIKeyboard.FrameBeginFromNotification (notification);
@@ -908,6 +908,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public void OnTextFieldDidBeginEditing( NSNotification notification )
         {
             Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
+            MaintainEditTextVisibility( );
         }
 
         public void OnTextFieldChanged( NSNotification notification )

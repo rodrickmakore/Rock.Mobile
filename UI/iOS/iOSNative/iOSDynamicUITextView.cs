@@ -13,7 +13,7 @@ namespace Rock.Mobile
     namespace UI
     {
         namespace iOSNative
-        {
+        {            
             /// <summary>
             /// A subclassed text view that grows vertically as text is added.
             /// </summary>
@@ -102,7 +102,7 @@ namespace Rock.Mobile
 
                             if( Animating == false )
                             {
-                                NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
+                                NaturalSize = new CGSize( base.Bounds.Width, base.Bounds.Height );
                             }
                         }
                     }
@@ -208,7 +208,7 @@ namespace Rock.Mobile
                         else
                         {
                             base.Bounds = new CGRect( value.X, value.Y, value.Width, ScaleHeightForText ? ContentSize.Height : value.Height );
-                            NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
+                            NaturalSize = new CGSize( base.Bounds.Width, base.Bounds.Height );
                         }
 
                         PlaceholderLabel.Bounds = base.Bounds;
@@ -229,7 +229,7 @@ namespace Rock.Mobile
 
                         if( Animating == false )
                         {
-                            NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
+                            NaturalSize = new CGSize( base.Bounds.Width, base.Bounds.Height );
                         }
                     }
                 }
@@ -262,23 +262,13 @@ namespace Rock.Mobile
                         // if scaling is on.
                         if( ScaleHeightForText && Animating == false )
                         {
-                            // do it via animation for a nice growth effect
-                            Animating = true;
-                            SizeF newSize = new SizeF( (float) base.Bounds.Width, (float) ContentSize.Height );
+                            base.Bounds = new CGRect( 0, 0, base.Bounds.Width, ContentSize.Height );
 
-                            SimpleAnimator_SizeF animator = new SimpleAnimator_SizeF( base.Bounds.Size.ToSizeF( ), newSize, .10f, 
-                                delegate(float percent, object value )
-                                {
-                                    SizeF currSize = (SizeF)value;
-                                    base.Bounds = new CGRect( 0, 0, currSize.Width, currSize.Height );
-                                },
-                                delegate
-                                {
-                                    Animating = false;
-                                    NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
-                                } );
+                            SizeToFit( );
 
-                            animator.Start( );
+                            NaturalSize = base.Bounds.Size;
+
+                            SetContentOffset( CGPoint.Empty, false );
                         }
 
                         // reveal the placeholder only when text is gone.
@@ -302,7 +292,7 @@ namespace Rock.Mobile
 
                         if( Animating == false )
                         {
-                            NaturalSize = new CGSize( Bounds.Width, Bounds.Height );
+                            NaturalSize = new CGSize( base.Bounds.Width, base.Bounds.Height );
                         }
                     }
                 }
