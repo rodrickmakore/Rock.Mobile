@@ -119,6 +119,14 @@ namespace Rock.Mobile
 
             public abstract void AnimateOpen( bool becomeFirstResponder );
             public abstract void AnimateClosed( );
+
+            public delegate void EditCallback( PlatformTextView textView );
+
+            protected EditCallback OnEditCallback { get; set; }
+            public void SetOnEditCallback( EditCallback onEditCallback )
+            {
+                OnEditCallback = onEditCallback;
+            }
         }
     }
 }

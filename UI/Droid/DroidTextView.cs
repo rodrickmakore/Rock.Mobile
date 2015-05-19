@@ -20,6 +20,43 @@ namespace Rock.Mobile
     namespace UI
     {
         /// <summary>
+        /// Subclassed length filter to allow us to prevent the TextView
+        /// from growing larger than our limit.
+        /// </summary>
+        public class InputFilter : InputFilterLengthFilter
+        {
+            public DroidTextView Parent { get; set; }
+
+            public InputFilter( int max ) : base (max)
+            {
+            }
+
+            public override Java.Lang.ICharSequence FilterFormatted(Java.Lang.ICharSequence source, int start, int end, ISpanned dest, int dstart, int dend)
+            {
+                Parent.OnEditorAction( );
+                return base.FilterFormatted(source, start, end, dest, dstart, dend);
+            }
+        }
+
+        /// <summary>
+        /// Subclass our edit text so we can hook a listener in and have callback support in the PlatformTextView for edit changes
+        /// </summary>
+        /*public class TextViewWithListener : BorderedRectEditText, TextView.IOnEditorActionListener
+        {
+            public TextViewWithListener( Android.Content.Context context ) : base( context )
+            {
+                SetOnEditorActionListener( this );
+            }
+
+            public DroidTextView DroidParent { get; set; }
+            public bool OnEditorAction( Android.Widget.TextView view, Android.Views.InputMethods.ImeAction action, Android.Views.KeyEvent keyEvent )
+            {
+                DroidParent.OnEditorAction( );
+                return true;
+            }
+        }*/
+
+        /// <summary>
         /// Android implementation of a text view.
         /// </summary>
         public class DroidTextView : PlatformTextView
@@ -52,6 +89,15 @@ namespace Rock.Mobile
 
             static Field CursorResource { get; set; }
 
+            public void OnEditorAction( )
+            {
+                // notify anyone who cares that we're being altered in some way
+                if ( OnEditCallback != null )
+                {
+                    OnEditCallback( this );
+                }
+            }
+
             public DroidTextView( )
             {
                 TextView = new BorderedRectEditText( Rock.Mobile.PlatformSpecific.Android.Core.Context );
@@ -60,6 +106,7 @@ namespace Rock.Mobile
                 TextView.InputType |= Android.Text.InputTypes.TextFlagMultiLine;
                 TextView.SetHorizontallyScrolling( false );
                 TextView.Gravity = GravityFlags.Top | GravityFlags.Left;
+                TextView.SetFilters( new IInputFilter[] { new InputFilter(int.MaxValue) { Parent = this } } );
 
                 // create a dummy view that can take focus to de-select the text field
                 /*DummyView = new View( Rock.Mobile.PlatformSpecific.Android.Core.Context );
@@ -68,6 +115,12 @@ namespace Rock.Mobile
 
                 // let the dummy request focus so that the edit field doesn't get it and bring up the keyboard.
                 DummyView.RequestFocus();*/
+
+                /*TextView.EditorAction += (object sender, Android.Widget.TextView.EditorActionEventArgs e ) =>
+                {
+                        Rock.Mobile.Util.Debug.WriteLine( "onEdit!" );
+                        //OnEditCallback( this );
+                };*/
 
                 // use reflection to get a reference to the TextView's cursor resource
                 if ( CursorResource == null )

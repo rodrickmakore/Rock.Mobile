@@ -31,8 +31,22 @@ namespace Rock.Mobile
                 TextView.Layer.AnchorPoint = new PointF( 0, 0 );
                 TextView.TextAlignment = UITextAlignment.Left;
 
+
                 TextView.Editable = true;
                 TextView.ClipsToBounds = true;
+
+                NSNotificationCenter.DefaultCenter.AddObserver( UITextView.TextDidChangeNotification, OnTextChanged );
+            }
+
+            protected void OnTextChanged( NSNotification notification )
+            {
+                if ( notification.Object == TextView )
+                {
+                    if ( OnEditCallback != null )
+                    {
+                        OnEditCallback( this );
+                    }
+                }
             }
 
             protected override object getPlatformNativeObject()
