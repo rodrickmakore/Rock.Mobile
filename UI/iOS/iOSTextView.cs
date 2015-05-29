@@ -25,6 +25,8 @@ namespace Rock.Mobile
             /// </summary>
             float SCALE_TIME_SECONDS = .20f;
 
+            NSObject ObserverHandle { get; set; }
+
             public iOSTextView( )
             {
                 TextView = new DynamicUITextView( );
@@ -34,8 +36,6 @@ namespace Rock.Mobile
 
                 TextView.Editable = true;
                 TextView.ClipsToBounds = true;
-
-                NSNotificationCenter.DefaultCenter.AddObserver( UITextView.TextDidChangeNotification, OnTextChanged );
             }
 
             protected void OnTextChanged( NSNotification notification )
@@ -285,12 +285,18 @@ namespace Rock.Mobile
                 }
 
                 TextView.AddAsSubview( view );
+
+                // add the handler when we're in a hierarchy
+                ObserverHandle = NSNotificationCenter.DefaultCenter.AddObserver( UITextView.TextDidChangeNotification, OnTextChanged );
             }
 
             public override void RemoveAsSubview( object obj )
             {
                 // Obj is only needed by Android, so we ignore it
                 TextView.RemoveFromSuperview( );
+
+                // and remove it when we're not
+                NSNotificationCenter.DefaultCenter.RemoveObserver( ObserverHandle );
             }
 
             public override void SizeToFit( )

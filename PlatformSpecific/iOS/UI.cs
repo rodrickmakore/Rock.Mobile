@@ -8,6 +8,8 @@ using Rock.Mobile.Util.Strings;
 using CoreGraphics;
 using Rock.Mobile.PlatformSpecific.iOS.Graphics;
 using Rock.Mobile.Animation;
+using Rock.Mobile.PlatformSpecific.Util;
+using System.Collections.Generic;
 
 namespace Rock.Mobile.PlatformSpecific.iOS.UI
 {
@@ -744,61 +746,62 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// <summary>
     /// Utility class that makes sure a text field being edited is in view and not obstructed
     /// by the software keyboard. 
-    /// Usage: Instantiate and pass in the parent view and child scroll view (Hierarchy must be View->UIScrollView->Whatever)
+    /// Usage: IN YOUR VIEW CONTROLLER, Instantiate and pass in the parent view and child scroll view (Hierarchy must be View->UIScrollView->Whatever)
+    /// Usage: Then, set delegates on the TextView of interest to either KeyboardAdjustManager's TextViewDelegate, or your own that fires the same notifications.
+    /// Ex: KeyboardAdjustManager kam = new KeyboardAdjustManager( View );
+    /// TextView.Delegate = new KeyboardAdjustManager.TextViewDelegate( );
 
     // The KeyboardAdjustManager is event driven. This means that it needs to know when text is being changed in the UITextView.
     // The UITextView of interest should have its delegate set to
-    // KeyboardAdjustManager.TextViewDelegate. (You may override this and call the base if needed.)
+    // KeyboardAdjustManager.TextViewDelegate OR YOUR OWN.
+    // Bottom line is the KAM needs the notifications below fired.
 
+    // IMPORTANT NOTE: The TextField is assumed to be in ABSOLUTE SCROLL coordinates. Not absolute to the Window.
+    // So, if it's an immediate child of the scroll view, you have to scroll a ton to see the control,
+    // its Y should be super high.
 
-    // The KeyboardAdjustManager will now send four notifications, and expects four equivalent methods to be called on itself. 
-    // It cannot handle this internally, because if you need to perform code on these events, you wouldn’t be able to.
-
-    //If you don't need any custom behavior, you can literally copy / paste this into your parent view. (Don't forget to store and release the 
-    // observer handles(
-
-    // The basic code is as follows:
-    // NSNotificationCenter.DefaultCenter.AddObserver (
-    //    KeyboardAdjustManager.TextFieldDidBeginEditingNotification, 
-    //    KeyboardAdjustManager.OnTextFieldDidBeginEditing);
-          
-    // NSNotificationCenter.DefaultCenter.AddObserver (
-    //    KeyboardAdjustManager.TextFieldChangedNotification, 
-    //    KeyboardAdjustManager.OnTextFieldChanged );
-            
-    // NSNotificationCenter.DefaultCenter.AddObserver (
-    //    UIKeyboard.WillHideNotification, 
-    //    KeyboardAdjustManager.OnKeyboardNotification);
-
-    // NSNotificationCenter.DefaultCenter.AddObserver (
-    //    UIKeyboard.WillShowNotification, 
-    //    KeyboardAdjustManager.OnKeyboardNotification);
-
-    // If you need to perform functionality, simply replace the Notification method call with your own, and in that, 
-    // call the KeyboardAdjustManager’s corresponding method.
-
+    // IMPORTANT NOTE: Don't create a KAM for each text view. One per active view controller is all you want.
 
     /// </summary>
     public class KeyboardAdjustManager
     {
-        // setup a delegate to manage text editing notifications
+        // /// <summary>
+        /// Optional
+        /// </summary>
         public class TextViewDelegate : UITextViewDelegate
         {
             public override bool ShouldBeginEditing(UITextView textView)
             {
-                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
                 return true;
             }
 
             public override void Changed(UITextView textView)
             {
-                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextFieldChangedNotification, NSValue.FromCGRect( textView.Frame ) );
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textView.Frame ) );
             }
         }
 
-        public static NSString TextFieldDidBeginEditingNotification = new NSString( "TextFieldDidBeginEditing" );
+        // setup a delegate to manage text editing notifications
+        public class TextFieldDelegate : UITextFieldDelegate
+        {
+            public override bool ShouldBeginEditing(UITextField textField)
+            {
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textField.Frame ) );
+                return true;
+            }
 
-        public static NSString TextFieldChangedNotification = new NSString( "TextFieldChanged" );
+            public override bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
+            {
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textField.Frame ) );
+                return true;
+            }
+        }
+
+        // used by the keyboard's textViewDelegate
+        public static NSString TextControlDidBeginEditingNotification = new NSString( "TextControlDidBeginEditing" );
+
+        public static NSString TextControlChangedNotification = new NSString( "TextControlChanged" );
 
         /// <summary>
         /// True when a keyboard is present due to UIKeyboardWillShowNotification.
@@ -836,13 +839,54 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         UIView ParentView { get; set; }
         UIScrollView ParentScrollView { get; set; }
 
-        public KeyboardAdjustManager( UIView parentView, UIScrollView parentScrollView )
+        List<NSObject> ObserverHandles { get; set; }
+
+        void OnTextFieldDidBeginEditing( NSNotification notification )
         {
-            ParentView = parentView;
-            ParentScrollView = parentScrollView;
+            Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
+            MaintainEditTextVisibility( );
         }
 
-        public void OnKeyboardNotification( NSNotification notification )
+        void OnTextFieldChanged( NSNotification notification )
+        {
+            Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
+            MaintainEditTextVisibility( );
+        }
+
+        public KeyboardAdjustManager( UIView parentView )
+        {
+            ParentView = parentView;
+            ParentScrollView = parentView.Subviews[ 0 ] as UIScrollView;
+            if ( ParentScrollView == null )
+            {
+                throw new Exception( "KeyboardAdjustManager requires the first child of parentView to be of type UIScrollView" );
+            }
+
+            // setup our observers
+            ObserverHandles = new List<NSObject>( );
+
+            NSObject handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlDidBeginEditingNotification, OnTextFieldDidBeginEditing);
+            ObserverHandles.Add( handle );
+
+            handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlChangedNotification, OnTextFieldChanged);
+            ObserverHandles.Add( handle );
+
+            handle = NSNotificationCenter.DefaultCenter.AddObserver (UIKeyboard.WillHideNotification, OnKeyboardNotification);
+            ObserverHandles.Add( handle );
+
+            handle = NSNotificationCenter.DefaultCenter.AddObserver (UIKeyboard.WillShowNotification, OnKeyboardNotification);
+            ObserverHandles.Add( handle );
+        }
+
+        public void FreeObservers( )
+        {
+            foreach( NSObject handle in ObserverHandles )
+            {
+                NSNotificationCenter.DefaultCenter.RemoveObserver( handle );   
+            }
+        }
+
+        void OnKeyboardNotification( NSNotification notification )
         {
             //Start an animation, using values from the keyboard
             UIView.BeginAnimations ("AnimateForKeyboard");
@@ -874,10 +918,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             }
             else if ( notification.Name == UIKeyboard.WillHideNotification )
             {
-                // get the keyboard frame and transform it into our view's space
-                CGRect keyboardFrame = UIKeyboard.FrameBeginFromNotification (notification);
-                keyboardFrame = ParentView.ConvertRectToView( keyboardFrame, null );
-
                 // restore the screen to the way it was before editing
                 ParentScrollView.ContentOffset = Edit_StartScrollOffset;
                 ParentScrollView.Layer.Position = Edit_StartScreenOffset;
@@ -905,25 +945,13 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             return new CGRect( xPos, yPos, textFrame.Width, textFrame.Height );
         }
 
-        public void OnTextFieldDidBeginEditing( NSNotification notification )
-        {
-            Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
-            MaintainEditTextVisibility( );
-        }
-
-        public void OnTextFieldChanged( NSNotification notification )
-        {
-            Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
-            MaintainEditTextVisibility( );
-        }
-
         protected void MaintainEditTextVisibility( )
         {
             // no need to do anything if a hardware keyboard is attached.
             if( DisplayingKeyboard == true )
             {
-                // PLUS makes it scroll "up"
-                // NEG makes it scroll "down"
+                // PLUS makes it scroll "up" (So if "CONTROL" is at the bottom of the  screen, it will go BELOW the screen (move down))
+                // NEG makes it scroll "down" (So if "CONTROL" is at the bottom of the screen, it will go UP on the screen (move up))
                 // TextField position MOVES AS THE PAGE IS SCROLLED.
                 // It is always relative, however, to the screen. So, if it's near the top, it's 0,
                 // whether that's because it was moved down and the screen scrolled up, or it's just at the top naturally.
@@ -936,18 +964,18 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
                 // clamp to the legal amount we can scroll "down"
                 // Don't factor in a negative ContentOffset. That could only happen if the view isn't actually going to scroll because all content fits on it.
-                scrollAmount = System.Math.Min( (float)scrollAmount, System.Math.Max( 0, (float) ParentScrollView.ContentOffset.Y ) ); 
+                scrollAmount = System.Math.Min( (float)scrollAmount, System.Math.Max( 0, (float)ParentScrollView.ContentOffset.Y ) ); 
 
                 // Now determine the amount of "up" scroll remaining
                 nfloat maxScrollAmount = ParentScrollView.ContentSize.Height - ParentScrollView.Bounds.Height;
-                nfloat scrollAmountDistRemainingDown = -(maxScrollAmount - ParentScrollView.ContentOffset.Y);
+                nfloat scrollAmountDistRemainingDown = -( maxScrollAmount - ParentScrollView.ContentOffset.Y );
 
                 // and clamp the scroll amount to that, so we don't scroll "up" beyond the contraints
                 nfloat allowedScrollAmount = System.Math.Max( (float)scrollAmount, (float)scrollAmountDistRemainingDown );
                 ParentScrollView.ContentOffset = new CGPoint( ParentScrollView.ContentOffset.X, ParentScrollView.ContentOffset.Y - allowedScrollAmount );
 
                 // if we STILL haven't scrolled enough "up" because of scroll contraints, we'll allow the window itself to move up.
-                nfloat scrollDistNeeded = -System.Math.Min( 0, (float) (scrollAmount - scrollAmountDistRemainingDown) );
+                nfloat scrollDistNeeded = -System.Math.Min( 0, (float)( scrollAmount - scrollAmountDistRemainingDown ) );
                 ParentScrollView.Layer.Position = new CGPoint( ParentScrollView.Layer.Position.X, ParentScrollView.Layer.Position.Y - scrollDistNeeded );
             }
         }

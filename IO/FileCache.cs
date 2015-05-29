@@ -204,9 +204,9 @@ namespace Rock.Mobile.IO
                         writer.Dispose( );
                     }
                 }
-                catch ( Exception )
+                catch ( Exception e )
                 {
-
+                    Rock.Mobile.Util.Debug.WriteLine( e.Message );
                 }
 
                 // return the result
@@ -284,12 +284,11 @@ namespace Rock.Mobile.IO
             }
         }
 
-        public delegate void ImageDownloaded( string imageUrl, string cachedFilename, bool result );
-        public void DownloadFileToCache( string downloadUrl, string cachedFilename, ImageDownloaded callback )
+        public delegate void FileDownloaded( bool result );
+        public void DownloadFileToCache( string downloadUrl, string cachedFilename, FileDownloaded callback )
         {
             if ( string.IsNullOrEmpty( downloadUrl ) == false )
             {
-                // request the image for the series
                 HttpRequest webRequest = new HttpRequest();
                 RestRequest restRequest = new RestRequest( Method.GET );
                 restRequest.AddHeader( "Accept", "image/png, text/*" );
@@ -302,17 +301,17 @@ namespace Rock.Mobile.IO
                         if ( model != null && Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
                         {
                             // write it to cache
-                            MemoryStream imageBuffer = new MemoryStream( model );
-                            imageBuffer.Position = 0;
-                            FileCache.Instance.SaveFile( imageBuffer, cachedFilename );
-                            imageBuffer.Dispose( );
+                            MemoryStream fileBuffer = new MemoryStream( model );
+                            fileBuffer.Position = 0;
+                            FileCache.Instance.SaveFile( fileBuffer, cachedFilename );
+                            fileBuffer.Dispose( );
 
                             result = true;
                         }
 
                         if( callback != null )
                         {
-                            callback( downloadUrl, cachedFilename, result );
+                            callback( result );
                         }
                     } );
             }

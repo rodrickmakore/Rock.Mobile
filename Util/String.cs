@@ -97,6 +97,22 @@ namespace Rock.Mobile.Util.Strings
             return numericString;
         }
 
+        /// <summary>
+        /// Returns true if the string contains only numbers
+        /// </summary>
+        public static bool IsNumeric( this string source )
+        {
+            for( int i = 0; i < source.Length; i++ )
+            {
+                if( source[ i ] < '0' || source[ i ] > '9' )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static bool IsEmailFormat( this string source )
         {
             // email format is x@x.x

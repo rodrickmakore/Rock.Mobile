@@ -49,9 +49,10 @@ namespace Rock.Mobile
                 /// <value><c>true</c> if animating; otherwise, <c>false</c>.</value>
                 public bool Animating { get; set; }
 
+                NSObject ObserverHandle { get; set; }
+
                 public DynamicUITextView( ) : base( )
                 {
-                    NSNotificationCenter.DefaultCenter.AddObserver( UITextView.TextDidChangeNotification, OnTextChanged );
                     Delegate = new Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextViewDelegate();
 
                     Layer.BackgroundColor = UIColor.Clear.CGColor;
@@ -64,12 +65,18 @@ namespace Rock.Mobile
 
                 public void AddAsSubview(UIView view)
                 {
+                    // add an observer while we're active
+                    ObserverHandle = NSNotificationCenter.DefaultCenter.AddObserver( UITextView.TextDidChangeNotification, OnTextChanged );
+
                     view.AddSubview( this );
                     view.AddSubview( PlaceholderLabel );
                 }
 
                 public override void RemoveFromSuperview( )
                 {
+                    // and remove it when we're not
+                    NSNotificationCenter.DefaultCenter.RemoveObserver( ObserverHandle );
+                    
                     PlaceholderLabel.RemoveFromSuperview( );
                     base.RemoveFromSuperview( );
                 }
