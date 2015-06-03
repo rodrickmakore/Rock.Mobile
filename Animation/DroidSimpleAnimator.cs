@@ -16,6 +16,14 @@ namespace Rock.Mobile.Animation
         protected AnimationUpdate AnimationUpdateDelegate;
         protected AnimationComplete AnimationCompleteDelegate;
 
+        public enum Style
+        {
+            Linear,
+            CurveEaseIn,
+            CurveEaseOut
+        }
+        Style AnimStyle { get; set; }
+
         protected void Init( float duration, AnimationUpdate updateDelegate, AnimationComplete completeDelegate )
         {
             Animator = ValueAnimator.OfFloat( 0.00f, 1.00f );
@@ -30,10 +38,12 @@ namespace Rock.Mobile.Animation
             AnimationCompleteDelegate = completeDelegate;
         }
 
-        public void Start( )
+        public void Start( Style animStyle = Style.Linear )
         {
             if ( Animator != null )
             {
+                AnimStyle = animStyle;
+
                 Animator.Start( );
             }
         }
@@ -42,8 +52,39 @@ namespace Rock.Mobile.Animation
 
         public void OnAnimationUpdate(ValueAnimator animation)
         {
-            float percent = System.Math.Min( (float)animation.CurrentPlayTime / (float)animation.Duration, 1.00f );
-            AnimTick( percent, AnimationUpdateDelegate );
+            //float percent = System.Math.Min( (float)animation.CurrentPlayTime / (float)animation.Duration, 1.00f );
+
+            float percent = 0.00f;
+
+            // check the style of animation they want
+            switch( AnimStyle )
+            {
+                // linear is, well, linear.
+                case Style.Linear:
+                {
+                    percent = (float)animation.CurrentPlayTime / (float)animation.Duration;
+                    break;
+                }
+
+
+                // curve ease in starts SLOW and ends FAST
+                case Style.CurveEaseIn:
+                {
+                    float xPerc = (float)animation.CurrentPlayTime / (float)animation.Duration;
+                    percent = (float) System.Math.Pow( xPerc, 3.0f );
+                    break;
+                }
+
+                // curve ease out starts FAST and ends SLOW
+                case Style.CurveEaseOut:
+                {
+                    float xPerc = (float)animation.CurrentPlayTime / (float)animation.Duration;
+                    percent = (float) 1 + (float) System.Math.Pow( (xPerc - 1), 3.0f );
+                    break;
+                }
+            }
+
+            AnimTick( System.Math.Min( percent, 1.00f ), AnimationUpdateDelegate );
         }
 
         public void OnAnimationEnd(Animator animation)

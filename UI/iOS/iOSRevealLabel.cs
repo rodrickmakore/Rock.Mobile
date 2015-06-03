@@ -28,10 +28,12 @@ namespace Rock.Mobile
 
             float MaxScale { get; set; }
 
+            const float ZeroScale = .0001f;
+
             public iOSRevealLabel( ) : base()
             {
                 MaxScale = 2.0f;
-                Scale = .01f;
+                Scale = ZeroScale;
 
                 // get a path to our custom fonts folder
                 String imagePath = NSBundle.MainBundle.BundlePath + "/spot_mask.png";
@@ -85,13 +87,13 @@ namespace Rock.Mobile
 
             public override void SetFade( float fadeAmount )
             {
-                Scale = System.Math.Max(.01f, fadeAmount * MaxScale);
+                Scale = System.Math.Max(ZeroScale, fadeAmount * MaxScale);
                 ApplyMaskScale( Scale );
             }
 
             public override void AnimateToFade( float fadeAmount )
             {
-                fadeAmount = System.Math.Max(.01f, fadeAmount * MaxScale);
+                fadeAmount = System.Math.Max(ZeroScale, fadeAmount * MaxScale);
 
                 SimpleAnimator_Float animator = new SimpleAnimator_Float( Scale, fadeAmount, SCALE_TIME_SECONDS, 
                     delegate(float percent, object value )

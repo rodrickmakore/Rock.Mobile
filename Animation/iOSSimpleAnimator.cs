@@ -21,6 +21,22 @@ namespace Rock.Mobile.Animation
 
         NSTimer AnimTimer = null;
 
+        public enum Style
+        {
+            Linear,
+
+            /// <summary>
+            // curve ease out starts SLOW and ends FAST
+            /// </summary>
+            CurveEaseIn,
+
+            /// <summary>
+            // curve ease out starts FAST and ends SLOW
+            /// </summary>
+            CurveEaseOut
+        }
+        Style AnimStyle { get; set; }
+
         public delegate void AnimationUpdate( float percent, object value );
         public delegate void AnimationComplete( );
 
@@ -35,8 +51,38 @@ namespace Rock.Mobile.Animation
                     // update our timer
                     CurrentTime += ANIMATION_TICK_RATE;
 
+                    float percent = 0.00f;
+
+                    // check the style of animation they want
+                    switch( AnimStyle )
+                    {
+                        // linear is, well, linear.
+                        case Style.Linear:
+                        {
+                            percent = CurrentTime / durationSeconds;
+                            break;
+                        }
+
+
+                        // curve ease in starts SLOW and ends FAST
+                        case Style.CurveEaseIn:
+                        {
+                            float xPerc = CurrentTime / durationSeconds;
+                            percent = (float) System.Math.Pow( xPerc, 3.0f );
+                            break;
+                        }
+
+                        // curve ease out starts FAST and ends SLOW
+                        case Style.CurveEaseOut:
+                        {
+                            float xPerc = CurrentTime / durationSeconds;
+                            percent = (float) 1 + (float) System.Math.Pow( (xPerc - 1), 3.0f );
+                            break;
+                        }
+                    }
+
                     // let the animation implementation do what it needs to
-                    AnimTick( System.Math.Min( CurrentTime / durationSeconds, 1.00f ), updateDelegate );
+                    AnimTick( System.Math.Min( percent, 1.00f ), updateDelegate );
 
                     // see if we're finished.
                     if( CurrentTime >= durationSeconds )
@@ -54,8 +100,10 @@ namespace Rock.Mobile.Animation
             );
         }
 
-        public void Start( )
+        public void Start( Style style = Style.Linear )
         {
+            AnimStyle = style;
+            
             // launch the timer
             NSRunLoop.Current.AddTimer( AnimTimer, NSRunLoop.NSDefaultRunLoopMode );
         }
