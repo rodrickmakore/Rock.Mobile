@@ -16,10 +16,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Graphics
             uiFont = UIFont.FromName(name, fontSize );
 
             // failed, so attempt to load it dynamically
-            //if( uiFont == null )
-            //JHM: 4-30-15 - I made the horrible mistake of upgrading day 1 to Xamarin 5.0.whatever,
-            // and something changed regarding UIFont.FromName. This hack works nicely :-|
-            if ( uiFont.Name == null )
+            if( uiFont == null )
             {
                 // get a path to our custom fonts folder
                 String fontPath = NSBundle.MainBundle.BundlePath + "/Fonts/" + name + ".ttf";
