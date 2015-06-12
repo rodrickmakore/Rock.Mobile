@@ -60,7 +60,8 @@ namespace Rock.Mobile
                         return (TModel) deser.Deserialize<TModel>( response );
                     }
 
-                    throw new Exception( string.Format( "Unknown ContentType received from RestSharp. {0}", contentType ) );
+                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "Unknown ContentType received from RestSharp. {0}", contentType ) );
+                    return new TModel();
                 }
 
                 public void Invoke( HttpStatusCode statusCode, string statusDesc, IRestResponse response )

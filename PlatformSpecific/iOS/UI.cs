@@ -980,5 +980,146 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             }
         }
     }
+
+    public class UIToggle : UIView
+    {
+        // by tracking whether the left is active, we can know which button is active.
+        // (cause if this is false, then right is active.)
+        public bool LeftActive { get; set; }
+
+        UIButton LeftButton { get; set; }
+        UIButton RightButton { get; set; }
+
+        UIColor _ActiveColor;
+        public UIColor ActiveColor 
+        { 
+            get
+            {
+                return _ActiveColor;
+            }
+
+            set
+            {
+                _ActiveColor = value;
+
+                // set the buttons appopriately
+                LeftButton.BackgroundColor = LeftActive == true ? _ActiveColor : _InActiveColor;
+                RightButton.BackgroundColor = LeftActive == false ? _ActiveColor : _InActiveColor;
+            }
+        }
+
+
+        UIColor _InActiveColor;
+        public UIColor InActiveColor
+        { 
+            get
+            {
+                return _InActiveColor;
+            }
+
+            set
+            {
+                _InActiveColor = value;
+
+                // set the buttons appopriately
+                LeftButton.BackgroundColor = LeftActive == true ? _ActiveColor : _InActiveColor;
+                RightButton.BackgroundColor = LeftActive == false ? _ActiveColor : _InActiveColor;
+            }
+        }
+
+        public UIColor TextColor
+        {
+            get
+            {
+                // for get, just take the left button, since we require them to be the same.
+                return LeftButton.TitleColor( UIControlState.Normal );
+            }
+            set
+            {
+                LeftButton.SetTitleColor( value, UIControlState.Normal );
+                RightButton.SetTitleColor( value, UIControlState.Normal );
+            }
+        }
+
+        public bool Enabled 
+        {
+            get
+            {
+                return LeftButton.Enabled;
+            }
+
+            set
+            {
+                LeftButton.Enabled = value;
+                RightButton.Enabled = value;
+            }
+        }
+
+        public delegate void OnClick( bool wasLeft );
+        public UIToggle( string leftLabel, string rightLabel, OnClick onClick )
+        {
+            // defualt left to on
+            LeftActive = true;
+
+            LeftButton = new UIButton( );
+            LeftButton.Layer.AnchorPoint = CGPoint.Empty;
+            AddSubview( LeftButton );
+            LeftButton.SetTitle( leftLabel, UIControlState.Normal );
+            LeftButton.SizeToFit( );
+            LeftButton.TouchUpInside += (object sender, EventArgs e) => 
+                {
+                    LeftButton.BackgroundColor = ActiveColor;
+                    RightButton.BackgroundColor = InActiveColor;
+
+                    if( onClick != null )
+                    {
+                        onClick( true );
+                    }
+                };
+
+
+            RightButton = new UIButton( );
+            RightButton.Layer.AnchorPoint = CGPoint.Empty;
+            AddSubview( RightButton );
+            RightButton.SetTitle( rightLabel, UIControlState.Normal );
+            RightButton.SizeToFit( );
+            RightButton.TouchUpInside += (object sender, EventArgs e) => 
+                {
+                    RightButton.BackgroundColor = ActiveColor;
+                    LeftButton.BackgroundColor = InActiveColor;
+
+                    if( onClick != null )
+                    {
+                        onClick( false );
+                    }
+                };
+        }
+
+        public override void SizeToFit( )
+        {
+            Bounds = new CGRect( 0, 0, LeftButton.Bounds.Width + RightButton.Bounds.Width, RightButton.Bounds.Height );
+        }
+
+        public void ViewDidLayoutSubviews( CGRect parentBounds )
+        {
+            RightButton.Layer.Position = new CGPoint( LeftButton.Frame.Right, 0 );
+        }
+
+        public new CGRect Bounds
+        {
+            get
+            {
+                return base.Bounds;
+            }
+
+            set
+            {
+                LeftButton.Bounds = new CGRect( 0, 0, value.Width / 2, LeftButton.Bounds.Height );
+                RightButton.Bounds = new CGRect( 0, 0, value.Width / 2, RightButton.Bounds.Height );
+
+                base.Bounds = value;
+            }
+        }
+    }
 }
 #endif
