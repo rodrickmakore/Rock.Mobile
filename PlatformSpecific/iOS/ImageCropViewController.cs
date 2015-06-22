@@ -1,3 +1,4 @@
+#if IOS
 using System;
 using Foundation;
 using UIKit;
@@ -654,3 +655,4 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         }
 	}
 }
+#endif
