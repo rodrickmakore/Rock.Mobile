@@ -1,4 +1,4 @@
-#if IOS
+#if __IOS__
 using System;
 using Foundation;
 using UIKit;

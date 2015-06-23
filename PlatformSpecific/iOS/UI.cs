@@ -51,6 +51,22 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             floatAnim.Start( );
         }
     }
+
+    /// <summary>
+    /// Simple class to inset the text of our text fields.
+    /// </summary>
+    public class UIInsetTextField : UITextField
+    {
+        public override CGRect TextRect(CGRect forBounds)
+        {
+            return new CGRect( forBounds.X + 5, forBounds.Y, forBounds.Width - 5, forBounds.Height );
+        }
+
+        public override CGRect EditingRect(CGRect forBounds)
+        {
+            return new CGRect( forBounds.X + 5, forBounds.Y, forBounds.Width - 5, forBounds.Height );
+        }
+    }
     
     public class WebLayout
     {

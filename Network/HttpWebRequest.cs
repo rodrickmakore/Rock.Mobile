@@ -47,17 +47,25 @@ namespace Rock.Mobile
 
                 TModel Deserialize( IRestResponse response )
                 {
+                    // watch for parse errors, and if that happens we'll return an error.
                     string contentType = response.ContentType.ToLower( );
-                    if ( contentType.Contains( "application/json" ) || contentType.Contains( "text/json" ) )
+                    try
                     {
-                        JsonDeserializer deserializer = new JsonDeserializer();
-                        return (TModel)deserializer.Deserialize<TModel>( response );
-                    }
+                        if ( contentType.Contains( "application/json" ) || contentType.Contains( "text/json" ) )
+                        {
+                            JsonDeserializer deserializer = new JsonDeserializer();
+                            return (TModel)deserializer.Deserialize<TModel>( response );
+                        }
 
-                    if ( contentType.Contains( "application/xml" ) || contentType.Contains( "text/xml" ) )
+                        if ( contentType.Contains( "application/xml" ) || contentType.Contains( "text/xml" ) )
+                        {
+                            XmlDeserializer deser = new XmlDeserializer();
+                            return (TModel) deser.Deserialize<TModel>( response );
+                        }
+                    }
+                    catch
                     {
-                        XmlDeserializer deser = new XmlDeserializer();
-                        return (TModel) deser.Deserialize<TModel>( response );
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "Parsing Error!" ) );
                     }
 
                     Rock.Mobile.Util.Debug.WriteLine( string.Format( "Unknown ContentType received from RestSharp. {0}", contentType ) );
