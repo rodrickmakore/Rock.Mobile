@@ -309,11 +309,18 @@ namespace Rock.Mobile.IO
                             result = true;
                         }
 
-                        if( callback != null )
+                        if ( callback != null )
                         {
                             callback( result );
                         }
                     } );
+            }
+            else
+            {
+                if ( callback != null )
+                {
+                    callback( false );
+                }
             }
         }
     }

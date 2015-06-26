@@ -12,8 +12,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Graphics
         public static UIFont GetFont( String name, float fontSize )
         {
             // first attempt to simpy load it (it may be loaded already)
-            UIFont uiFont = null;
-            uiFont = UIFont.FromName(name, fontSize );
+            UIFont uiFont = UIFont.FromName(name, fontSize );
 
             // failed, so attempt to load it dynamically
             if( uiFont == null )
@@ -42,10 +41,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.Graphics
                 result = CTFontManager.UnregisterGraphicsFont( newFont, out error );
                 if ( result == false )
                     throw new NSErrorException( error );
-            }
-            else
-            {
-                Rock.Mobile.Util.Debug.WriteLine( "Already Loaded" );
             }
 
             return uiFont;

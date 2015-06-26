@@ -69,20 +69,87 @@ namespace Rock.Mobile
 
             protected override AutoCorrectionType getAutoCorrectionType()
             {
-                return 0;
+                // if it's set, go ahead and return yes
+                if ( ( TextField.InputType & InputTypes.TextFlagAutoCorrect ) != 0 )
+                {
+                    return AutoCorrectionType.Yes;
+                }
+
+                return AutoCorrectionType.No;
             }
 
             protected override void setAutoCorrectionType(AutoCorrectionType style)
             {
+                switch ( style )
+                {
+                    case AutoCorrectionType.Yes:
+                    {
+                        TextField.InputType |= InputTypes.TextFlagAutoCorrect;
+                        break;
+                    }
+
+                    case AutoCorrectionType.Default:
+                    case AutoCorrectionType.No:
+                    {
+                        TextField.InputType &= ~InputTypes.TextFlagAutoCorrect;
+                        break;
+                    }
+                }
             }
 
             protected override AutoCapitalizationType getAutoCapitalizationType()
             {
-                return 0;
+                // see which capitalizaton mask is active
+                if ( (TextField.InputType & InputTypes.TextFlagCapWords) != 0 )
+                {
+                    return AutoCapitalizationType.Words;
+                }
+                else if ( (TextField.InputType & InputTypes.TextFlagCapSentences) != 0 )
+                {
+                    return AutoCapitalizationType.Sentences;
+                }
+                else if ( (TextField.InputType & InputTypes.TextFlagCapCharacters) != 0 )
+                {
+                    return AutoCapitalizationType.All;
+                }
+
+                return AutoCapitalizationType.None;
             }
 
             protected override void setAutoCapitalizationType(AutoCapitalizationType style)
             {
+                // first clear all fields
+                TextField.InputType &= ~(InputTypes.TextFlagCapWords | InputTypes.TextFlagCapCharacters | InputTypes.TextFlagCapSentences);
+
+                switch ( style )
+                {
+                    case AutoCapitalizationType.All:
+                    {
+                        // for everything, add it all
+                        TextField.InputType |= InputTypes.TextFlagCapCharacters;
+                        break;
+                    }
+
+                    case AutoCapitalizationType.Sentences:
+                    {
+                        // for everything, add it all
+                        TextField.InputType |= InputTypes.TextFlagCapSentences;
+                        break;
+                    }
+
+                    case AutoCapitalizationType.Words:
+                    {
+                        // for everything, add it all
+                        TextField.InputType |= InputTypes.TextFlagCapWords;
+                        break;
+                    }
+                    
+                    case AutoCapitalizationType.None:
+                    {
+                        // if "none" was requested, do nothing.
+                        break;
+                    }
+                }
             }
 
             public override void SetFont( string fontName, float fontSize )

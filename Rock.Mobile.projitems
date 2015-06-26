@@ -92,6 +92,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\Android\Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\Debug.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\ImageCropViewController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\DateTimeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)UI\.gitignore" />

@@ -999,9 +999,16 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
     public class UIToggle : UIView
     {
+        public enum Toggle
+        {
+            Left,
+            Right,
+            None
+        };
+
         // by tracking whether the left is active, we can know which button is active.
         // (cause if this is false, then right is active.)
-        public bool LeftActive { get; set; }
+        public Toggle SideToggled { get; protected set; }
 
         UIButton LeftButton { get; set; }
         UIButton RightButton { get; set; }
@@ -1019,11 +1026,26 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 _ActiveColor = value;
 
                 // set the buttons appopriately
-                LeftButton.BackgroundColor = LeftActive == true ? _ActiveColor : _InActiveColor;
-                RightButton.BackgroundColor = LeftActive == false ? _ActiveColor : _InActiveColor;
+                ToggleSide( SideToggled );
             }
         }
 
+        UIFont _Font;
+        public UIFont Font
+        {
+            get
+            {
+                return _Font;
+            }
+
+            set
+            {
+                _Font = value;
+
+                LeftButton.Font = value;
+                RightButton.Font = value;
+            }
+        }
 
         UIColor _InActiveColor;
         public UIColor InActiveColor
@@ -1038,8 +1060,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 _InActiveColor = value;
 
                 // set the buttons appopriately
-                LeftButton.BackgroundColor = LeftActive == true ? _ActiveColor : _InActiveColor;
-                RightButton.BackgroundColor = LeftActive == false ? _ActiveColor : _InActiveColor;
+                ToggleSide( SideToggled );
             }
         }
 
@@ -1074,9 +1095,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public delegate void OnClick( bool wasLeft );
         public UIToggle( string leftLabel, string rightLabel, OnClick onClick )
         {
-            // defualt left to on
-            LeftActive = true;
-
             LeftButton = new UIButton( );
             LeftButton.Layer.AnchorPoint = CGPoint.Empty;
             AddSubview( LeftButton );
@@ -1084,8 +1102,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             LeftButton.SizeToFit( );
             LeftButton.TouchUpInside += (object sender, EventArgs e) => 
                 {
-                    LeftButton.BackgroundColor = ActiveColor;
-                    RightButton.BackgroundColor = InActiveColor;
+                    ToggleSide( Toggle.Left );
 
                     if( onClick != null )
                     {
@@ -1101,40 +1118,48 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             RightButton.SizeToFit( );
             RightButton.TouchUpInside += (object sender, EventArgs e) => 
                 {
-                    RightButton.BackgroundColor = ActiveColor;
-                    LeftButton.BackgroundColor = InActiveColor;
+                    ToggleSide( Toggle.Right );
 
                     if( onClick != null )
                     {
                         onClick( false );
                     }
                 };
+
+            // default neither toggle to on
+            ToggleSide( Toggle.None );
+        }
+
+        public void ToggleSide( Toggle toggleSide )
+        {
+            // set the colors based on which (if either) side is toggled.
+            LeftButton.BackgroundColor = toggleSide == Toggle.Left ? ActiveColor : InActiveColor;
+            RightButton.BackgroundColor = toggleSide == Toggle.Right ? ActiveColor : InActiveColor;
+
+            SideToggled = toggleSide;
         }
 
         public override void SizeToFit( )
         {
-            Bounds = new CGRect( 0, 0, LeftButton.Bounds.Width + RightButton.Bounds.Width, RightButton.Bounds.Height );
-        }
+            // first wrap each button and give them some padding
+            LeftButton.SizeToFit( );
+            LeftButton.Bounds = new CGRect( 0, 0, LeftButton.Bounds.Width + 5, LeftButton.Bounds.Height + 5 );
 
-        public void ViewDidLayoutSubviews( CGRect parentBounds )
-        {
+            RightButton.SizeToFit( );
+            RightButton.Bounds = new CGRect( 0, 0, RightButton.Bounds.Width + 5, RightButton.Bounds.Height + 5 );
+
+            nfloat maxWidth = System.Math.Max( (float)LeftButton.Bounds.Width, (float)RightButton.Bounds.Width );
+            nfloat maxHeight = System.Math.Max( (float)LeftButton.Bounds.Height, (float)RightButton.Bounds.Height );
+
+            // now make the buttons even
+            LeftButton.Bounds = new CGRect( 0, 0, maxWidth, maxHeight );
+            RightButton.Bounds = new CGRect( 0, 0, maxWidth, maxHeight );
+
+            // put the right button next to the left
             RightButton.Layer.Position = new CGPoint( LeftButton.Frame.Right, 0 );
-        }
 
-        public new CGRect Bounds
-        {
-            get
-            {
-                return base.Bounds;
-            }
-
-            set
-            {
-                LeftButton.Bounds = new CGRect( 0, 0, value.Width / 2, LeftButton.Bounds.Height );
-                RightButton.Bounds = new CGRect( 0, 0, value.Width / 2, RightButton.Bounds.Height );
-
-                base.Bounds = value;
-            }
+            // and wrap everything.
+            Bounds = new CGRect( 0, 0, maxWidth * 2, maxHeight );
         }
     }
 }
