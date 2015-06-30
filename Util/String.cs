@@ -135,6 +135,25 @@ namespace Rock.Mobile.Util.Strings
         }
 
         /// <summary>
+        /// Takes a string assumed to be a URL and ensures it can be parsed as a URI
+        /// </summary>
+        public static bool IsValidURL( this string url )
+        {
+            // simply wrap .net's url parser in an exception handler
+            try
+            {
+                new System.Uri( url );
+                return true;
+            }
+            catch
+            {
+            }
+
+            // failed, so return false
+            return false;
+        }
+
+        /// <summary>
         /// Takes a string assumed to be only digits and formats it as a phone number.
         /// </summary>
         public static string AsPhoneNumber( this string number )
