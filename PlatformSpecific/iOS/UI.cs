@@ -57,14 +57,23 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// </summary>
     public class UIInsetTextField : UITextField
     {
+        public int XInset { get; set; }
+        public int YInset { get; set; }
+
+        public UIInsetTextField( )
+        {
+            XInset = 5;
+            YInset = 5;
+        }
+
         public override CGRect TextRect(CGRect forBounds)
         {
-            return new CGRect( forBounds.X + 5, forBounds.Y, forBounds.Width - 5, forBounds.Height );
+            return new CGRect( forBounds.X + XInset, forBounds.Y + YInset, forBounds.Width - (XInset * 2), forBounds.Height - (YInset * 2) );
         }
 
         public override CGRect EditingRect(CGRect forBounds)
         {
-            return new CGRect( forBounds.X + 5, forBounds.Y, forBounds.Width - 5, forBounds.Height );
+            return new CGRect( forBounds.X + XInset, forBounds.Y + YInset, forBounds.Width - (XInset * 2), forBounds.Height - (YInset * 2) );
         }
     }
     
