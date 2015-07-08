@@ -1,0 +1,587 @@
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+
+namespace Rock.Mobile
+{
+    namespace Network
+    {
+        /// <summary>
+        /// Implements the core API REST layer for Rock.
+        /// </summary>
+        public static class RockApi
+        {
+            /// <summary>
+            /// The header key used for passing up the mobile app authorization token.
+            /// </summary>
+            const string AuthorizationTokenHeaderKey = "Authorization-Token";
+
+            public static string BaseUrl { get; private set; }
+            static string AuthorizationKey { get; set; }
+            static HttpRequest Request { get; set; }
+
+            static RockApi( )
+            {
+                Request = new HttpRequest();
+            }
+
+            public static void SetRockURL( string rockUrl )
+            {
+                BaseUrl = rockUrl;
+
+                // append the "/" if necessary.
+                if ( string.IsNullOrEmpty( BaseUrl ) == false && BaseUrl.EndsWith( "/" ) == false )
+                {
+                    BaseUrl += "/";
+                }
+            }
+
+            public static void SetAuthorizationKey( string authKey )
+            {
+                AuthorizationKey = authKey;
+            }
+
+            static RestRequest GetRockRestRequest( Method method )
+            {
+                if ( string.IsNullOrEmpty( BaseUrl ) == true )
+                {
+                    throw new Exception( "No Rock URL set. Call SetRockURL before making any API requests." );
+                }
+
+                RestRequest request = new RestRequest( method );
+                request.RequestFormat = DataFormat.Json;
+                request.AddHeader( AuthorizationTokenHeaderKey, AuthorizationKey );
+
+                return request;
+            }
+
+
+
+            const string EndPoint_Auth_FacebookLogin = "api/Auth/FacebookLogin";
+            public static void Post_Auth_FacebookLogin( object facebookUser, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                request.AddBody( facebookUser );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_Auth_FacebookLogin, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_Auth_Login = "api/Auth/Login";
+            public static void Post_Auth_Login( string username, string password, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                request.AddParameter( "Username", username );
+                request.AddParameter( "Password", password );
+                request.AddParameter( "Persisted", true );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_Auth_Login, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_People = "api/People";
+            public static void Get_People<T>( string oDataFilter, HttpRequest.RequestResult<T> resultHandler ) where T : new( )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestUrl = BaseUrl + EndPoint_People + oDataFilter;
+                Request.ExecuteAsync<T>( requestUrl, request, resultHandler);
+            }
+
+            public static void Put_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.PUT );
+                request.AddBody( person );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_People + "/" + person.Id.ToString( ), request, resultHandler );
+            }
+
+            public static void Post_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+            {
+                // create a person object that can go up to rock, and copy the relavant data from the passed in arg
+                Rock.Client.Person newPerson = new Rock.Client.Person( );
+                newPerson.Guid = person.Guid;
+                newPerson.BirthDate = person.BirthDate;
+                newPerson.BirthDay = person.BirthDay;
+                newPerson.BirthMonth = person.BirthMonth;
+                newPerson.BirthYear = person.BirthYear;
+                newPerson.Email = person.Email;
+                newPerson.FirstName = person.FirstName;
+                newPerson.NickName = person.NickName;
+                newPerson.LastName = person.LastName;
+                newPerson.Gender = person.Gender;
+
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddBody( person );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_People, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_People_GetByUserName = "api/People/GetByUserName/";
+            public static void Get_People_ByUserName( string userName, HttpRequest.RequestResult<Rock.Client.Person> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestUrl = BaseUrl + EndPoint_People_GetByUserName;
+                requestUrl += userName;
+
+                Request.ExecuteAsync<Rock.Client.Person>( requestUrl, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_People_AddExistingPersonToFamily = "api/People/AddExistingPersonToFamily";
+            public static void Post_People_AddExistingPersonToFamily( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                string requestString = BaseUrl + EndPoint_People_AddExistingPersonToFamily + oDataFilter;
+
+                Request.ExecuteAsync( requestString, request, resultHandler );    
+            }
+
+
+
+            const string EndPoint_People_AttributeValue = "api/People/AttributeValue";
+            public static void Post_People_AttributeValue( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                string requestString = BaseUrl + EndPoint_People_AttributeValue + oDataFilter;
+
+                Request.ExecuteAsync( requestString, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_Campuses = "api/Campuses/";
+            public static void Get_Campuses( HttpRequest.RequestResult< List<Rock.Client.Campus> > resultHandler )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_Campuses;
+
+                // get the raw response
+                Request.ExecuteAsync< List<Rock.Client.Campus> >( requestUrl, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Attributes = "api/Attributes";
+            public static void Get_Attributes( string oDataFilter, HttpRequest.RequestResult<List<Rock.Client.Attribute>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_Attributes + oDataFilter;
+
+                Request.ExecuteAsync<List<Rock.Client.Attribute>>( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_GetImage = "GetImage.ashx?id={0}&width={1}&height={1}";
+            public static void Get_GetImage( string photoId, uint dimensionSize, HttpRequest.RequestResult<MemoryStream> resultHandler )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + string.Format( EndPoint_GetImage, photoId, dimensionSize, dimensionSize );
+
+                // get the raw response
+                Request.ExecuteAsync( requestUrl, request, delegate(HttpStatusCode statusCode, string statusDescription, byte[] model) 
+                    {
+                        if ( model != null )
+                        {
+                            MemoryStream memoryStream = new MemoryStream( model );
+
+                            resultHandler( statusCode, statusDescription, memoryStream );
+
+                            memoryStream.Dispose( );
+                        }
+                        else
+                        {
+                            resultHandler( statusCode, statusDescription, null );
+                        }
+                    });
+            }
+
+
+
+            const string EndPoint_FileUploader = "FileUploader.ashx?isBinaryFile={0}&fileTypeGuid={1}&isTemporary={2}";
+            public static void Post_FileUploader( MemoryStream fileBuffer, bool isBinary, string fileTypeGuid, bool isTemporary, HttpRequest.RequestResult<byte[]> resultHandler )
+            {
+                // send up the file
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddFile( "file0", fileBuffer.ToArray( ), "file.dat" );
+
+                string requestUrl = string.Format( BaseUrl + EndPoint_FileUploader, isBinary, fileTypeGuid, isTemporary );
+
+                Request.ExecuteAsync( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_GroupMembers = "api/groupmembers/";
+            public static void Get_GroupMembers( string oDataFilter, HttpRequest.RequestResult<List<Rock.Client.GroupMember>> requestHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_GroupMembers + oDataFilter;
+
+                Request.ExecuteAsync< List<Rock.Client.GroupMember> >( requestUrl, request, requestHandler );
+            }
+
+            public static void Put_GroupMembers( Rock.Client.GroupMember groupMember, HttpRequest.RequestResult requestHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.PUT );
+                request.AddBody( groupMember );
+
+                string requestUrl = BaseUrl + EndPoint_GroupMembers + groupMember.Id.ToString( );
+                Request.ExecuteAsync( requestUrl, request, requestHandler );
+            }
+
+            public static void Post_GroupMembers( Rock.Client.GroupMember groupMember, HttpRequest.RequestResult requestHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddBody( groupMember );
+
+                string requestUrl = BaseUrl + EndPoint_GroupMembers;
+                Request.ExecuteAsync( requestUrl, request, requestHandler );
+            }
+
+
+
+            const string EndPoint_Groups_GetFamiliesByPersonNameSearch = "api/Groups/GetFamiliesByPersonNameSearch/";
+            public static void Get_Groups_FamiliesByPersonNameSearch( string personName, HttpRequest.RequestResult<List<Rock.Client.Family>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_Groups_GetFamiliesByPersonNameSearch + personName;
+
+                Request.ExecuteAsync<List<Rock.Client.Family>>( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Groups_GetFamily = "api/Groups/GetFamily/{0}";
+            public static void Get_Groups_GetFamily( int familyID, HttpRequest.RequestResult<Rock.Client.Family> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + string.Format( EndPoint_Groups_GetFamily, familyID );
+
+                Request.ExecuteAsync<Rock.Client.Family>( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Groups_AttributeValue = "api/Groups/AttributeValue";
+            public static void Post_Groups_AttributeValue( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                string requestString = BaseUrl + EndPoint_Groups_AttributeValue + oDataFilter;
+
+                Request.ExecuteAsync( requestString, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_PrayerRequests_Public = "api/prayerrequests/public";
+            public static void Get_PrayerRequests_Public( DateTime upToTime, HttpRequest.RequestResult< List<Rock.Client.PrayerRequest> > resultHandler )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                // insert the expiration limit
+                string requestString = BaseUrl + EndPoint_PrayerRequests_Public + upToTime.ToString( );
+
+                Request.ExecuteAsync< List<Rock.Client.PrayerRequest> >( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_PrayerRequests = "api/prayerrequests";
+            public static void Post_PrayerRequests( Rock.Client.PrayerRequest prayer, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddBody( prayer );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_PrayerRequests, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_PrayerRequests_Prayed = "api/prayerrequests/prayed/";
+            public static void Put_PrayerRequests_Prayed( int prayerId, HttpRequest.RequestResult resultHandler )
+            {
+                // build a URL that contains the ID for the prayer that is getting another prayer
+                RestRequest request = GetRockRestRequest( Method.PUT );
+
+                string requestUrl = BaseUrl + EndPoint_PrayerRequests_Prayed;
+                requestUrl += prayerId.ToString( );
+
+                Request.ExecuteAsync( requestUrl, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Categories_GetChildren_1 = "api/categories/getChildren/1";
+            public static void Get_Categories_GetChildren_1( HttpRequest.RequestResult<List<Rock.Client.Category>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_Categories_GetChildren_1;
+
+                // get the resonse
+                Request.ExecuteAsync< List<Rock.Client.Category> >( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_ContentChannelItems = "api/ContentChannelItems";
+            public static void Get_ContentChannelItems( string oDataFilter, HttpRequest.RequestResult< List<Rock.Client.ContentChannelItem> > resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_ContentChannelItems + oDataFilter;
+
+                Request.ExecuteAsync< List<Rock.Client.ContentChannelItem> >( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_Groups_GetFamilies = "api/Groups/GetFamilies/";
+            public static void Get_FamiliesOfPerson( int personId, string oDataFilter, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_Groups_GetFamilies + personId.ToString( );
+                requestUrl += oDataFilter;
+
+                // get the raw response
+                Request.ExecuteAsync< List<Rock.Client.Group> >( requestUrl, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Groups_GuestsForFamily = "api/Groups/GetGuestsForFamily/";
+            public static void Get_Groups_GuestsForFamily( int familyId, HttpRequest.RequestResult<List<Rock.Client.GuestFamily>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_Groups_GuestsForFamily + familyId.ToString( );
+
+                Request.ExecuteAsync<List<Rock.Client.GuestFamily>>( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Groups = "api/Groups";
+            public static void Get_Groups<T>( string oDataFilter, HttpRequest.RequestResult<T> resultHandler ) where T : new( )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_Groups + oDataFilter;
+
+                Request.ExecuteAsync<T>( requestUrl, request, resultHandler );
+            }
+
+            public static void Put_Groups( Rock.Client.Group group, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.PUT );
+                request.AddBody( group );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_Groups + "/" + group.Id, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_AttributeValues = "api/AttributeValues";
+            public static void Get_AttributeValues<T>( string oDataFilter, HttpRequest.RequestResult<T> resultHandler ) where T : new( )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + EndPoint_AttributeValues + oDataFilter;
+
+                Request.ExecuteAsync<T>( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_Groups_ByLocation = "api/Groups/ByLocation/{0}/{1}/{2}/{3}/{4}/{5}";
+            public static void Get_Groups_ByLocation( int geoFenceGroupTypeId, int groupTypeId, int locationId, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + string.Format( EndPoint_Groups_ByLocation, geoFenceGroupTypeId, groupTypeId, locationId );
+
+                Request.ExecuteAsync< List<Rock.Client.Group> >( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_Groups_SaveAddress = "api/Groups/SaveAddress/{0}/{1}/{2}/{3}/{4}/{5}/{6}";
+            public static void Put_Groups_SaveAddress( Rock.Client.Group group, Rock.Client.GroupLocation groupLocation, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.PUT );
+
+                string requestUrl = string.Format( BaseUrl + EndPoint_Groups_SaveAddress, group.Id, 
+                    groupLocation.GroupLocationTypeValueId, 
+                    groupLocation.Location.Street1, 
+                    groupLocation.Location.City, 
+                    groupLocation.Location.State, 
+                    groupLocation.Location.PostalCode, 
+                    groupLocation.Location.Country );
+
+                Request.ExecuteAsync( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_GroupMembers_KnownRelationships = "api/GroupMembers/KnownRelationship";
+            public static void Post_GroupMembers_KnownRelationships( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                string requestString = BaseUrl + EndPoint_GroupMembers_KnownRelationships + oDataFilter;
+
+                Request.ExecuteAsync( requestString, request, resultHandler );
+            }
+
+            public static void Delete_GroupMembers_KnownRelationships( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.DELETE );
+
+                string requestString = BaseUrl + EndPoint_GroupMembers_KnownRelationships + oDataFilter;
+
+                Request.ExecuteAsync( requestString, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_PhoneNumbers = "api/PhoneNumbers/";
+            public static void Put_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.PUT );
+                request.AddBody( phoneNumber );
+
+                // since we're updating an existing number, put the ID
+                string requestUrl = EndPoint_PhoneNumbers + phoneNumber.Id;
+
+                // fire off the request
+                Request.ExecuteAsync( BaseUrl + requestUrl, request, resultHandler);
+            }
+
+            public static void Post_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddBody( phoneNumber );
+
+                // fire off the request
+                Request.ExecuteAsync( BaseUrl + EndPoint_PhoneNumbers, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Locations_FromAddress = "api/locations/{0}/{1}/{2}/{3}";
+            public static void Get_Locations_FromAddress( string street, string city, string state, string zip, HttpRequest.RequestResult<Rock.Client.Location> resultHandler )
+            {
+                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
+                RestRequest request = GetRockRestRequest( Method.GET );
+                string requestUrl = BaseUrl + string.Format( EndPoint_Locations_FromAddress, street, city, state, zip );
+
+                // first get the location based on the info passed up
+                Request.ExecuteAsync<Rock.Client.Location>( requestUrl, request, resultHandler );
+            }
+
+
+
+            const string EndPoint_UserLogins = "api/UserLogins";
+            public static void Post_UserLogins( int personId, string username, string password, int loginEntityTypeId, HttpRequest.RequestResult resultHandler )
+            {
+                Rock.Client.UserLoginWithPlainTextPassword newLogin = new Rock.Client.UserLoginWithPlainTextPassword();
+                newLogin.UserName = username;
+                newLogin.PlainTextPassword = password;
+                newLogin.PersonId = personId;
+                newLogin.Guid = Guid.NewGuid( );
+                newLogin.EntityTypeId = loginEntityTypeId;
+
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddBody( newLogin );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_UserLogins, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_DefinedTypes = "api/DefinedTypes";
+            public static void Get_DefinedTypes( string oDataFilter, HttpRequest.RequestResult<List<Rock.Client.DefinedType>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_DefinedTypes + oDataFilter;
+
+                Request.ExecuteAsync<List<Rock.Client.DefinedType>>( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_Workflows_WorkflowEntry = "api/Workflows/WorkflowEntry";
+            public static void Post_Workflows_WorkflowEntry( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.POST );
+
+                string requestString = EndPoint_Workflows_WorkflowEntry + oDataFilter;
+                Request.ExecuteAsync( BaseUrl + requestString, request, resultHandler );    
+            }
+
+
+
+            const string EndPoint_GroupTypeRoles = "api/GroupTypeRoles";
+            public static void Get_GroupTypeRoles( string oDataFilter, HttpRequest.RequestResult<List<Rock.Client.GroupTypeRole>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_GroupTypeRoles + oDataFilter;
+
+                Request.ExecuteAsync<List<Rock.Client.GroupTypeRole>>( requestString, request, resultHandler);
+            }
+
+
+
+            const string EndPoint_DefinedValues = "api/DefinedValues";
+            public static void Get_DefinedValues( string oDataFilter, HttpRequest.RequestResult<List<Rock.Client.DefinedValue>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestUrl = BaseUrl + EndPoint_DefinedValues + oDataFilter;
+
+                Request.ExecuteAsync<List<Rock.Client.DefinedValue>>( requestUrl, request, resultHandler );
+            }
+
+            /// <summary>
+            /// Core function that must be used before calling ANY endpoint requiring a personId
+            /// </summary>
+            public class PersonIdObj
+            {
+                public int PersonId { get; set; }
+            }
+
+            const string EndPoint_PersonAlias = "api/PersonAlias/";
+            public static void Get_PersonAliasIdToPersonId( int personAliasId, HttpRequest.RequestResult<PersonIdObj> resultHandler )
+            {
+                // For debugging, enable the below
+                //onComplete( person.Id );
+                //return;
+
+                // make the request for the ID
+                RestRequest request = GetRockRestRequest( Method.GET );
+                Request.ExecuteAsync<PersonIdObj>( BaseUrl + EndPoint_PersonAlias + personAliasId, request, resultHandler ); 
+            }
+        }
+    }
+}

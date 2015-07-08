@@ -23,6 +23,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Media\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\" />
     <Folder Include="$(MSBuildThisFileDirectory)Util\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Network\Rock.Client.Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CoreLocation\iBeacon\Droid_iBeacon.cs" />
@@ -93,6 +94,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Util\Debug.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecific\iOS\ImageCropViewController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\DateTimeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\ApplicationApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\RockApi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Rock.Client.Extensions\Family.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Rock.Client.Extensions\GuestFamily.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)UI\.gitignore" />
