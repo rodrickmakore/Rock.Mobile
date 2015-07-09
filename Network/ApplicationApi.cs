@@ -156,7 +156,7 @@ namespace Rock.Mobile.Network
             updatedGroup.AllowGuests = familyGroup.AllowGuests;
             updatedGroup.GroupType = null;
 
-            RockApi.Put_Groups( familyGroup, resultHandler );
+            RockApi.Put_Groups( updatedGroup, resultHandler );
         }
 
         public static void UpdateFamilyAddress( Rock.Client.Group family, Rock.Client.GroupLocation address, HttpRequest.RequestResult resultHandler )

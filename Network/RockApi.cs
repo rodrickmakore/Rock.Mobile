@@ -102,6 +102,7 @@ namespace Rock.Mobile
                 Request.ExecuteAsync( BaseUrl + EndPoint_People + "/" + person.Id.ToString( ), request, resultHandler );
             }
 
+            const int PersonRecordTypeValueId = 1;
             public static void Post_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
             {
                 // create a person object that can go up to rock, and copy the relavant data from the passed in arg
@@ -116,6 +117,7 @@ namespace Rock.Mobile
                 newPerson.NickName = person.NickName;
                 newPerson.LastName = person.LastName;
                 newPerson.Gender = person.Gender;
+                newPerson.RecordTypeValueId = PersonRecordTypeValueId;
 
                 RestRequest request = GetRockRestRequest( Method.POST );
                 request.AddBody( person );
