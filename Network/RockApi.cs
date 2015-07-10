@@ -94,33 +94,40 @@ namespace Rock.Mobile
                 Request.ExecuteAsync<T>( requestUrl, request, resultHandler);
             }
 
+            const int PersonRecordTypeValueId = 1;
+            const int RecordStatusTypeValueId = 3;
+            const int ConnectionStatusTypeValueId = 146;
+            static Rock.Client.PersonEntity PackagePersonForUpload( Rock.Client.Person person )
+            {
+                // there are certain values that cannot be sent up to Rock, so
+                // this will ensure that the 'person' object is setup for a clean upload to Rock.
+                Rock.Client.PersonEntity newPerson = new Rock.Client.PersonEntity( );
+                newPerson.CopyPropertiesFrom( person );
+                newPerson.FirstName = person.NickName; //ALWAYS SET THE FIRST NAME TO NICK NAME
+                newPerson.RecordTypeValueId = PersonRecordTypeValueId;
+                newPerson.RecordStatusValueId = RecordStatusTypeValueId;
+                newPerson.ConnectionStatusValueId = ConnectionStatusTypeValueId;
+
+                return newPerson;
+            }
             public static void Put_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
             {
-                RestRequest request = GetRockRestRequest( Method.PUT );
-                request.AddBody( person );
+                // create a person object that can go up to rock, and copy the relavant data from the passed in arg
+                Rock.Client.PersonEntity personEntity = PackagePersonForUpload( person );
 
-                Request.ExecuteAsync( BaseUrl + EndPoint_People + "/" + person.Id.ToString( ), request, resultHandler );
+                RestRequest request = GetRockRestRequest( Method.PUT );
+                request.AddBody( personEntity );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_People + "/" + personEntity.Id.ToString( ), request, resultHandler );
             }
 
-            const int PersonRecordTypeValueId = 1;
             public static void Post_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
             {
                 // create a person object that can go up to rock, and copy the relavant data from the passed in arg
-                Rock.Client.Person newPerson = new Rock.Client.Person( );
-                newPerson.Guid = person.Guid;
-                newPerson.BirthDate = person.BirthDate;
-                newPerson.BirthDay = person.BirthDay;
-                newPerson.BirthMonth = person.BirthMonth;
-                newPerson.BirthYear = person.BirthYear;
-                newPerson.Email = person.Email;
-                newPerson.FirstName = person.FirstName;
-                newPerson.NickName = person.NickName;
-                newPerson.LastName = person.LastName;
-                newPerson.Gender = person.Gender;
-                newPerson.RecordTypeValueId = PersonRecordTypeValueId;
-
+                Rock.Client.PersonEntity personEntity = PackagePersonForUpload( person );
+                    
                 RestRequest request = GetRockRestRequest( Method.POST );
-                request.AddBody( person );
+                request.AddBody( personEntity );
 
                 Request.ExecuteAsync( BaseUrl + EndPoint_People, request, resultHandler);
             }
@@ -241,17 +248,23 @@ namespace Rock.Mobile
 
             public static void Put_GroupMembers( Rock.Client.GroupMember groupMember, HttpRequest.RequestResult requestHandler )
             {
+                Rock.Client.GroupMemberEntity groupMemberEntity = new Rock.Client.GroupMemberEntity();
+                groupMemberEntity.CopyPropertiesFrom( groupMember );
+                
                 RestRequest request = GetRockRestRequest( Method.PUT );
-                request.AddBody( groupMember );
+                request.AddBody( groupMemberEntity );
 
-                string requestUrl = BaseUrl + EndPoint_GroupMembers + groupMember.Id.ToString( );
+                string requestUrl = BaseUrl + EndPoint_GroupMembers + groupMemberEntity.Id.ToString( );
                 Request.ExecuteAsync( requestUrl, request, requestHandler );
             }
 
             public static void Post_GroupMembers( Rock.Client.GroupMember groupMember, HttpRequest.RequestResult requestHandler )
             {
+                Rock.Client.GroupMemberEntity groupMemberEntity = new Rock.Client.GroupMemberEntity();
+                groupMemberEntity.CopyPropertiesFrom( groupMember );
+
                 RestRequest request = GetRockRestRequest( Method.POST );
-                request.AddBody( groupMember );
+                request.AddBody( groupMemberEntity );
 
                 string requestUrl = BaseUrl + EndPoint_GroupMembers;
                 Request.ExecuteAsync( requestUrl, request, requestHandler );
@@ -312,8 +325,11 @@ namespace Rock.Mobile
             const string EndPoint_PrayerRequests = "api/prayerrequests";
             public static void Post_PrayerRequests( Rock.Client.PrayerRequest prayer, HttpRequest.RequestResult resultHandler )
             {
+                Rock.Client.PrayerRequestEntity prayerRequestEntity = new Rock.Client.PrayerRequestEntity();
+                prayerRequestEntity.CopyPropertiesFrom( prayer );
+                
                 RestRequest request = GetRockRestRequest( Method.POST );
-                request.AddBody( prayer );
+                request.AddBody( prayerRequestEntity );
 
                 Request.ExecuteAsync( BaseUrl + EndPoint_PrayerRequests, request, resultHandler);
             }
@@ -394,10 +410,13 @@ namespace Rock.Mobile
 
             public static void Put_Groups( Rock.Client.Group group, HttpRequest.RequestResult resultHandler )
             {
+                Rock.Client.GroupEntity groupEntity = new Rock.Client.GroupEntity();
+                groupEntity.CopyPropertiesFrom( group );
+                
                 RestRequest request = GetRockRestRequest( Method.PUT );
-                request.AddBody( group );
+                request.AddBody( groupEntity );
 
-                Request.ExecuteAsync( BaseUrl + EndPoint_Groups + "/" + group.Id, request, resultHandler);
+                Request.ExecuteAsync( BaseUrl + EndPoint_Groups + "/" + groupEntity.Id, request, resultHandler);
             }
 
 
@@ -468,11 +487,14 @@ namespace Rock.Mobile
             const string EndPoint_PhoneNumbers = "api/PhoneNumbers/";
             public static void Put_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
             {
+                Rock.Client.PhoneNumberEntity phoneNumberEntity = new Rock.Client.PhoneNumberEntity();
+                phoneNumberEntity.CopyPropertiesFrom( phoneNumber );
+                
                 RestRequest request = GetRockRestRequest( Method.PUT );
-                request.AddBody( phoneNumber );
+                request.AddBody( phoneNumberEntity );
 
                 // since we're updating an existing number, put the ID
-                string requestUrl = EndPoint_PhoneNumbers + phoneNumber.Id;
+                string requestUrl = EndPoint_PhoneNumbers + phoneNumberEntity.Id;
 
                 // fire off the request
                 Request.ExecuteAsync( BaseUrl + requestUrl, request, resultHandler);
@@ -480,8 +502,11 @@ namespace Rock.Mobile
 
             public static void Post_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
             {
+                Rock.Client.PhoneNumberEntity phoneNumberEntity = new Rock.Client.PhoneNumberEntity();
+                phoneNumberEntity.CopyPropertiesFrom( phoneNumber );
+
                 RestRequest request = GetRockRestRequest( Method.POST );
-                request.AddBody( phoneNumber );
+                request.AddBody( phoneNumberEntity );
 
                 // fire off the request
                 Request.ExecuteAsync( BaseUrl + EndPoint_PhoneNumbers, request, resultHandler);

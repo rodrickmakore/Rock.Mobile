@@ -132,31 +132,12 @@ namespace Rock.Mobile.Network
 
         public static void UpdateHomeCampus( Rock.Client.Group familyGroup, HttpRequest.RequestResult resultHandler )
         {
-            // We can use UpdateFamily to update the campus
-            UpdateFamilyGroup( familyGroup, resultHandler );
+            RockApi.Put_Groups( familyGroup, resultHandler );
         }
 
         public static void UpdateFamilyGroup( Rock.Client.Group familyGroup, HttpRequest.RequestResult resultHandler )
         {
-            // This updates the family to match whatever was passed in as familyGroup.
-            // It can be used to update any aspect of a family, including Campus, Name, etc.
-            Rock.Client.Group updatedGroup = new Rock.Client.Group();
-            updatedGroup.Id = familyGroup.Id;
-            updatedGroup.Guid = familyGroup.Guid;
-            updatedGroup.IsSystem = familyGroup.IsSystem;
-            updatedGroup.ParentGroupId = null;
-            updatedGroup.GroupTypeId = familyGroup.GroupTypeId;
-            updatedGroup.CampusId = familyGroup.CampusId;
-            updatedGroup.ScheduleId = null;
-            updatedGroup.Name = familyGroup.Name;
-            updatedGroup.Description = familyGroup.Description;
-            updatedGroup.IsSecurityRole = familyGroup.IsSecurityRole;
-            updatedGroup.IsActive = familyGroup.IsActive;
-            updatedGroup.Order = familyGroup.Order;
-            updatedGroup.AllowGuests = familyGroup.AllowGuests;
-            updatedGroup.GroupType = null;
-
-            RockApi.Put_Groups( updatedGroup, resultHandler );
+            RockApi.Put_Groups( familyGroup, resultHandler );
         }
 
         public static void UpdateFamilyAddress( Rock.Client.Group family, Rock.Client.GroupLocation address, HttpRequest.RequestResult resultHandler )
