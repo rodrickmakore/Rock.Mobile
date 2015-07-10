@@ -161,6 +161,23 @@ namespace Rock.Mobile.Network
             RockApi.Get_Groups<Rock.Client.Group>( oDataFilter, resultHandler );
         }
 
+        public static void GetFamilyGroupModelByGuid( Guid guid, HttpRequest.RequestResult<Rock.Client.Group> resultHandler )
+        {
+            string oDataFilter = string.Format( "?$filter=Guid eq guid'{0}'", guid.ToString( ) );
+            RockApi.Get_Groups<List<Rock.Client.Group>>( oDataFilter, 
+                delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.Group> groupList )
+                {
+                    Rock.Client.Group returnGroup = null;
+
+                    if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
+                    {
+                        returnGroup = groupList[ 0 ];
+                    }
+
+                    resultHandler( statusCode, statusDescription, returnGroup );
+                } );
+        }
+
         public static void UpdatePerson( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
         {
             // update the profile by the personID

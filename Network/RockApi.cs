@@ -419,6 +419,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync( BaseUrl + EndPoint_Groups + "/" + groupEntity.Id, request, resultHandler);
             }
 
+            public static void Post_Groups( Rock.Client.Group group, HttpRequest.RequestResult resultHandler )
+            {
+                Rock.Client.GroupEntity groupEntity = new Rock.Client.GroupEntity();
+                groupEntity.CopyPropertiesFrom( group );
+
+                RestRequest request = GetRockRestRequest( Method.POST );
+                request.AddBody( groupEntity );
+
+                Request.ExecuteAsync( BaseUrl + EndPoint_Groups, request, resultHandler);
+            }
+
 
 
             const string EndPoint_AttributeValues = "api/AttributeValues";
