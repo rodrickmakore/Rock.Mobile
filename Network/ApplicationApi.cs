@@ -310,7 +310,7 @@ namespace Rock.Mobile.Network
         const int GroupMemberRole_Member_ValueId = 59;
         const int ApplicationGroup_PhotoRequest_ValueId = 1207885;
         const Rock.Client.Enums.GroupMemberStatus GroupMemberStatus_Pending_ValueId = Rock.Client.Enums.GroupMemberStatus.Pending;
-        public static void UpdatePersonImageGroup( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+        static void UpdatePersonImageGroup( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
         {
             ResolvePersonAliasId( person, 
                 delegate(int personId )

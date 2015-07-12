@@ -309,13 +309,13 @@ namespace Rock.Mobile
 
 
             const string EndPoint_PrayerRequests_Public = "api/prayerrequests/public";
-            public static void Get_PrayerRequests_Public( DateTime upToTime, HttpRequest.RequestResult< List<Rock.Client.PrayerRequest> > resultHandler )
+            public static void Get_PrayerRequests_Public( HttpRequest.RequestResult< List<Rock.Client.PrayerRequest> > resultHandler )
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = GetRockRestRequest( Method.GET );
 
                 // insert the expiration limit
-                string requestString = BaseUrl + EndPoint_PrayerRequests_Public + upToTime.ToString( );
+                string requestString = BaseUrl + EndPoint_PrayerRequests_Public;
 
                 Request.ExecuteAsync< List<Rock.Client.PrayerRequest> >( requestString, request, resultHandler);
             }
@@ -444,7 +444,7 @@ namespace Rock.Mobile
 
 
 
-            const string EndPoint_Groups_ByLocation = "api/Groups/ByLocation/{0}/{1}/{2}/{3}/{4}/{5}";
+            const string EndPoint_Groups_ByLocation = "api/Groups/ByLocation/{0}/{1}/{2}";
             public static void Get_Groups_ByLocation( int geoFenceGroupTypeId, int groupTypeId, int locationId, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
