@@ -52,8 +52,6 @@ namespace Rock.Mobile.Animation
 
         public void OnAnimationUpdate(ValueAnimator animation)
         {
-            //float percent = System.Math.Min( (float)animation.CurrentPlayTime / (float)animation.Duration, 1.00f );
-
             float percent = 0.00f;
 
             // check the style of animation they want
@@ -65,7 +63,6 @@ namespace Rock.Mobile.Animation
                     percent = (float)animation.CurrentPlayTime / (float)animation.Duration;
                     break;
                 }
-
 
                 // curve ease in starts SLOW and ends FAST
                 case Style.CurveEaseIn:
@@ -89,6 +86,12 @@ namespace Rock.Mobile.Animation
 
         public void OnAnimationEnd(Animator animation)
         {
+            // give it one more tick at full percentage. This way if 
+            // low framerate causes a large delta than we don't handle,
+            // we'll at least finish out the animation.
+            AnimTick( 1.00f, AnimationUpdateDelegate );
+
+            // now finish it
             if ( AnimationCompleteDelegate != null )
             {
                 AnimationCompleteDelegate( );

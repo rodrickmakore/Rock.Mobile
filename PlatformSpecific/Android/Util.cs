@@ -18,7 +18,7 @@ namespace Rock.Mobile.PlatformSpecific.Android.Util
                     // if true, the image is a hdpi image and should be scaled to an appropriate size of the device
                     if( scaleForDpi == true )
                     {
-                        decodeOptions.InSampleSize = (int)Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density;
+                        decodeOptions.InSampleSize = (int)System.Math.Ceiling( Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density );
                     }
 
                     // if it was bundled, take it from our assets
