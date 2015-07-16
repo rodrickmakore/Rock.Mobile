@@ -16,7 +16,12 @@ namespace Rock.Mobile
                 ScaleAspectFill,
                 ScaleAspectFit
             }
-            
+
+            /// <summary>
+            /// Creates an image. If scaleForDPI is true, it will assume the image is high DPI and downsize it,
+            /// so expect it to be half the normal size.
+            /// </summary>
+            /// <param name="scaleForDPI">If set to <c>true</c> scale for DP.</param>
             public static PlatformImageView Create( bool scaleForDPI )
             {
                 #if __IOS__
