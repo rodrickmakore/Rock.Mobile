@@ -31,6 +31,7 @@ namespace Rock.Mobile
                 ImageView = new BorderedRectImageView( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 ImageView.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
 
+                // Set this to true if your image is like a "retina" iOS image. This will effectively HALF the size of the image.
                 _ScaleForDPI = scaleForDPI;
             }
 
@@ -84,7 +85,7 @@ namespace Rock.Mobile
                 BitmapFactory.Options decodeOptions = new BitmapFactory.Options( );
                 if ( _ScaleForDPI )
                 {
-                    decodeOptions.InSampleSize = (int)Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density;
+                    decodeOptions.InSampleSize = (int)System.Math.Ceiling( Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density );
                 }
 
                 ImageRef = BitmapFactory.DecodeStream( imageStream, null, decodeOptions );
