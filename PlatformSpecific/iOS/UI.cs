@@ -866,6 +866,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
         List<NSObject> ObserverHandles { get; set; }
 
+        bool IsActive { get; set; }
+
         void OnTextFieldDidBeginEditing( NSNotification notification )
         {
             Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
@@ -886,7 +888,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             {
                 throw new Exception( "KeyboardAdjustManager requires the first child of parentView to be of type UIScrollView" );
             }
+        }
 
+        public void Activate( )
+        {
             // setup our observers
             ObserverHandles = new List<NSObject>( );
 
@@ -901,60 +906,67 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
             handle = NSNotificationCenter.DefaultCenter.AddObserver (UIKeyboard.WillShowNotification, OnKeyboardNotification);
             ObserverHandles.Add( handle );
+
+            IsActive = true;
         }
 
-        public void FreeObservers( )
+        public void Deactivate( )
         {
             foreach( NSObject handle in ObserverHandles )
             {
                 NSNotificationCenter.DefaultCenter.RemoveObserver( handle );   
             }
+
+            IsActive = false;
         }
 
         void OnKeyboardNotification( NSNotification notification )
         {
-            //Start an animation, using values from the keyboard
-            UIView.BeginAnimations ("AnimateForKeyboard");
-            UIView.SetAnimationBeginsFromCurrentState (true);
-            UIView.SetAnimationDuration (UIKeyboard.AnimationDurationFromNotification (notification));
-            UIView.SetAnimationCurve ((UIViewAnimationCurve)UIKeyboard.AnimationCurveFromNotification (notification));
-
-            // JHM 5-18-15: Don't ignore the show notification if we think we're showing the keyboard.
-            // Instead, we'll simply 'reset' our potitioning. This is important in iOS 8
-            // in case they toggle the little "tips" panel open / closed
-            if( notification.Name == UIKeyboard.WillShowNotification )
+            if ( IsActive )
             {
-                DisplayingKeyboard = true;
+                //Start an animation, using values from the keyboard
+                UIView.BeginAnimations( "AnimateForKeyboard" );
+                UIView.SetAnimationBeginsFromCurrentState( true );
+                UIView.SetAnimationDuration( UIKeyboard.AnimationDurationFromNotification( notification ) );
+                UIView.SetAnimationCurve( (UIViewAnimationCurve)UIKeyboard.AnimationCurveFromNotification( notification ) );
 
-                // store the original screen positioning / scroll. No matter what, we will
-                // undo any scrolling the user did while editing.
-                Edit_StartScrollOffset = ParentScrollView.ContentOffset;
-                Edit_StartScreenOffset = ParentScrollView.Layer.Position;
+                // JHM 5-18-15: Don't ignore the show notification if we think we're showing the keyboard.
+                // Instead, we'll simply 'reset' our potitioning. This is important in iOS 8
+                // in case they toggle the little "tips" panel open / closed
+                if ( notification.Name == UIKeyboard.WillShowNotification )
+                {
+                    DisplayingKeyboard = true;
 
-                // get the keyboard frame and transform it into our view's space
-                CGRect keyboardFrame = UIKeyboard.FrameEndFromNotification (notification);
-                keyboardFrame = ParentView.ConvertRectToView( keyboardFrame, null );
+                    // store the original screen positioning / scroll. No matter what, we will
+                    // undo any scrolling the user did while editing.
+                    Edit_StartScrollOffset = ParentScrollView.ContentOffset;
+                    Edit_StartScreenOffset = ParentScrollView.Layer.Position;
 
-                // first, get the bottom point of the visible area. (Reduce the visible area slightly so we don't butt RIGHT against the textView)
-                Edit_VisibleAreaWithKeyboardBot = (ParentView.Bounds.Height - keyboardFrame.Height) * .98f;
+                    // get the keyboard frame and transform it into our view's space
+                    CGRect keyboardFrame = UIKeyboard.FrameEndFromNotification( notification );
+                    keyboardFrame = ParentView.ConvertRectToView( keyboardFrame, null );
 
-                // now get the dist between the bottom of the visible area and the text field (text field's pos also changes as we scroll)
-                MaintainEditTextVisibility( );
+                    // first, get the bottom point of the visible area. (Reduce the visible area slightly so we don't butt RIGHT against the textView)
+                    Edit_VisibleAreaWithKeyboardBot = ( ParentView.Bounds.Height - keyboardFrame.Height ) * .98f;
+
+                    // now get the dist between the bottom of the visible area and the text field (text field's pos also changes as we scroll)
+                    MaintainEditTextVisibility( );
+                }
+                else if ( notification.Name == UIKeyboard.WillHideNotification )
+                {
+                    // restore the screen to the way it was before editing
+                    ParentScrollView.ContentOffset = Edit_StartScrollOffset;
+                    ParentScrollView.Layer.Position = Edit_StartScreenOffset;
+
+                    // reset the tapped textfield area
+                    Edit_TappedTextFieldFrame = RectangleF.Empty;
+
+                    DisplayingKeyboard = false;
+                }
+
+                //Commit the animation
+                UIView.CommitAnimations( );
             }
-            else if ( notification.Name == UIKeyboard.WillHideNotification )
-            {
-                // restore the screen to the way it was before editing
-                ParentScrollView.ContentOffset = Edit_StartScrollOffset;
-                ParentScrollView.Layer.Position = Edit_StartScreenOffset;
-
-                // reset the tapped textfield area
-                Edit_TappedTextFieldFrame = RectangleF.Empty;
-
-                DisplayingKeyboard = false;
-            }
-
-            //Commit the animation
-            UIView.CommitAnimations (); 
         }
 
         CGRect GetTappedTextFieldFrame( RectangleF textFrame )
@@ -973,7 +985,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         protected void MaintainEditTextVisibility( )
         {
             // no need to do anything if a hardware keyboard is attached.
-            if( DisplayingKeyboard == true )
+            if( IsActive && DisplayingKeyboard == true )
             {
                 // PLUS makes it scroll "up" (So if "CONTROL" is at the bottom of the  screen, it will go BELOW the screen (move down))
                 // NEG makes it scroll "down" (So if "CONTROL" is at the bottom of the screen, it will go UP on the screen (move up))
