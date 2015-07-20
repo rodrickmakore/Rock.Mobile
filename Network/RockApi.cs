@@ -496,6 +496,14 @@ namespace Rock.Mobile
 
 
             const string EndPoint_PhoneNumbers = "api/PhoneNumbers/";
+            public static void Get_PhoneNumbers<T>( string oDataFilter, HttpRequest.RequestResult<T> resultHandler ) where T : new( )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestUrl = BaseUrl + EndPoint_PhoneNumbers + oDataFilter;
+                Request.ExecuteAsync<T>( requestUrl, request, resultHandler);
+            }
+
             public static void Put_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
             {
                 Rock.Client.PhoneNumberEntity phoneNumberEntity = new Rock.Client.PhoneNumberEntity();

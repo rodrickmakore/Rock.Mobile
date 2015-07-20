@@ -84,7 +84,7 @@ namespace Rock.Mobile.Network
                 {
                     Rock.Client.Person returnPerson = null;
 
-                    if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
+                    if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true && personList != null && personList.Count > 0 )
                     {
                         returnPerson = personList[ 0 ];
                     }
@@ -127,6 +127,22 @@ namespace Rock.Mobile.Network
                         // or just update the existing number
                         RockApi.Put_PhoneNumbers( phoneNumber, resultHandler );
                     }
+                } );
+        }
+
+        public static void GetPhoneNumberByGuid( Guid guid, HttpRequest.RequestResult<Rock.Client.PhoneNumber> resultHandler )
+        {
+            string oDataFilter = string.Format( "?$filter=Guid eq guid'{0}'", guid.ToString( ) );
+            RockApi.Get_PhoneNumbers<List<Rock.Client.PhoneNumber>>( oDataFilter, delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.PhoneNumber> model )
+                {
+                    Rock.Client.PhoneNumber returnPhoneNumber = null;
+
+                    if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true && model != null && model.Count > 0 )
+                    {
+                        returnPhoneNumber = model[ 0 ];
+                    }
+
+                    resultHandler( statusCode, statusDescription, returnPhoneNumber );
                 } );
         }
 
