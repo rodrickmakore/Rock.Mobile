@@ -14,46 +14,54 @@ namespace Rock.Mobile.PlatformSpecific.Android.Util
             Rock.Mobile.Threading.Util.PerformOnWorkerThread( delegate
                 {
                     BitmapFactory.Options decodeOptions = new BitmapFactory.Options( );
-
-                    // if true, the image is a hdpi image and should be scaled to an appropriate size of the device
-                    if( scaleForDpi == true )
-                    {
-                        decodeOptions.InSampleSize = (int)System.Math.Ceiling( Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density );
-                    }
-
-                    // if it was bundled, take it from our assets
                     Bitmap imageBmp = null;
-                    if( bundled == true )
+
+                    try
                     {
-                        System.IO.Stream bundleStream = Rock.Mobile.PlatformSpecific.Android.Core.Context.Assets.Open( imageName );
-                        if( bundleStream != null )
+                        // if true, the image is a hdpi image and should be scaled to an appropriate size of the device
+                        if( scaleForDpi == true )
                         {
-                            imageBmp = BitmapFactory.DecodeStream( bundleStream, null, decodeOptions );
-                            bundleStream.Dispose( );
-                        }
-                        else
-                        {
-                            Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
+                            decodeOptions.InSampleSize = (int)System.Math.Ceiling( Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density );
                         }
 
-                    }
-                    // else filecache
-                    else
-                    {
-                        System.IO.MemoryStream assetStream = (System.IO.MemoryStream)FileCache.Instance.LoadFile( imageName );
-                        if( assetStream != null )
+                        // if it was bundled, take it from our assets
+                        if( bundled == true )
                         {
-                            imageBmp = BitmapFactory.DecodeStream( assetStream, null, decodeOptions );
-                            if( imageBmp == null )
+                            System.IO.Stream bundleStream = Rock.Mobile.PlatformSpecific.Android.Core.Context.Assets.Open( imageName );
+                            if( bundleStream != null )
                             {
-                                Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Image loaded null. {0}", imageName ) );
+                                imageBmp = BitmapFactory.DecodeStream( bundleStream, null, decodeOptions );
+                                bundleStream.Dispose( );
                             }
-                            assetStream.Dispose( );
+                            else
+                            {
+                                Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
+                            }
+
                         }
+                        // else filecache
                         else
                         {
-                            Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
+                            System.IO.MemoryStream assetStream = (System.IO.MemoryStream)FileCache.Instance.LoadFile( imageName );
+                            if( assetStream != null )
+                            {
+                                imageBmp = BitmapFactory.DecodeStream( assetStream, null, decodeOptions );
+                                if( imageBmp == null )
+                                {
+                                    Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Image loaded null. {0}", imageName ) );
+                                }
+                                assetStream.Dispose( );
+                            }
+                            else
+                            {
+                                Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
+                            }
                         }
+                    }
+                    catch( Exception e )
+                    {
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
+                        Xamarin.Insights.Report( e );
                     }
 
                     // update the image banner on the UI thread

@@ -508,7 +508,7 @@ namespace Rock.Mobile
                 string requestUrl = EndPoint_PhoneNumbers + phoneNumberEntity.Id;
 
                 // fire off the request
-                Request.ExecuteAsync( BaseUrl + requestUrl, request, resultHandler);
+                Request.ExecuteAsync( BaseUrl + requestUrl, request, resultHandler );
             }
 
             public static void Post_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
@@ -520,7 +520,17 @@ namespace Rock.Mobile
                 request.AddBody( phoneNumberEntity );
 
                 // fire off the request
-                Request.ExecuteAsync( BaseUrl + EndPoint_PhoneNumbers, request, resultHandler);
+                Request.ExecuteAsync( BaseUrl + EndPoint_PhoneNumbers, request, resultHandler );
+            }
+
+            public static void Delete_PhoneNumbers( int phoneNumberId, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.DELETE );
+
+                string requestUrl = EndPoint_PhoneNumbers + phoneNumberId;
+
+                // fire off the request
+                Request.ExecuteAsync( BaseUrl + requestUrl, request, resultHandler );
             }
 
 

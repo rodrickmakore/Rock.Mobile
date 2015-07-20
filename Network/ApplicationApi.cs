@@ -130,6 +130,11 @@ namespace Rock.Mobile.Network
                 } );
         }
 
+        public static void DeleteCellPhoneNumber( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
+        {
+            RockApi.Delete_PhoneNumbers( phoneNumber.Id, resultHandler );
+        }
+
         public static void UpdateHomeCampus( Rock.Client.Group familyGroup, HttpRequest.RequestResult resultHandler )
         {
             RockApi.Put_Groups( familyGroup, resultHandler );
