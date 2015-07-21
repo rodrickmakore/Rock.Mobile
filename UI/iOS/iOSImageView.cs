@@ -73,7 +73,7 @@ namespace Rock.Mobile
                 }
                 else
                 {
-                    ImageView.Image = new UIImage( imageData );
+                    ImageView.Image = new UIImage( imageData, 1 );
                 }
             }
 

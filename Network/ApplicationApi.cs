@@ -306,7 +306,7 @@ namespace Rock.Mobile.Network
             public string Id { get; set; }
             public string FileName { get; set; }
         }
-        public static void UploadPersonPicture( MemoryStream imageBuffer, HttpRequest.RequestResult<int> resultHandler )
+        static void UploadPersonPicture( MemoryStream imageBuffer, HttpRequest.RequestResult<int> resultHandler )
         {
             // send up the image for the user
             RockApi.Post_FileUploader( imageBuffer, true, FileTypeImageGuid, false, 

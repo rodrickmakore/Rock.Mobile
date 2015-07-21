@@ -60,10 +60,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public int XInset { get; set; }
         public int YInset { get; set; }
 
-        public UIInsetTextField( )
+        public UIInsetTextField( int xInset = 5, int yInset = 5 )
         {
-            XInset = 5;
-            YInset = 5;
+            XInset = xInset;
+            YInset = yInset;
         }
 
         public override CGRect TextRect(CGRect forBounds)
@@ -1046,7 +1046,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             {
                 _ActiveColor = value;
 
-                // set the buttons appopriately
+                // set the buttons appropriately
                 ToggleSide( SideToggled );
             }
         }
@@ -1080,7 +1080,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             {
                 _InActiveColor = value;
 
-                // set the buttons appopriately
+                // set the buttons appropriately
                 ToggleSide( SideToggled );
             }
         }
