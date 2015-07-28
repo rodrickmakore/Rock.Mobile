@@ -893,31 +893,37 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         public void Activate( )
         {
             // setup our observers
-            ObserverHandles = new List<NSObject>( );
+            if ( IsActive == false )
+            {
+                ObserverHandles = new List<NSObject>();
 
-            NSObject handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlDidBeginEditingNotification, OnTextFieldDidBeginEditing);
-            ObserverHandles.Add( handle );
+                NSObject handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlDidBeginEditingNotification, OnTextFieldDidBeginEditing );
+                ObserverHandles.Add( handle );
 
-            handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlChangedNotification, OnTextFieldChanged);
-            ObserverHandles.Add( handle );
+                handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlChangedNotification, OnTextFieldChanged );
+                ObserverHandles.Add( handle );
 
-            handle = NSNotificationCenter.DefaultCenter.AddObserver (UIKeyboard.WillHideNotification, OnKeyboardNotification);
-            ObserverHandles.Add( handle );
+                handle = NSNotificationCenter.DefaultCenter.AddObserver( UIKeyboard.WillHideNotification, OnKeyboardNotification );
+                ObserverHandles.Add( handle );
 
-            handle = NSNotificationCenter.DefaultCenter.AddObserver (UIKeyboard.WillShowNotification, OnKeyboardNotification);
-            ObserverHandles.Add( handle );
+                handle = NSNotificationCenter.DefaultCenter.AddObserver( UIKeyboard.WillShowNotification, OnKeyboardNotification );
+                ObserverHandles.Add( handle );
 
-            IsActive = true;
+                IsActive = true;
+            }
         }
 
         public void Deactivate( )
         {
-            foreach( NSObject handle in ObserverHandles )
+            if ( IsActive == true )
             {
-                NSNotificationCenter.DefaultCenter.RemoveObserver( handle );   
-            }
+                foreach ( NSObject handle in ObserverHandles )
+                {
+                    NSNotificationCenter.DefaultCenter.RemoveObserver( handle );   
+                }
 
-            IsActive = false;
+                IsActive = false;
+            }
         }
 
         void OnKeyboardNotification( NSNotification notification )
