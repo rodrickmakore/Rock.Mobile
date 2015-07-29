@@ -63,6 +63,30 @@ namespace Rock.Mobile.Network
                 } );
         }
 
+        public static void IsRockAtURL( string url, HttpRequest.RequestResult onComplete )
+        {
+            // get the default person in Rock
+            string fullUrl = url + "/api/People/1";
+
+            RockApi.Get_CustomEndPoint<Rock.Client.Person>( fullUrl, 
+                delegate(HttpStatusCode statusCode, string statusDescription, Rock.Client.Person person )
+                {
+                    // if it returns, this is safely a Rock server.
+                    // we'll also consider it valid if it returns Unauthorized. I think its pretty safe to assume
+                    // that there won't be other servers out there (especially when people are TRYING to connect to Rock)
+                    // that just so happen to have an /api/people/{0} that returns Unauthorized.
+                    if( (Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) && person != null) || statusCode == HttpStatusCode.Unauthorized )
+                    {
+                        onComplete( HttpStatusCode.OK, "" );
+                    }
+                    // otherwise, Rock isn't here.
+                    else
+                    {
+                        onComplete( HttpStatusCode.BadRequest, "" );
+                    }
+                } );
+        }
+
         public static void UpdateOrAddPerson( Rock.Client.Person person, bool isNew, HttpRequest.RequestResult resultHandler )
         {
             if ( isNew == true )

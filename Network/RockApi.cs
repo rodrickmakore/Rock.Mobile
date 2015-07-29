@@ -45,11 +45,6 @@ namespace Rock.Mobile
 
             static RestRequest GetRockRestRequest( Method method )
             {
-                if ( string.IsNullOrEmpty( BaseUrl ) == true )
-                {
-                    throw new Exception( "No Rock URL set. Call SetRockURL before making any API requests." );
-                }
-
                 RestRequest request = new RestRequest( method );
                 request.RequestFormat = DataFormat.Json;
                 request.AddHeader( AuthorizationTokenHeaderKey, AuthorizationKey );
@@ -57,6 +52,17 @@ namespace Rock.Mobile
                 return request;
             }
 
+
+            // This allows hitting custom endpoints in Rock that don't necessarily map to a specific endpoint.
+            // An example would be checking to see if Rock exists. We do that by querying the default person. Since
+            // that is a workaround, we don't put an endpoint for that in here. Instead, the ApplicationApi implements it
+            // using this method.
+            public static void Get_CustomEndPoint<T>( string urlWithQuery, HttpRequest.RequestResult<T> resultHandler ) where T : new( )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                Request.ExecuteAsync<T>( urlWithQuery, request, resultHandler );
+            }
 
 
             const string EndPoint_Auth_FacebookLogin = "api/Auth/FacebookLogin";
