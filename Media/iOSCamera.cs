@@ -8,6 +8,7 @@ using CoreGraphics;
 using System.Runtime.InteropServices;
 using ImageIO;
 using CoreFoundation;
+using AVFoundation;
 
 namespace Rock.Mobile
 {
@@ -46,7 +47,20 @@ namespace Rock.Mobile
 
             public override bool IsAvailable( )
             {
-                return UIImagePickerController.IsSourceTypeAvailable( UIImagePickerControllerSourceType.Camera );
+                // get the permission settings
+                AVAuthorizationStatus authStatus = AVCaptureDevice.GetAuthorizationStatus( AVMediaType.Video );
+
+                // see if there's even a camera ON the device
+                bool isTypeAvailable = UIImagePickerController.IsSourceTypeAvailable( UIImagePickerControllerSourceType.Camera );
+
+                // if there IS a camera, and the permission is allowed, then yes, it's available.
+                if ( isTypeAvailable == true && authStatus == AVAuthorizationStatus.Authorized )
+                {
+                    return true;
+                }
+
+                // otherwise it isn't.
+                return false;
             }
 
             public override void CaptureImage( object imageDest, object context, CaptureImageEvent callback )
