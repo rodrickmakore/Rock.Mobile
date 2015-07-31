@@ -443,5 +443,18 @@ namespace Rock.Mobile.Network
                     }
                 } );
         }
+
+        public static void GetImpersonationToken( int personAliasId, HttpRequest.RequestResult<string> resultHandler )
+        {
+            ApplicationApi.ResolvePersonAliasId( personAliasId, 
+                delegate(int personId )
+                {
+                    // with the resolved ID, get the impersonation token
+                    RockApi.Get_People_GetSearchDetails( personId.ToString( ), delegate(HttpStatusCode statusCode, string statusDescription, string impersonationToken )
+                        {
+                            resultHandler( statusCode, statusDescription, impersonationToken );
+                        } );
+                } );
+        }
     }
 }

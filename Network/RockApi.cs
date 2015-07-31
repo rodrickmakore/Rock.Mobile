@@ -177,6 +177,22 @@ namespace Rock.Mobile
 
 
 
+            const string EndPoint_People_GetSearchDetails = "api/People/GetSearchDetails/";
+            public static void Get_People_GetSearchDetails( string oDataFilter, HttpRequest.RequestResult<string> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_People_GetSearchDetails + oDataFilter;
+                Request.ExecuteAsync<object>( requestString, request, delegate(HttpStatusCode statusCode, string statusDescription, object model )
+                    {
+                        // we know this endpoint returns string data, so intercept and cast to a string.
+                        // we have to do this because string doesn't have a parameterless constructor
+                        resultHandler( statusCode, statusDescription, (string)model );
+                    } );
+            }
+
+
+
             const string EndPoint_Campuses = "api/Campuses/";
             public static void Get_Campuses( HttpRequest.RequestResult< List<Rock.Client.Campus> > resultHandler )
             {
