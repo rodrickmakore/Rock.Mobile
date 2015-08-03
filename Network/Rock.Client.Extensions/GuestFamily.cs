@@ -14,6 +14,7 @@ namespace Rock.Client
             public string LastName { get; set; }
             public string PhotoUrl { get; set; }
             public bool CanCheckin { get; set; }
+            public string Role { get; set; }
         }
         
         public int Id { get; set; }
@@ -24,24 +25,6 @@ namespace Rock.Client
 
         public GuestFamily( )
         {
-        }
-
-        public void SortMembers( )
-        {
-            // sort the family members by adult / child
-            FamilyMembers.Sort( delegate( Member x, Member y )
-                {
-                    // get their birthdays
-                    /*DateTime xDate = x.Person.BirthDate.HasValue ? x.Person.BirthDate.Value : DateTime.MinValue;
-                    DateTime yDate = y.Person.BirthDate.HasValue ? y.Person.BirthDate.Value : DateTime.MinValue;
-
-                    if( xDate < yDate )
-                    {
-                        return -1;
-                    }*/
-
-                    return 1;
-                } );
         }
     }
 }
