@@ -15,6 +15,7 @@ namespace Rock.Client
             public string PhotoUrl { get; set; }
             public bool CanCheckin { get; set; }
             public string Role { get; set; }
+            public Rock.Client.Enums.Gender Gender { get; set; }
         }
         
         public int Id { get; set; }
