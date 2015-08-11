@@ -26,6 +26,15 @@ namespace Rock.Mobile.PlatformSpecific.Util
         }
     }
 
+    public static class StringExtensions
+    {
+        public static NSString UrlEncode( this string url )
+        {
+            NSString displayUrl = new NSString( url );
+            return displayUrl.CreateStringByAddingPercentEscapes( NSStringEncoding.ASCIIStringEncoding );
+        }
+    }
+
     public static class CGObjectExtensions
     {
         public static System.Drawing.PointF ToPointF( this CGPoint point )

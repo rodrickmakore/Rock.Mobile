@@ -53,8 +53,8 @@ namespace Rock.Mobile
                 // see if there's even a camera ON the device
                 bool isTypeAvailable = UIImagePickerController.IsSourceTypeAvailable( UIImagePickerControllerSourceType.Camera );
 
-                // if there IS a camera, and the permission is allowed, then yes, it's available.
-                if ( isTypeAvailable == true && authStatus == AVAuthorizationStatus.Authorized )
+                // if there IS a camera, and the permission is allowed or notdetermined, then yes, it's available.
+                if ( isTypeAvailable == true && (authStatus == AVAuthorizationStatus.Authorized || authStatus == AVAuthorizationStatus.NotDetermined) )
                 {
                     return true;
                 }

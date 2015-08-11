@@ -22,45 +22,41 @@ namespace Rock.Mobile.Network
         public static void ResolvePersonAliasId( Rock.Client.Person person, OnPersonAliasIdResolved onComplete )
         {
             // make the request for the ID
-            if ( person.PrimaryAliasId.HasValue == true )
-            {
-                RockApi.Get_PersonAliasIdToPersonId( person.PrimaryAliasId.Value, 
-                    delegate(HttpStatusCode statusCode, string statusDescription, RockApi.PersonIdObj model)
+            ResolvePersonAliasId( person.PrimaryAliasId, 
+                delegate(int personId)
+                {
+                    if( personId != -1 )
                     {
-                        if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) )
+                        // sync the new person ID.
+                        person.Id = personId;
+                    }
+
+                    onComplete( personId );
+                } );
+        }
+
+        public static void ResolvePersonAliasId( int? personAliasId, OnPersonAliasIdResolved onComplete )
+        {
+            // make the request for the ID
+            if ( personAliasId.HasValue )
+            {
+                RockApi.Get_PersonAliasIdToPersonId( personAliasId.Value, 
+                    delegate(HttpStatusCode statusCode, string statusDescription, RockApi.PersonIdObj model )
+                    {
+                        if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) && model != null )
                         {
-                            // sync the new person ID.
-                            person.Id = model.PersonId;
                             onComplete( model.PersonId );
                         }
                         else
                         {
                             onComplete( -1 );
                         }
-
                     } );
             }
             else
             {
-                onComplete( person.Id );
+                onComplete( -1 );
             }
-        }
-
-        public static void ResolvePersonAliasId( int personAliasId, OnPersonAliasIdResolved onComplete )
-        {
-            // make the request for the ID
-            RockApi.Get_PersonAliasIdToPersonId( personAliasId, 
-                delegate(HttpStatusCode statusCode, string statusDescription, RockApi.PersonIdObj model)
-                {
-                    if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) )
-                    {
-                        onComplete( model.PersonId );
-                    }
-                    else
-                    {
-                        onComplete( -1 );
-                    }
-                } );
         }
 
         public static void IsRockAtURL( string url, HttpRequest.RequestResult onComplete )

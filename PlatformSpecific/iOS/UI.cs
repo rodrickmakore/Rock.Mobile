@@ -1010,7 +1010,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 scrollAmount = System.Math.Min( (float)scrollAmount, System.Math.Max( 0, (float)ParentScrollView.ContentOffset.Y ) ); 
 
                 // Now determine the amount of "up" scroll remaining
-                nfloat maxScrollAmount = ParentScrollView.ContentSize.Height - ParentScrollView.Bounds.Height;
+                // Again, Don't factor in negative ContentOffset. That could only happen if the view isn't actually going to scroll because all content fits on it.
+                nfloat maxScrollAmount = (nfloat)System.Math.Max( (float)ParentScrollView.ContentSize.Height - ParentScrollView.Bounds.Height, 0 );
                 nfloat scrollAmountDistRemainingDown = -( maxScrollAmount - ParentScrollView.ContentOffset.Y );
 
                 // and clamp the scroll amount to that, so we don't scroll "up" beyond the contraints

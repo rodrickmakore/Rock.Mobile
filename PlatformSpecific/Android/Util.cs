@@ -60,8 +60,10 @@ namespace Rock.Mobile.PlatformSpecific.Android.Util
                     }
                     catch( Exception e )
                     {
-                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0}", imageName ) );
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "ASYNCLOAD ERROR: Failed to load image {0} {1}", imageName, e ) );
+#if !DEBUG
                         Xamarin.Insights.Report( e );
+#endif
                     }
 
                     // update the image banner on the UI thread
