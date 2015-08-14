@@ -381,8 +381,18 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
     /// </summary>
     public class PhoneNumberFormatterDelegate : UITextFieldDelegate
     {
+        // this works in tandem with the KeyboardAdjustManager to allow the
+        // user to set this delegate, but also support the keyboard adjust manager.
+        public override bool ShouldBeginEditing(UITextField textField)
+        {
+            NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textField.Frame ) );
+            return true;
+        }
+
         public override bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
         {
+            NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textField.Frame ) );
+
             string newString = "";
 
             // What are we doing?
