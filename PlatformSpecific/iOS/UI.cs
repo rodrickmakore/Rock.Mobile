@@ -1116,6 +1116,32 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             }
         }
 
+        public CGColor BorderColor
+        {
+            get
+            {
+                return LeftButton.Layer.BorderColor;
+            }
+            set
+            {
+                LeftButton.Layer.BorderColor = value;
+                RightButton.Layer.BorderColor = value;
+            }
+        }
+
+        public nfloat BorderWidth
+        {
+            get
+            {
+                return LeftButton.Layer.BorderWidth;
+            }
+            set
+            {
+                LeftButton.Layer.BorderWidth = value;
+                RightButton.Layer.BorderWidth = value;
+            }
+        }
+
         public bool Enabled 
         {
             get
@@ -1179,12 +1205,15 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
         public override void SizeToFit( )
         {
+            nfloat horizontalPadding = 30;
+            nfloat verticalPadding = 5;
+
             // first wrap each button and give them some padding
             LeftButton.SizeToFit( );
-            LeftButton.Bounds = new CGRect( 0, 0, LeftButton.Bounds.Width + 5, LeftButton.Bounds.Height + 5 );
+            LeftButton.Bounds = new CGRect( 0, 0, LeftButton.Bounds.Width + horizontalPadding, LeftButton.Bounds.Height + verticalPadding );
 
             RightButton.SizeToFit( );
-            RightButton.Bounds = new CGRect( 0, 0, RightButton.Bounds.Width + 5, RightButton.Bounds.Height + 5 );
+            RightButton.Bounds = new CGRect( 0, 0, RightButton.Bounds.Width + horizontalPadding, RightButton.Bounds.Height + verticalPadding );
 
             nfloat maxWidth = System.Math.Max( (float)LeftButton.Bounds.Width, (float)RightButton.Bounds.Width );
             nfloat maxHeight = System.Math.Max( (float)LeftButton.Bounds.Height, (float)RightButton.Bounds.Height );
@@ -1194,10 +1223,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             RightButton.Bounds = new CGRect( 0, 0, maxWidth, maxHeight );
 
             // put the right button next to the left
-            RightButton.Layer.Position = new CGPoint( LeftButton.Frame.Right, 0 );
+            RightButton.Layer.Position = new CGPoint( LeftButton.Frame.Right - 1, 0 );
 
             // and wrap everything.
-            Bounds = new CGRect( 0, 0, maxWidth * 2, maxHeight );
+            Bounds = new CGRect( 0, 0, (maxWidth * 2) - LeftButton.Layer.BorderWidth, maxHeight );
         }
     }
 }
