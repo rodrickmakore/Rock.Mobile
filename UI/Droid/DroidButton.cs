@@ -33,6 +33,7 @@ namespace Rock.Mobile
             {
                 Button = new BorderedRectButton( Rock.Mobile.PlatformSpecific.Android.Core.Context );
                 Button.LayoutParameters = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
+                Button.SetAllCaps( false );
 
                 Button.Click += (object sender, EventArgs e ) =>
                     {
@@ -51,6 +52,7 @@ namespace Rock.Mobile
                     Typeface fontFace = Rock.Mobile.PlatformSpecific.Android.Graphics.FontManager.Instance.GetFont( fontName );
                     Button.SetTypeface( fontFace, TypefaceStyle.Normal );
                     Button.SetTextSize( Android.Util.ComplexUnitType.Dip, fontSize );
+                    Button.SetAllCaps( false );
                 } 
                 catch
                 {
