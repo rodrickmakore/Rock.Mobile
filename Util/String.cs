@@ -73,6 +73,24 @@ namespace Rock.Mobile.Util.Strings
             int lastSlashIndex = url.LastIndexOf( "/" ) + 1;
             return url.Substring( lastSlashIndex );
         }
+
+        public static string AddParamToURL( string url, string parameter )
+        {
+            string fullUrl = url;
+
+            // if the URL contains a ? already, just add the parameter as an additional
+            if ( url.Contains( "?" ) )
+            {
+                fullUrl += "&";
+            }
+            else
+            {
+                // otherwise add the ?
+                fullUrl += "?";
+            }
+
+            return fullUrl + parameter;
+        }
     }
 
     public static class StringExtensions
