@@ -89,10 +89,16 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
                 Parent.OnReceivedError( errorCode, description, failingUrl );
             }
+
+            public override bool ShouldOverrideUrlLoading(WebView view, string url)
+            {
+                return Parent.ShouldOverrideUrlLoading(view, url);
+            }
         }
 
         WebView WebView { get; set; }
         ProgressBar ProgressBar { get; set; }
+        string ExternalToken { get; set; }
 
         public delegate void PageLoaded( bool result, string forwardUrl );
         PageLoaded PageLoadedHandler { get; set; }
@@ -136,13 +142,30 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             CookieManager.Instance.RemoveAllCookie( );
         }
 #pragma warning restore 0618
-
-        public void LoadUrl( string url, PageLoaded loadedHandler )
+        
+        public void LoadUrl( string url, string externalToken, PageLoaded loadedHandler )
         {
             PageLoadedHandler = loadedHandler;
 
+            // if the url begins with this, we'll launch it in an external browser
+            ExternalToken = externalToken;
+
             ProgressBar.Visibility = ViewStates.Visible;
             WebView.LoadUrl( url );
+        }
+
+        public bool ShouldOverrideUrlLoading(WebView view, string url)
+        {
+            if ( url.StartsWith( ExternalToken ) )
+            {
+                global::Android.Net.Uri uri = global::Android.Net.Uri.Parse( url.Substring( ExternalToken.Length ) );
+
+                var intent = new Intent( Intent.ActionView, uri ); 
+                ((Activity)Rock.Mobile.PlatformSpecific.Android.Core.Context).StartActivity( intent );
+                return true;
+            }
+
+            return false;
         }
 
         public void OnReceivedError( ClientError errorCode, string description, string failingUrl )
