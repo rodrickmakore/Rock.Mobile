@@ -303,19 +303,19 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
             Icon = new TextView( context );
             Icon.LayoutParameters = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
-            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).LeftMargin = 10;
-            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).RightMargin = 25;
+            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).LeftMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 5 );
+            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).RightMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 15 );
 
-            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).TopMargin = 10;
-            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).BottomMargin = 10;
+            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).TopMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 5 );
+            ( (LinearLayout.LayoutParams)Icon.LayoutParameters ).BottomMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 5 );
             TextLayout.AddView( Icon );
 
             Label = new TextView( context );
             Label.LayoutParameters = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent );
-            ( (LinearLayout.LayoutParams)Label.LayoutParameters ).RightMargin = 10;
+            ( (LinearLayout.LayoutParams)Label.LayoutParameters ).RightMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 5 );
 
-            ( (LinearLayout.LayoutParams)Label.LayoutParameters ).TopMargin = 10;
-            ( (LinearLayout.LayoutParams)Label.LayoutParameters ).BottomMargin = 10;
+            ( (LinearLayout.LayoutParams)Label.LayoutParameters ).TopMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 5 );
+            ( (LinearLayout.LayoutParams)Label.LayoutParameters ).BottomMargin = (int)Rock.Mobile.Graphics.Util.UnitToPx( 5 );
             TextLayout.AddView( Label );
 
             // create the button that wraps the layout and handles input
