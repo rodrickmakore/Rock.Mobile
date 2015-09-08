@@ -10,6 +10,7 @@ using Android.Content;
 using Android.Views;
 using Rock.Mobile.UI;
 using Android.Animation;
+using Android.OS;
 
 namespace Rock.Mobile.PlatformSpecific.Android.Graphics
 {
@@ -142,11 +143,19 @@ namespace Rock.Mobile.PlatformSpecific.Android.Graphics
 
             // now define the mask portion
             AlphaMask = new System.Drawing.SizeF( maskWidth, maskHeight );
+
+            // XOR'ing (which is required) is not supported in Hardware on pre-18 Android versions.
+            // So in that case, drop to software for this view and spit out a warning.
+            if ( int.Parse( Build.VERSION.Sdk ) < 18 )
+            {
+                SetLayerType( LayerType.Software, null );
+                Rock.Mobile.Util.Debug.WriteLine( "Device is running API < 18. Mask Layer must render in SOFTWARE. (Could be slow)" );
+            }
         }
 
         protected override void OnDraw(Canvas canvas)
         {
-            // Note: The reason we do it like this, so simply, is that there's a huge performanceh it to rendering into our own canvas. I'm not sure why,
+            // Note: The reason we do it like this, so simply, is that there's a huge performance hit to rendering into our own canvas. I'm not sure why,
             // because i haven't taken the time to R&D it, but I think it has something to do with the canvas they provide being GPU based and mine being on the CPU, or
             // at least causing the GPU texture to have to be flushed and re-DMA'd.
 
