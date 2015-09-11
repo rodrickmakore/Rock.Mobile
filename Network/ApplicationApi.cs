@@ -240,6 +240,24 @@ namespace Rock.Mobile.Network
             RockApi.Get_GroupTypeRoles( oDataFilter, resultHandler );
         }
 
+
+        public static void GetAttributeForGuid( string guid, HttpRequest.RequestResult<Rock.Client.Attribute> resultHandler )
+        {
+            string oDataFilter = string.Format( "?$filter=Guid eq guid'{0}'", guid );
+
+            RockApi.Get_Attributes( oDataFilter, delegate(System.Net.HttpStatusCode statusCode, string statusDescription, List<Rock.Client.Attribute> model )
+                {
+                    if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true && model != null && model.Count > 0 )
+                    {
+                        resultHandler( statusCode, statusDescription, model[ 0 ] );
+                    }
+                    else
+                    {
+                        resultHandler( statusCode, statusDescription, null );
+                    }
+                } );
+        }
+
         public static void GetAttribute( int[] attributeIds, HttpRequest.RequestResult<List<Rock.Client.Attribute>> resultHandler )
         {
             string oDataFilter = "?$filter={0}&$expand=AttributeQualifiers,FieldType&$orderby=Id";
