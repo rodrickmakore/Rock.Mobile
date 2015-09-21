@@ -187,7 +187,17 @@ namespace Rock.Mobile
                     {
                         // we know this endpoint returns string data, so intercept and cast to a string.
                         // we have to do this because string doesn't have a parameterless constructor
-                        resultHandler( statusCode, statusDescription, (string)model );
+
+                        // use dynamic casting so that if there's a problem with the return value we handle it.
+                        if( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) )
+                        {
+                            string result = model as string;
+                            resultHandler( statusCode, statusDescription, result );
+                        }
+                        else
+                        {
+                            resultHandler( statusCode, statusDescription, null );
+                        }
                     } );
             }
 
