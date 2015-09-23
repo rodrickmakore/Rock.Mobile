@@ -75,9 +75,11 @@ namespace Rock.Mobile.PlatformSpecific.Android.Util
                                 // dispose only if it loaded safely
                                 if( imageBmp != null )
                                 {
+                                    imageBmp.Recycle( );
                                     imageBmp.Dispose( );
                                 }
                             }
+                            imageBmp = null;
                         });
                 } );
         }
