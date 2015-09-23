@@ -108,11 +108,12 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
         public WebLayout( global::Android.Content.Context context ) : base( context )
         {
             // required for pre-21 android
-            CookieSyncManager.CreateInstance( context );
+            CookieSyncManager.CreateInstance( context.ApplicationContext );
 
             CookieManager.Instance.RemoveAllCookie( );
 
-            WebView = new WebView( context );
+            WebView = new WebView( context.ApplicationContext );
+            //WebView = new WebView( context );
             WebView.Settings.SaveFormData = false;
 
             WebView.ClearFormData( );
@@ -181,6 +182,20 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
 
             ProgressBar.Visibility = ViewStates.Invisible;
             PageLoadedHandler( true, url );
+        }
+
+        public void Destroy( )
+        {
+            if ( WebView != null )
+            {
+                RemoveView( WebView );
+
+                WebView.RemoveAllViews( );
+                WebView.Destroy( );
+                WebView = null;
+
+                System.GC.Collect( GC.MaxGeneration );
+            }
         }
     }
 
