@@ -477,11 +477,11 @@ namespace Rock.Mobile
 
 
             const string EndPoint_Groups_ByLocation = "api/Groups/ByLocation/{0}/{1}/{2}";
-            public static void Get_Groups_ByLocation( int geoFenceGroupTypeId, int groupTypeId, int locationId, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
+            public static void Get_Groups_ByLocation( int geoFenceGroupTypeId, int groupTypeId, int locationId, string oDataFilter, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = GetRockRestRequest( Method.GET );
-                string requestUrl = BaseUrl + string.Format( EndPoint_Groups_ByLocation, geoFenceGroupTypeId, groupTypeId, locationId );
+                string requestUrl = BaseUrl + string.Format( EndPoint_Groups_ByLocation, geoFenceGroupTypeId, groupTypeId, locationId ) + oDataFilter;
 
                 Request.ExecuteAsync< List<Rock.Client.Group> >( requestUrl, request, resultHandler );
             }
