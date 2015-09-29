@@ -69,10 +69,15 @@ namespace Rock.Mobile
             {
                 // free our C# reference so Dalvik can clean up 
                 // the resources.
+                if( ImageView != null && ImageView.Drawable != null )
+                {
+                    ImageView.Drawable.Dispose( );
+                    ImageView.SetImageBitmap( null );
+                }
+                
                 if ( ImageRef != null )
                 {
-                    ImageView.SetImageBitmap( null );
-
+                    ImageRef.Recycle( );
                     ImageRef.Dispose( );
                     ImageRef = null;
                 }

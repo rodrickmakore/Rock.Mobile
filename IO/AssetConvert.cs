@@ -22,18 +22,25 @@ namespace Rock.Mobile.IO
             #endif
 
             #if __ANDROID__
-            System.IO.Stream stream = Rock.Mobile.PlatformSpecific.Android.Core.Context.Assets.Open( assetPath );
+            try
+            {
+                System.IO.Stream stream = Rock.Mobile.PlatformSpecific.Android.Core.Context.Assets.Open( assetPath );
+            
+                MemoryStream memStream = new MemoryStream( );
+                stream.CopyTo( memStream );
 
-            MemoryStream memStream = new MemoryStream( );
-            stream.CopyTo( memStream );
+                // reset the memstream position
+                memStream.Position = 0;
 
-            // reset the memstream position
-            memStream.Position = 0;
+                stream.Dispose( );
+                stream = null;
 
-            stream.Dispose( );
-            stream = null;
-
-            return memStream;
+                return memStream;
+            }
+            catch
+            {
+                return null;
+            }
             #endif
         }
     }
