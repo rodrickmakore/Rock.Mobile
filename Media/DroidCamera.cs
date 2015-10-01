@@ -187,31 +187,7 @@ namespace Rock.Mobile
                 {
                     case Result.Ok: 
                     {
-                        // Open the bitmap
-                        Bitmap cameraBmp = MediaStore.Images.Media.GetBitmap( Rock.Mobile.PlatformSpecific.Android.Core.Context.ContentResolver, Uri.FromFile( new Java.IO.File( imageFile ) ) );
-
-                        // create a rotation matrix to orient the picture "up"
-                        Matrix transform = new Matrix();
-                        transform.PostRotate( NeededRotation( new Java.IO.File( imageFile ) ) );
-
-                        // re-create the bitmap rotated.
-                        Bitmap rotatedBmp = Bitmap.CreateBitmap( cameraBmp, 0, 0, cameraBmp.Width, cameraBmp.Height, transform, true );
-
-                        // save to disk as a jpg, overwriting our original
-                        MemoryStream memStream = new MemoryStream( );
-                        rotatedBmp.Compress( Bitmap.CompressFormat.Jpeg, 100, memStream );
-
-                        using (FileStream writer = new FileStream( imageFile, FileMode.Create ))
-                        {
-                            memStream.WriteTo( writer );
-                        }
-
-                        // release our refs to the bmps
-                        cameraBmp.Dispose( );
-                        cameraBmp = null;
-
-                        rotatedBmp.Dispose( );
-                        rotatedBmp = null;
+                        
 
                         // send off the success notification
                         CaptureImageEventDelegate( this, new CaptureImageEventArgs( true, imageFile ) ); 
@@ -222,34 +198,6 @@ namespace Rock.Mobile
                     default: CaptureImageEventDelegate( this, new CaptureImageEventArgs( false, null ) ); break;
                 }
             }
-
-
-            public static int NeededRotation(Java.IO.File ff)
-            {
-                try
-                {
-                    // extract the header info
-                    ExifInterface exif = new ExifInterface( ff.AbsolutePath );
-
-                    // determine how we should rotate the image
-                    int orientation = exif.GetAttributeInt( ExifInterface.TagOrientation, 0 );
-                    switch( orientation )
-                    {
-                        case 3: return 180;
-                        case 6: return 90;
-                        case 8: return 270;
-                    }
-
-                    return 0;
-
-                } 
-                catch (Exception )
-                {
-                }
-
-                return 0;
-            }
-
         }
     }
 }

@@ -153,6 +153,36 @@ namespace Rock.Mobile.Util.Strings
         }
 
         /// <summary>
+        /// Remove all characters that wouldn't be appropriate for a filename
+        /// </summary>
+        /// <returns>The sanitized.</returns>
+        /// <param name="source">Source.</param>
+        public static string AsLegalFilename( this string source )
+        {
+            string lowerSource = source.ToLower( );
+
+            // strip all non-alpha numeric values
+            string sanitizedString = "";
+
+            for ( int i = 0; i < lowerSource.Length; i++ )
+            {
+                // verify it a space. If iti s, replace it with an underscore
+                if ( lowerSource[ i ] == ' ' )
+                {
+                    sanitizedString += "_";
+                }
+                // then, verify it isn't a reserved character (only allow alpha-numeric)
+                else if( (lowerSource[ i ] >= 'a' && lowerSource[ i ] <= 'z') ||
+                         (lowerSource[ i ] >= '0' && lowerSource[ i ] <= '9' ) )
+                {
+                    sanitizedString += lowerSource[ i ];
+                }
+            }
+
+            return sanitizedString;
+        }
+
+        /// <summary>
         /// Takes a string assumed to be a URL and ensures it can be parsed as a URI
         /// </summary>
         public static bool IsValidURL( this string url )
