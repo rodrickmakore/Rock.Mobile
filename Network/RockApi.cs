@@ -116,10 +116,17 @@ namespace Rock.Mobile
 
                 return newPerson;
             }
-            public static void Put_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+            public static void Put_People( Rock.Client.Person person, int modifiedById, HttpRequest.RequestResult resultHandler )
             {
                 // create a person object that can go up to rock, and copy the relavant data from the passed in arg
                 Rock.Client.PersonEntity personEntity = PackagePersonForUpload( person );
+
+                if ( modifiedById > 0 )
+                {
+                    personEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    personEntity.CreatedByPersonAliasId = modifiedById;
+                    personEntity.ModifiedByPersonAliasId = modifiedById;
+                }
 
                 RestRequest request = GetRockRestRequest( Method.PUT );
                 request.AddBody( personEntity );
@@ -127,10 +134,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync( BaseUrl + EndPoint_People + "/" + personEntity.Id.ToString( ), request, resultHandler );
             }
 
-            public static void Post_People( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+            public static void Post_People( Rock.Client.Person person, int modifiedById, HttpRequest.RequestResult resultHandler )
             {
                 // create a person object that can go up to rock, and copy the relavant data from the passed in arg
                 Rock.Client.PersonEntity personEntity = PackagePersonForUpload( person );
+
+                if ( modifiedById > 0 )
+                {
+                    personEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    personEntity.CreatedByPersonAliasId = modifiedById;
+                    personEntity.ModifiedByPersonAliasId = modifiedById;
+                }
                     
                 RestRequest request = GetRockRestRequest( Method.POST );
                 request.AddBody( personEntity );
@@ -278,10 +292,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync< List<Rock.Client.GroupMember> >( requestUrl, request, requestHandler );
             }
 
-            public static void Put_GroupMembers( Rock.Client.GroupMember groupMember, HttpRequest.RequestResult requestHandler )
+            public static void Put_GroupMembers( Rock.Client.GroupMember groupMember, int modifiedById, HttpRequest.RequestResult requestHandler )
             {
                 Rock.Client.GroupMemberEntity groupMemberEntity = new Rock.Client.GroupMemberEntity();
                 groupMemberEntity.CopyPropertiesFrom( groupMember );
+
+                if ( modifiedById > 0 )
+                {
+                    groupMemberEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    groupMemberEntity.CreatedByPersonAliasId = modifiedById;
+                    groupMemberEntity.ModifiedByPersonAliasId = modifiedById;
+                }
                 
                 RestRequest request = GetRockRestRequest( Method.PUT );
                 request.AddBody( groupMemberEntity );
@@ -290,10 +311,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync( requestUrl, request, requestHandler );
             }
 
-            public static void Post_GroupMembers( Rock.Client.GroupMember groupMember, HttpRequest.RequestResult requestHandler )
+            public static void Post_GroupMembers( Rock.Client.GroupMember groupMember, int modifiedById, HttpRequest.RequestResult requestHandler )
             {
                 Rock.Client.GroupMemberEntity groupMemberEntity = new Rock.Client.GroupMemberEntity();
                 groupMemberEntity.CopyPropertiesFrom( groupMember );
+
+                if ( modifiedById > 0 )
+                {
+                    groupMemberEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    groupMemberEntity.CreatedByPersonAliasId = modifiedById;
+                    groupMemberEntity.ModifiedByPersonAliasId = modifiedById;
+                }
 
                 RestRequest request = GetRockRestRequest( Method.POST );
                 request.AddBody( groupMemberEntity );
@@ -440,10 +468,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync<T>( requestUrl, request, resultHandler );
             }
 
-            public static void Put_Groups( Rock.Client.Group group, HttpRequest.RequestResult resultHandler )
+            public static void Put_Groups( Rock.Client.Group group, int modifiedById, HttpRequest.RequestResult resultHandler )
             {
                 Rock.Client.GroupEntity groupEntity = new Rock.Client.GroupEntity();
                 groupEntity.CopyPropertiesFrom( group );
+
+                if ( modifiedById > 0 )
+                {
+                    groupEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    groupEntity.CreatedByPersonAliasId = modifiedById;
+                    groupEntity.ModifiedByPersonAliasId = modifiedById;
+                }
                 
                 RestRequest request = GetRockRestRequest( Method.PUT );
                 request.AddBody( groupEntity );
@@ -451,10 +486,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync( BaseUrl + EndPoint_Groups + "/" + groupEntity.Id, request, resultHandler);
             }
 
-            public static void Post_Groups( Rock.Client.Group group, HttpRequest.RequestResult resultHandler )
+            public static void Post_Groups( Rock.Client.Group group, int modifiedById, HttpRequest.RequestResult resultHandler )
             {
                 Rock.Client.GroupEntity groupEntity = new Rock.Client.GroupEntity();
                 groupEntity.CopyPropertiesFrom( group );
+
+                if ( modifiedById > 0 )
+                {
+                    groupEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    groupEntity.CreatedByPersonAliasId = modifiedById;
+                    groupEntity.ModifiedByPersonAliasId = modifiedById;
+                }
 
                 RestRequest request = GetRockRestRequest( Method.POST );
                 request.AddBody( groupEntity );
@@ -536,10 +578,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync<T>( requestUrl, request, resultHandler);
             }
 
-            public static void Put_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
+            public static void Put_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, int modifiedById, HttpRequest.RequestResult resultHandler )
             {
                 Rock.Client.PhoneNumberEntity phoneNumberEntity = new Rock.Client.PhoneNumberEntity();
                 phoneNumberEntity.CopyPropertiesFrom( phoneNumber );
+
+                if ( modifiedById > 0 )
+                {
+                    phoneNumberEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    phoneNumberEntity.CreatedByPersonAliasId = modifiedById;
+                    phoneNumberEntity.ModifiedByPersonAliasId = modifiedById;
+                }
                 
                 RestRequest request = GetRockRestRequest( Method.PUT );
                 request.AddBody( phoneNumberEntity );
@@ -551,10 +600,17 @@ namespace Rock.Mobile
                 Request.ExecuteAsync( BaseUrl + requestUrl, request, resultHandler );
             }
 
-            public static void Post_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, HttpRequest.RequestResult resultHandler )
+            public static void Post_PhoneNumbers( Rock.Client.PhoneNumber phoneNumber, int modifiedById, HttpRequest.RequestResult resultHandler )
             {
                 Rock.Client.PhoneNumberEntity phoneNumberEntity = new Rock.Client.PhoneNumberEntity();
                 phoneNumberEntity.CopyPropertiesFrom( phoneNumber );
+
+                if ( modifiedById > 0 )
+                {
+                    phoneNumberEntity.ModifiedAuditValuesAlreadyUpdated = true;
+                    phoneNumberEntity.CreatedByPersonAliasId = modifiedById;
+                    phoneNumberEntity.ModifiedByPersonAliasId = modifiedById;
+                }
 
                 RestRequest request = GetRockRestRequest( Method.POST );
                 request.AddBody( phoneNumberEntity );

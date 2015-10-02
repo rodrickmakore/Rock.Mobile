@@ -83,16 +83,16 @@ namespace Rock.Mobile.Network
                 } );
         }
 
-        public static void UpdateOrAddPerson( Rock.Client.Person person, bool isNew, HttpRequest.RequestResult resultHandler )
+        public static void UpdateOrAddPerson( Rock.Client.Person person, bool isNew, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
             if ( isNew == true )
             {
                 person.Guid = Guid.NewGuid( );
-                RockApi.Post_People( person, resultHandler );
+                RockApi.Post_People( person, modifiedById, resultHandler );
             }
             else
             {
-                RockApi.Put_People( person, resultHandler );
+                RockApi.Put_People( person, modifiedById, resultHandler );
             }
         }
 
@@ -125,7 +125,7 @@ namespace Rock.Mobile.Network
         }
 
         const int CellPhoneValueId = 12;
-        public static void AddOrUpdateCellPhoneNumber( Rock.Client.Person person, Rock.Client.PhoneNumber phoneNumber, bool isNew, HttpRequest.RequestResult resultHandler )
+        public static void AddOrUpdateCellPhoneNumber( Rock.Client.Person person, Rock.Client.PhoneNumber phoneNumber, bool isNew, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
             // first, get the latest person ID
             ResolvePersonAliasId( person, 
@@ -140,12 +140,12 @@ namespace Rock.Mobile.Network
                     {
                         // set the required values for a new phone number
                         phoneNumber.Guid = Guid.NewGuid( );
-                        RockApi.Post_PhoneNumbers( phoneNumber, resultHandler );
+                        RockApi.Post_PhoneNumbers( phoneNumber, modifiedById, resultHandler );
                     }
                     else
                     {
                         // or just update the existing number
-                        RockApi.Put_PhoneNumbers( phoneNumber, resultHandler );
+                        RockApi.Put_PhoneNumbers( phoneNumber, modifiedById, resultHandler );
                     }
                 } );
         }
@@ -171,14 +171,14 @@ namespace Rock.Mobile.Network
             RockApi.Delete_PhoneNumbers( phoneNumber.Id, resultHandler );
         }
 
-        public static void UpdateHomeCampus( Rock.Client.Group familyGroup, HttpRequest.RequestResult resultHandler )
+        public static void UpdateHomeCampus( Rock.Client.Group familyGroup, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
-            RockApi.Put_Groups( familyGroup, resultHandler );
+            RockApi.Put_Groups( familyGroup, modifiedById, resultHandler );
         }
 
-        public static void UpdateFamilyGroup( Rock.Client.Group familyGroup, HttpRequest.RequestResult resultHandler )
+        public static void UpdateFamilyGroup( Rock.Client.Group familyGroup, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
-            RockApi.Put_Groups( familyGroup, resultHandler );
+            RockApi.Put_Groups( familyGroup, modifiedById, resultHandler );
         }
 
         public static void UpdateFamilyAddress( Rock.Client.Group family, Rock.Client.GroupLocation address, HttpRequest.RequestResult resultHandler )
@@ -219,13 +219,13 @@ namespace Rock.Mobile.Network
                 } );
         }
 
-        public static void UpdatePerson( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+        public static void UpdatePerson( Rock.Client.Person person, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
             // update the profile by the personID
             ResolvePersonAliasId( person, 
                 delegate(int personId )
                 {
-                    RockApi.Put_People( person, resultHandler );
+                    RockApi.Put_People( person, modifiedById, resultHandler );
                 } );
         }
 
@@ -276,7 +276,7 @@ namespace Rock.Mobile.Network
             RockApi.Get_Attributes( oDataFullFilter, resultHandler );
         }
 
-        public static void UploadSavedProfilePicture( Rock.Client.Person person, MemoryStream imageStream, HttpRequest.RequestResult result )
+        public static void UploadSavedProfilePicture( Rock.Client.Person person, MemoryStream imageStream, int modifiedById, HttpRequest.RequestResult result )
         {
             // verify it's valid and not corrupt, or otherwise unable to load. If it is, we'll stop here.
             if ( imageStream != null )
@@ -298,14 +298,15 @@ namespace Rock.Mobile.Network
                             person.PhotoId = photoId;
 
                             // attempt to sync the profile
-                            UpdateOrAddPerson( person, false,
+                            UpdateOrAddPerson( person, false, modifiedById,
                                 delegate ( System.Net.HttpStatusCode profileStatusCode, string profileStatusDesc )
                                 {
                                     if ( Rock.Mobile.Network.Util.StatusInSuccessRange( profileStatusCode ) == true )
                                     {
                                         // now (and only now) that we know the profile was updated correctly,
                                         // we can update the image group.
-                                        UpdatePersonImageGroup( person, delegate ( System.Net.HttpStatusCode resultCode, string resultDesc )
+                                        UpdatePersonImageGroup( person, modifiedById, 
+                                            delegate ( System.Net.HttpStatusCode resultCode, string resultDesc )
                                             {
                                                 if ( result != null )
                                                 {
@@ -369,7 +370,7 @@ namespace Rock.Mobile.Network
         const int GroupMemberRole_Member_ValueId = 59;
         const int ApplicationGroup_PhotoRequest_ValueId = 1207885;
         const Rock.Client.Enums.GroupMemberStatus GroupMemberStatus_Pending_ValueId = Rock.Client.Enums.GroupMemberStatus.Pending;
-        static void UpdatePersonImageGroup( Rock.Client.Person person, HttpRequest.RequestResult resultHandler )
+        static void UpdatePersonImageGroup( Rock.Client.Person person, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
             ResolvePersonAliasId( person, 
                 delegate(int personId )
@@ -390,7 +391,7 @@ namespace Rock.Mobile.Network
                                     groupMember.GroupId = ApplicationGroup_PhotoRequest_ValueId;
                                     groupMember.GroupRoleId = GroupMemberRole_Member_ValueId;
 
-                                    RockApi.Post_GroupMembers( groupMember, resultHandler );
+                                    RockApi.Post_GroupMembers( groupMember, modifiedById, resultHandler );
                                 }
                                 else
                                 {
@@ -408,7 +409,7 @@ namespace Rock.Mobile.Network
                                     groupMember.Id = model[ 0 ].Id;
                                     groupMember.IsSystem = model[ 0 ].IsSystem;
 
-                                    RockApi.Put_GroupMembers( groupMember, resultHandler );
+                                    RockApi.Put_GroupMembers( groupMember, modifiedById, resultHandler );
                                 }
                             }
                             else
