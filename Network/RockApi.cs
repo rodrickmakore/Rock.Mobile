@@ -180,6 +180,15 @@ namespace Rock.Mobile
 
 
             const string EndPoint_People_AttributeValue = "api/People/AttributeValue";
+            public static void Delete_People_AttributeValue( string oDataFilter, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.DELETE );
+
+                string requestString = BaseUrl + EndPoint_People_AttributeValue + oDataFilter;
+
+                Request.ExecuteAsync( requestString, request, resultHandler );
+            }
+
             public static void Post_People_AttributeValue( string oDataFilter, HttpRequest.RequestResult resultHandler )
             {
                 RestRequest request = GetRockRestRequest( Method.POST );
