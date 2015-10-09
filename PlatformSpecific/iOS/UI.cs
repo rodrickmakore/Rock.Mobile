@@ -936,6 +936,7 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
             }
         }
 
+        bool ReceivedWillShowNotification = false;
         void OnKeyboardNotification( NSNotification notification )
         {
             if ( IsActive )
@@ -951,6 +952,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 // in case they toggle the little "tips" panel open / closed
                 if ( notification.Name == UIKeyboard.WillShowNotification )
                 {
+                    ReceivedWillShowNotification = true;
+
                     DisplayingKeyboard = true;
 
                     // store the original screen positioning / scroll. No matter what, we will
@@ -968,8 +971,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     // now get the dist between the bottom of the visible area and the text field (text field's pos also changes as we scroll)
                     MaintainEditTextVisibility( );
                 }
-                else if ( notification.Name == UIKeyboard.WillHideNotification )
+                else if ( notification.Name == UIKeyboard.WillHideNotification && ReceivedWillShowNotification == true )
                 {
+                    ReceivedWillShowNotification = false;
+
                     // restore the screen to the way it was before editing
                     ParentScrollView.ContentOffset = Edit_StartScrollOffset;
                     ParentScrollView.Layer.Position = Edit_StartScreenOffset;

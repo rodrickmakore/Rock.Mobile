@@ -152,6 +152,24 @@ namespace Rock.Mobile.Util.Strings
             return false;
         }
 
+        public static string ToUpperFirstLetter( this string source )
+        {
+            return char.ToUpper( source[ 0 ] ) + source.Substring( 1 );
+        }
+
+        public static string ToUpperWords( this string source )
+        {
+            string fixedString = "";
+            
+            string[] words = source.Split( ' ' );
+            foreach ( string word in words )
+            {
+                fixedString += char.ToUpper( word[ 0 ] ) + word.Substring( 1 ) + " ";
+            }
+
+            return fixedString.TrimEnd( ' ' );
+        }
+
         /// <summary>
         /// Remove all characters that wouldn't be appropriate for a filename
         /// </summary>
