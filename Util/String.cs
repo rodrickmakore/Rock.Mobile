@@ -102,17 +102,22 @@ namespace Rock.Mobile.Util.Strings
         /// <param name="source">Source.</param>
         public static string AsNumeric( this string source )
         {
-            string numericString = "";
-
-            for( int i = 0; i < source.Length; i++ )
+            if ( string.IsNullOrEmpty( source ) == false )
             {
-                if( source[ i ] >= '0' && source[ i ] <= '9' )
+                string numericString = "";
+
+                for ( int i = 0; i < source.Length; i++ )
                 {
-                    numericString += source[ i ];
+                    if ( source[ i ] >= '0' && source[ i ] <= '9' )
+                    {
+                        numericString += source[ i ];
+                    }
                 }
+
+                return numericString;
             }
 
-            return numericString;
+            return source;
         }
 
         /// <summary>
@@ -120,32 +125,40 @@ namespace Rock.Mobile.Util.Strings
         /// </summary>
         public static bool IsNumeric( this string source )
         {
-            for( int i = 0; i < source.Length; i++ )
+            if ( string.IsNullOrEmpty( source ) == false )
             {
-                if( source[ i ] < '0' || source[ i ] > '9' )
+                for ( int i = 0; i < source.Length; i++ )
                 {
-                    return false;
+                    if ( source[ i ] < '0' || source[ i ] > '9' )
+                    {
+                        return false;
+                    }
                 }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public static bool IsEmailFormat( this string source )
         {
-            // email format is x@x.x
-
-            // this does a VERY basic format check. It's by no means completely bullet proof
-
-            // is the @ symbol in a safe place? (can't be at the start or end)
-            int atSymbolIndex = source.IndexOf( '@' );
-            if ( atSymbolIndex > 0 && atSymbolIndex < source.Length - 1 )
+            if ( string.IsNullOrEmpty( source ) == false )
             {
-                // make sure there's at least one . after the @ symbol
-                int dotSymbolIndex = source.LastIndexOf( '.' );
-                if ( dotSymbolIndex > atSymbolIndex && dotSymbolIndex < source.Length - 1 )
+                // email format is x@x.x
+
+                // this does a VERY basic format check. It's by no means completely bullet proof
+
+                // is the @ symbol in a safe place? (can't be at the start or end)
+                int atSymbolIndex = source.IndexOf( '@' );
+                if ( atSymbolIndex > 0 && atSymbolIndex < source.Length - 1 )
                 {
-                    return true;
+                    // make sure there's at least one . after the @ symbol
+                    int dotSymbolIndex = source.LastIndexOf( '.' );
+                    if ( dotSymbolIndex > atSymbolIndex && dotSymbolIndex < source.Length - 1 )
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -154,20 +167,30 @@ namespace Rock.Mobile.Util.Strings
 
         public static string ToUpperFirstLetter( this string source )
         {
-            return char.ToUpper( source[ 0 ] ) + source.Substring( 1 );
+            if ( string.IsNullOrEmpty( source ) == false )
+            {
+                return char.ToUpper( source[ 0 ] ) + source.Substring( 1 );
+            }
+
+            return source;
         }
 
         public static string ToUpperWords( this string source )
         {
-            string fixedString = "";
-            
-            string[] words = source.Split( ' ' );
-            foreach ( string word in words )
+            if ( string.IsNullOrEmpty( source ) == false )
             {
-                fixedString += char.ToUpper( word[ 0 ] ) + word.Substring( 1 ) + " ";
+                string fixedString = "";
+                
+                string[] words = source.Split( ' ' );
+                foreach ( string word in words )
+                {
+                    fixedString += char.ToUpper( word[ 0 ] ) + word.Substring( 1 ).ToLower( ) + " ";
+                }
+
+                return fixedString.TrimEnd( ' ' );
             }
 
-            return fixedString.TrimEnd( ' ' );
+            return source;
         }
 
         /// <summary>
@@ -177,27 +200,32 @@ namespace Rock.Mobile.Util.Strings
         /// <param name="source">Source.</param>
         public static string AsLegalFilename( this string source )
         {
-            string lowerSource = source.ToLower( );
-
-            // strip all non-alpha numeric values
-            string sanitizedString = "";
-
-            for ( int i = 0; i < lowerSource.Length; i++ )
+            if ( string.IsNullOrEmpty( source ) == false )
             {
-                // verify it a space. If iti s, replace it with an underscore
-                if ( lowerSource[ i ] == ' ' )
+                string lowerSource = source.ToLower( );
+
+                // strip all non-alpha numeric values
+                string sanitizedString = "";
+
+                for ( int i = 0; i < lowerSource.Length; i++ )
                 {
-                    sanitizedString += "_";
+                    // verify it a space. If iti s, replace it with an underscore
+                    if ( lowerSource[ i ] == ' ' )
+                    {
+                        sanitizedString += "_";
+                    }
+                    // then, verify it isn't a reserved character (only allow alpha-numeric)
+                    else if ( ( lowerSource[ i ] >= 'a' && lowerSource[ i ] <= 'z' ) ||
+                             ( lowerSource[ i ] >= '0' && lowerSource[ i ] <= '9' ) )
+                    {
+                        sanitizedString += lowerSource[ i ];
+                    }
                 }
-                // then, verify it isn't a reserved character (only allow alpha-numeric)
-                else if( (lowerSource[ i ] >= 'a' && lowerSource[ i ] <= 'z') ||
-                         (lowerSource[ i ] >= '0' && lowerSource[ i ] <= '9' ) )
-                {
-                    sanitizedString += lowerSource[ i ];
-                }
+
+                return sanitizedString;
             }
 
-            return sanitizedString;
+            return source;
         }
 
         /// <summary>
@@ -224,32 +252,36 @@ namespace Rock.Mobile.Util.Strings
         /// </summary>
         public static string AsPhoneNumber( this string number )
         {
-            // nothing to do if it's less than four digits
-            if ( number.Length < 4 
-            )
+            if ( string.IsNullOrEmpty( number ) == false )
             {
-                return number;
-            }
-            // We know it has at least enough for a local exchange and subscriber number
-            else if ( number.Length < 8 )
-            {
-                return number.Substring( 0, 3 ) + "-" + number.Substring( 3 );
-            }
-            else
-            {
-                // We know it has at least enough for an area code and local exchange
-                // Area Code
-                // Local Exchange
-                // Subscriber Number
-                string areaCode = number.Substring( 0, 3 );
+                // nothing to do if it's less than four digits
+                if ( number.Length < 4 )
+                {
+                    return number;
+                }
+                // We know it has at least enough for a local exchange and subscriber number
+                else if ( number.Length < 8 )
+                {
+                    return number.Substring( 0, 3 ) + "-" + number.Substring( 3 );
+                }
+                else
+                {
+                    // We know it has at least enough for an area code and local exchange
+                    // Area Code
+                    // Local Exchange
+                    // Subscriber Number
+                    string areaCode = number.Substring( 0, 3 );
 
-                string localExchange = number.Substring( 3, 3 );
+                    string localExchange = number.Substring( 3, 3 );
 
-                // for the subscriber nubmer, take the remaining four digits, but no more.
-                string subscriberNumber = number.Substring( 6, System.Math.Min( number.Length - 6, 4 ) ); 
+                    // for the subscriber nubmer, take the remaining four digits, but no more.
+                    string subscriberNumber = number.Substring( 6, System.Math.Min( number.Length - 6, 4 ) ); 
 
-                return "(" + areaCode + ")" + " " + localExchange + "-" + subscriberNumber;
+                    return "(" + areaCode + ")" + " " + localExchange + "-" + subscriberNumber;
+                }
             }
+
+            return number;
         }
     }
 }

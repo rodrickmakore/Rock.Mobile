@@ -63,10 +63,16 @@ namespace Rock.Mobile
                             return (TModel) deser.Deserialize<TModel>( response );
                         }
                     }
+#if DEBUG
+                    catch(Exception e)
+                    {
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "Parsing Error! {0}", e ) );
+                    }
+#else
                     catch
                     {
-                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "Parsing Error!" ) );
                     }
+#endif
 
                     Rock.Mobile.Util.Debug.WriteLine( string.Format( "Unknown ContentType received from RestSharp. {0}", contentType ) );
                     return new TModel();

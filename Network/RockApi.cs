@@ -167,6 +167,19 @@ namespace Rock.Mobile
 
 
 
+            const string EndPoint_People_GetGraduationYear = "api/People/GetGraduationYear/";
+            public static void Get_People_GraduationYear( int gradeOffset, HttpRequest.RequestResult<int> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestUrl = BaseUrl + EndPoint_People_GetGraduationYear;
+                requestUrl += gradeOffset;
+
+                Request.ExecuteAsync<int>( requestUrl, request, resultHandler);
+            }
+
+
+
             const string EndPoint_People_AddExistingPersonToFamily = "api/People/AddExistingPersonToFamily";
             public static void Post_People_AddExistingPersonToFamily( string oDataFilter, HttpRequest.RequestResult resultHandler )
             {
@@ -539,23 +552,70 @@ namespace Rock.Mobile
 
 
 
-            const string EndPoint_Groups_SaveAddress = "api/Groups/SaveAddress/{0}/{1}/{2}/{3}/{4}/{5}/{6}";
+            /*const string EndPoint_Groups_SaveAddress = "api/Groups/SaveAddress/{0}/{1}/{2}/{3}/{4}/{5}/{6}";
             public static void Put_Groups_SaveAddress( Rock.Client.Group group, Rock.Client.GroupLocation groupLocation, HttpRequest.RequestResult resultHandler )
             {
                 RestRequest request = GetRockRestRequest( Method.PUT );
 
                 string requestUrl = string.Format( BaseUrl + EndPoint_Groups_SaveAddress, group.Id, 
                     groupLocation.GroupLocationTypeValueId, 
-                    groupLocation.Location.Street1, 
-                    groupLocation.Location.City, 
-                    groupLocation.Location.State, 
-                    groupLocation.Location.PostalCode, 
-                    groupLocation.Location.Country );
+                    System.Net.WebUtility.UrlEncode( groupLocation.Location.Street1 ), 
+                    System.Net.WebUtility.UrlEncode( groupLocation.Location.City ), 
+                    System.Net.WebUtility.UrlEncode( groupLocation.Location.State ), 
+                    System.Net.WebUtility.UrlEncode( groupLocation.Location.PostalCode ), 
+                    System.Net.WebUtility.UrlEncode( groupLocation.Location.Country ) );
+
+                // make sure the URL pieces are fully encoded, but still use spaces
+                requestUrl = requestUrl.Replace( "+", " " );
+
+                Request.ExecuteAsync( requestUrl, request, resultHandler );
+            }*/
+
+            const string EndPoint_Groups_SaveAddress = "api/Groups/SaveAddress/{0}/{1}";
+            public static void Put_Groups_SaveAddress( Rock.Client.Group group, Rock.Client.GroupLocation groupLocation, HttpRequest.RequestResult resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.PUT );
+
+                string requestUrl = string.Format( BaseUrl + EndPoint_Groups_SaveAddress, group.Id, 
+                                        groupLocation.GroupLocationTypeValueId );
+
+
+                // append all valid params (since they're not all required)
+                if ( string.IsNullOrEmpty( groupLocation.Location.Street1 ) == false )
+                {
+                    requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "street1=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.Street1 ) ) );
+                }
+
+                if ( string.IsNullOrEmpty( groupLocation.Location.Street2 ) == false )
+                {
+                    requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "street2=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.Street2 ) ) );
+                }
+
+                if ( string.IsNullOrEmpty( groupLocation.Location.City ) == false )
+                {
+                    requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "city=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.City ) ) );
+                }
+
+                if ( string.IsNullOrEmpty( groupLocation.Location.State ) == false )
+                {
+                    requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "state=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.State ) ) );
+                }
+
+                if ( string.IsNullOrEmpty( groupLocation.Location.PostalCode ) == false )
+                {
+                    requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "postalCode=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.PostalCode ) ) );
+                }
+
+                if ( string.IsNullOrEmpty( groupLocation.Location.Country ) == false )
+                {
+                    requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "country=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.Country ) ) );
+                }
+
+                // make sure the URL pieces are fully encoded, but still use spaces
+                requestUrl = requestUrl.Replace( "+", " " );
 
                 Request.ExecuteAsync( requestUrl, request, resultHandler );
             }
-
-
 
             const string EndPoint_GroupMembers_KnownRelationships = "api/GroupMembers/KnownRelationship";
             public static void Post_GroupMembers_KnownRelationships( string oDataFilter, HttpRequest.RequestResult resultHandler )
