@@ -102,7 +102,7 @@ namespace Rock.Mobile.Util.Strings
         /// <param name="source">Source.</param>
         public static string AsNumeric( this string source )
         {
-            if ( string.IsNullOrEmpty( source ) == false )
+            if ( string.IsNullOrWhiteSpace( source ) == false )
             {
                 string numericString = "";
 
@@ -125,7 +125,7 @@ namespace Rock.Mobile.Util.Strings
         /// </summary>
         public static bool IsNumeric( this string source )
         {
-            if ( string.IsNullOrEmpty( source ) == false )
+            if ( string.IsNullOrWhiteSpace( source ) == false )
             {
                 for ( int i = 0; i < source.Length; i++ )
                 {
@@ -143,7 +143,7 @@ namespace Rock.Mobile.Util.Strings
 
         public static bool IsEmailFormat( this string source )
         {
-            if ( string.IsNullOrEmpty( source ) == false )
+            if ( string.IsNullOrWhiteSpace( source ) == false )
             {
                 // email format is x@x.x
 
@@ -165,26 +165,28 @@ namespace Rock.Mobile.Util.Strings
             return false;
         }
 
-        public static string ToUpperFirstLetter( this string source )
-        {
-            if ( string.IsNullOrEmpty( source ) == false )
-            {
-                return char.ToUpper( source[ 0 ] ) + source.Substring( 1 );
-            }
-
-            return source;
-        }
-
         public static string ToUpperWords( this string source )
         {
-            if ( string.IsNullOrEmpty( source ) == false )
+            if ( string.IsNullOrWhiteSpace( source ) == false )
             {
                 string fixedString = "";
                 
                 string[] words = source.Split( ' ' );
                 foreach ( string word in words )
                 {
-                    fixedString += char.ToUpper( word[ 0 ] ) + word.Substring( 1 ).ToLower( ) + " ";
+                    // it's possible this word is null (ex: they pass a string
+                    // like " family")
+                    if ( string.IsNullOrWhiteSpace( word ) == false )
+                    {
+                        fixedString += char.ToUpper( word[ 0 ] );
+
+                        if ( word.Length > 1 )
+                        {
+                            fixedString += word.Substring( 1 );
+                        }
+                    }
+
+                    fixedString += " ";
                 }
 
                 return fixedString.TrimEnd( ' ' );
@@ -200,7 +202,7 @@ namespace Rock.Mobile.Util.Strings
         /// <param name="source">Source.</param>
         public static string AsLegalFilename( this string source )
         {
-            if ( string.IsNullOrEmpty( source ) == false )
+            if ( string.IsNullOrWhiteSpace( source ) == false )
             {
                 string lowerSource = source.ToLower( );
 
@@ -252,7 +254,7 @@ namespace Rock.Mobile.Util.Strings
         /// </summary>
         public static string AsPhoneNumber( this string number )
         {
-            if ( string.IsNullOrEmpty( number ) == false )
+            if ( string.IsNullOrWhiteSpace( number ) == false )
             {
                 // nothing to do if it's less than four digits
                 if ( number.Length < 4 )

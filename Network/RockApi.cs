@@ -581,32 +581,32 @@ namespace Rock.Mobile
 
 
                 // append all valid params (since they're not all required)
-                if ( string.IsNullOrEmpty( groupLocation.Location.Street1 ) == false )
+                if ( string.IsNullOrWhiteSpace( groupLocation.Location.Street1 ) == false )
                 {
                     requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "street1=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.Street1 ) ) );
                 }
 
-                if ( string.IsNullOrEmpty( groupLocation.Location.Street2 ) == false )
+                if ( string.IsNullOrWhiteSpace( groupLocation.Location.Street2 ) == false )
                 {
                     requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "street2=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.Street2 ) ) );
                 }
 
-                if ( string.IsNullOrEmpty( groupLocation.Location.City ) == false )
+                if ( string.IsNullOrWhiteSpace( groupLocation.Location.City ) == false )
                 {
                     requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "city=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.City ) ) );
                 }
 
-                if ( string.IsNullOrEmpty( groupLocation.Location.State ) == false )
+                if ( string.IsNullOrWhiteSpace( groupLocation.Location.State ) == false )
                 {
                     requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "state=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.State ) ) );
                 }
 
-                if ( string.IsNullOrEmpty( groupLocation.Location.PostalCode ) == false )
+                if ( string.IsNullOrWhiteSpace( groupLocation.Location.PostalCode ) == false )
                 {
                     requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "postalCode=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.PostalCode ) ) );
                 }
 
-                if ( string.IsNullOrEmpty( groupLocation.Location.Country ) == false )
+                if ( string.IsNullOrWhiteSpace( groupLocation.Location.Country ) == false )
                 {
                     requestUrl = Rock.Mobile.Util.Strings.Parsers.AddParamToURL( requestUrl, string.Format( "country=" + System.Net.WebUtility.UrlEncode( groupLocation.Location.Country ) ) );
                 }

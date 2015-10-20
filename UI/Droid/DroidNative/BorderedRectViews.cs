@@ -225,7 +225,7 @@ namespace Rock.Mobile
 
                     // if there's no text, we don't want to provide any border. There's no text TO border.
                     float borderSize = 0;
-                    if ( string.IsNullOrEmpty( Text ) != true )
+                    if ( string.IsNullOrWhiteSpace( Text ) != true )
                     {
                         // now adjust for the border
                         borderSize = TypedValue.ApplyDimension( ComplexUnitType.Dip, BorderWidth, Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics );

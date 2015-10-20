@@ -287,7 +287,7 @@ namespace Rock.Mobile.IO
         public delegate void FileDownloaded( bool result );
         public void DownloadFileToCache( string downloadUrl, string cachedFilename, FileDownloaded callback )
         {
-            if ( string.IsNullOrEmpty( downloadUrl ) == false )
+            if ( string.IsNullOrWhiteSpace( downloadUrl ) == false )
             {
                 HttpRequest webRequest = new HttpRequest();
                 RestRequest restRequest = new RestRequest( Method.GET );

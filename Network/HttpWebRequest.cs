@@ -92,7 +92,7 @@ namespace Rock.Mobile
                     else
                     {
                         // either deserialize to that type
-                        if ( string.IsNullOrEmpty( response.ContentType ) == false )
+                        if ( string.IsNullOrWhiteSpace( response.ContentType ) == false )
                         {
                             // deserialize this ourselves according to our generic type.
                             obj = Deserialize( response );

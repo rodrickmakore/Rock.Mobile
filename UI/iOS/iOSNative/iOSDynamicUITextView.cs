@@ -179,7 +179,7 @@ namespace Rock.Mobile
 
                         // only take the hidden state if it's hiding, or we have no text,
                         // in which case we'll allow showing as well.
-                        if( value == true || string.IsNullOrEmpty( Text ) )
+                        if( value == true || string.IsNullOrWhiteSpace( Text ) )
                         {
                             PlaceholderLabel.Hidden = value;
                         }
@@ -253,7 +253,7 @@ namespace Rock.Mobile
 
                         // if directly setting text to the control, hide the label if
                         // it's a non-emty string.
-                        if( string.IsNullOrEmpty( value ) == false )
+                        if( string.IsNullOrWhiteSpace( value ) == false )
                         {
                             PlaceholderLabel.Hidden = true;
                         }

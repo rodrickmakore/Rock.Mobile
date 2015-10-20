@@ -391,8 +391,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
         public override bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
         {
-            NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textField.Frame ) );
-
             string newString = "";
 
             // What are we doing?
@@ -810,11 +808,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
                 return true;
             }
-
-            public override void Changed(UITextView textView)
-            {
-                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textView.Frame ) );
-            }
         }
 
         // setup a delegate to manage text editing notifications
@@ -825,18 +818,10 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textField.Frame ) );
                 return true;
             }
-
-            public override bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
-            {
-                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textField.Frame ) );
-                return true;
-            }
         }
 
         // used by the keyboard's textViewDelegate
         public static NSString TextControlDidBeginEditingNotification = new NSString( "TextControlDidBeginEditing" );
-
-        public static NSString TextControlChangedNotification = new NSString( "TextControlChanged" );
 
         /// <summary>
         /// True when a keyboard is present due to UIKeyboardWillShowNotification.
@@ -880,14 +865,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
 
         void OnTextFieldDidBeginEditing( NSNotification notification )
         {
+            // don't immediately move the screen when a text field is tapped.
             Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
-            MaintainEditTextVisibility( );
-        }
-
-        void OnTextFieldChanged( NSNotification notification )
-        {
-            Edit_TappedTextFieldFrame = GetTappedTextFieldFrame( ( (NSValue)notification.Object ).RectangleFValue );
-            MaintainEditTextVisibility( );
         }
 
         public KeyboardAdjustManager( UIView parentView )
@@ -908,9 +887,6 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 ObserverHandles = new List<NSObject>();
 
                 NSObject handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlDidBeginEditingNotification, OnTextFieldDidBeginEditing );
-                ObserverHandles.Add( handle );
-
-                handle = NSNotificationCenter.DefaultCenter.AddObserver( KeyboardAdjustManager.TextControlChangedNotification, OnTextFieldChanged );
                 ObserverHandles.Add( handle );
 
                 handle = NSNotificationCenter.DefaultCenter.AddObserver( UIKeyboard.WillHideNotification, OnKeyboardNotification );
@@ -952,14 +928,21 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 // in case they toggle the little "tips" panel open / closed
                 if ( notification.Name == UIKeyboard.WillShowNotification )
                 {
+                    // first, store whether we're already storign the keyboard, so we can decide
+                    // whether to auto-scroll the screen.
+                    bool keyboardAlreadyShowing = DisplayingKeyboard;
+
+                    // if we are NOT showing the keyboard, store the position of the screen so we can safely return them.
+                    if ( DisplayingKeyboard == false )
+                    {
+                        // store the original screen positioning / scroll. No matter what, we will
+                        // undo any scrolling the user did while editing.
+                        Edit_StartScrollOffset = ParentScrollView.ContentOffset;
+                        Edit_StartScreenOffset = ParentScrollView.Layer.Position;
+                    }
+
                     ReceivedWillShowNotification = true;
-
                     DisplayingKeyboard = true;
-
-                    // store the original screen positioning / scroll. No matter what, we will
-                    // undo any scrolling the user did while editing.
-                    Edit_StartScrollOffset = ParentScrollView.ContentOffset;
-                    Edit_StartScreenOffset = ParentScrollView.Layer.Position;
 
                     // get the keyboard frame and transform it into our view's space
                     CGRect keyboardFrame = UIKeyboard.FrameEndFromNotification( notification );
@@ -968,15 +951,21 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                     // first, get the bottom point of the visible area. (Reduce the visible area slightly so we don't butt RIGHT against the textView)
                     Edit_VisibleAreaWithKeyboardBot = ( ParentView.Bounds.Height - keyboardFrame.Height ) * .98f;
 
-                    // now get the dist between the bottom of the visible area and the text field (text field's pos also changes as we scroll)
-                    MaintainEditTextVisibility( );
+                    // if we were NOT already showing the keyboard go ahead and move the screen.
+                    if ( keyboardAlreadyShowing == false )
+                    {
+                        // now get the dist between the bottom of the visible area and the text field (text field's pos also changes as we scroll)
+                        MaintainEditTextVisibility( );
+                    }
                 }
                 else if ( notification.Name == UIKeyboard.WillHideNotification && ReceivedWillShowNotification == true )
                 {
                     ReceivedWillShowNotification = false;
 
-                    // restore the screen to the way it was before editing
+                    // note: there's a bug with this, if you change scroll views WHILE a keyboard is up, it could
+                    // "restore" the new scrollView to an invalid scroll position and look weird.
                     ParentScrollView.ContentOffset = Edit_StartScrollOffset;
+                    
                     ParentScrollView.Layer.Position = Edit_StartScreenOffset;
 
                     // reset the tapped textfield area
