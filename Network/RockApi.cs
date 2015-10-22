@@ -100,9 +100,9 @@ namespace Rock.Mobile
                 Request.ExecuteAsync<T>( requestUrl, request, resultHandler);
             }
 
-            const int PersonRecordTypeValueId = 1;
-            const int RecordStatusTypeValueId = 3;
-            const int ConnectionStatusTypeValueId = 146;
+            const int RecordTypeValueId = 1; //This should never change, and represents "Person"
+            const int RecordStatusTypeValueId = 5; //This represents "Pending", and is the safest default to use.
+            const int ConnectionStatusTypeValueId = 67; // This represents "Web Prospect", and is the safest default to use.
             static Rock.Client.PersonEntity PackagePersonForUpload( Rock.Client.Person person )
             {
                 // there are certain values that cannot be sent up to Rock, so
@@ -110,9 +110,18 @@ namespace Rock.Mobile
                 Rock.Client.PersonEntity newPerson = new Rock.Client.PersonEntity( );
                 newPerson.CopyPropertiesFrom( person );
                 newPerson.FirstName = person.NickName; //ALWAYS SET THE FIRST NAME TO NICK NAME
-                newPerson.RecordTypeValueId = PersonRecordTypeValueId;
-                newPerson.RecordStatusValueId = RecordStatusTypeValueId;
-                newPerson.ConnectionStatusValueId = ConnectionStatusTypeValueId;
+                newPerson.RecordTypeValueId = RecordTypeValueId; //ALWAYS SET THE RECORD TYPE TO PERSON
+
+                // set the record / connection status values only if they aren't already set.
+                if ( newPerson.RecordStatusValueId == null )
+                {
+                    newPerson.RecordStatusValueId = RecordStatusTypeValueId;
+                }
+
+                if ( newPerson.ConnectionStatusValueId == null )
+                {
+                    newPerson.ConnectionStatusValueId = ConnectionStatusTypeValueId;
+                }
 
                 return newPerson;
             }

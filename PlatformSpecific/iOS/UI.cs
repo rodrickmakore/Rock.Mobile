@@ -393,6 +393,8 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
         {
             string newString = "";
 
+            NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textField.Frame ) );
+
             // What are we doing?
             if ( range.Location == textField.Text.Length )
             {
@@ -808,6 +810,11 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textView.Frame ) );
                 return true;
             }
+
+            public override void Changed(UITextView textView)
+            {
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textView.Frame ) );
+            }
         }
 
         // setup a delegate to manage text editing notifications
@@ -818,10 +825,17 @@ namespace Rock.Mobile.PlatformSpecific.iOS.UI
                 NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlDidBeginEditingNotification, NSValue.FromCGRect( textField.Frame ) );
                 return true;
             }
+
+            public override bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
+            {
+                NSNotificationCenter.DefaultCenter.PostNotificationName( Rock.Mobile.PlatformSpecific.iOS.UI.KeyboardAdjustManager.TextControlChangedNotification, NSValue.FromCGRect( textField.Frame ) );
+                return true;
+            }
         }
 
         // used by the keyboard's textViewDelegate
         public static NSString TextControlDidBeginEditingNotification = new NSString( "TextControlDidBeginEditing" );
+        public static NSString TextControlChangedNotification = new NSString( "TextControlChanged" );
 
         /// <summary>
         /// True when a keyboard is present due to UIKeyboardWillShowNotification.
