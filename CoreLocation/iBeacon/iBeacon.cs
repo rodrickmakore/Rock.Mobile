@@ -179,7 +179,7 @@ namespace Rock.Mobile
             }
 
             //Implements the main LocationManager, which manages all Beacons and Ranges
-            #if__IOS__
+    #if __IOS__
 			public abstract class LocationManager
 	#endif
             #if __ANDROID__
