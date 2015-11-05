@@ -712,9 +712,18 @@ namespace Rock.Mobile
             const string EndPoint_Locations_FromAddress = "api/locations/{0}/{1}/{2}/{3}";
             public static void Get_Locations_FromAddress( string street, string city, string state, string zip, HttpRequest.RequestResult<Rock.Client.Location> resultHandler )
             {
+                // url encode the address values
+                street = System.Net.WebUtility.UrlEncode( street );
+                city = System.Net.WebUtility.UrlEncode( city );
+                state = System.Net.WebUtility.UrlEncode( state );
+                zip = System.Net.WebUtility.UrlEncode( zip );
+
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = GetRockRestRequest( Method.GET );
                 string requestUrl = BaseUrl + string.Format( EndPoint_Locations_FromAddress, street, city, state, zip );
+
+                // restore white space
+                requestUrl = requestUrl.Replace( "+", " " );
 
                 // first get the location based on the info passed up
                 Request.ExecuteAsync<Rock.Client.Location>( requestUrl, request, resultHandler );
