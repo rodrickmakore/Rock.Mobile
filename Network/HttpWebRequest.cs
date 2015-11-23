@@ -281,7 +281,7 @@ namespace Rock.Mobile
                     Rock.Mobile.Util.Debug.WriteLine( "ThreadProc: Waking for work" );
 
                     // while there are requests pending, process them
-                    while ( RequestQueue.Count != 0 )
+                    while ( RequestQueue.IsEmpty == false )
                     {
                         Rock.Mobile.Util.Debug.WriteLine( "ThreadProc: Processing Request" );
 

@@ -23,9 +23,9 @@ namespace Rock.Mobile.IO
 
         /// <summary>
         /// The length of time a file should remain cached. After this, it will be deleted
-        /// from cache. (30 days)
+        /// from cache. (7 days)
         /// </summary>
-        static TimeSpan CacheFileDefaultExpiration = new TimeSpan( 30, 0, 0, 0 );
+        static TimeSpan CacheFileDefaultExpiration = new TimeSpan( 7, 0, 0, 0 );
 
         /// <summary>
         /// Ok, it's not technically NONE, but it's 10 years. Come on...
