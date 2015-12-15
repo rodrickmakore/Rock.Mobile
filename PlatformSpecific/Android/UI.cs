@@ -169,6 +169,18 @@ namespace Rock.Mobile.PlatformSpecific.Android.UI
             return false;
         }
 
+        public bool OnBackPressed( )
+        {
+            if( WebView.CanGoBack( ) )
+            {
+                WebView.GoBack( );
+
+                return true;
+            }
+
+            return false;
+        }
+
         public void OnReceivedError( ClientError errorCode, string description, string failingUrl )
         {
             ProgressBar.Visibility = ViewStates.Invisible;

@@ -467,7 +467,6 @@ namespace Rock.Mobile
             const string EndPoint_Groups_GetFamilies = "api/Groups/GetFamilies/";
             public static void Get_FamiliesOfPerson( int personId, string oDataFilter, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
             {
-                // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = GetRockRestRequest( Method.GET );
                 string requestUrl = BaseUrl + EndPoint_Groups_GetFamilies + personId.ToString( );
                 requestUrl += oDataFilter;
@@ -627,6 +626,15 @@ namespace Rock.Mobile
             }
 
             const string EndPoint_GroupMembers_KnownRelationships = "api/GroupMembers/KnownRelationship";
+            public static void Get_GroupMembers_KnownRelationships( string query, HttpRequest.RequestResult<List<Rock.Client.GroupMember>> resultHandler )
+            {
+                RestRequest request = GetRockRestRequest( Method.GET );
+
+                string requestString = BaseUrl + EndPoint_GroupMembers_KnownRelationships + query;
+
+                Request.ExecuteAsync<List<Rock.Client.GroupMember>>( requestString, request, resultHandler );
+            }
+
             public static void Post_GroupMembers_KnownRelationships( string oDataFilter, HttpRequest.RequestResult resultHandler )
             {
                 RestRequest request = GetRockRestRequest( Method.POST );
