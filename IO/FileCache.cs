@@ -139,7 +139,7 @@ namespace Rock.Mobile.IO
 
                         expiredItems.Add( entry );
 
-                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} expired. Age: {1} minutes old.", (string)entry.Key, deltaTime.Minutes ) );
+                        Rock.Mobile.Util.Debug.WriteLine( string.Format( "{0} expired. Age: {1} minutes past expiration.", (string)entry.Key, deltaTime.TotalMinutes ) );
                     }
                     else
                     {
@@ -285,7 +285,7 @@ namespace Rock.Mobile.IO
         }
 
         public delegate void FileDownloaded( bool result );
-        public void DownloadFileToCache( string downloadUrl, string cachedFilename, FileDownloaded callback )
+        public void DownloadFileToCache( string downloadUrl, string cachedFilename, TimeSpan? expirationTime = null, FileDownloaded callback = null )
         {
             if ( string.IsNullOrWhiteSpace( downloadUrl ) == false )
             {
@@ -303,7 +303,7 @@ namespace Rock.Mobile.IO
                             // write it to cache
                             MemoryStream fileBuffer = new MemoryStream( model );
                             fileBuffer.Position = 0;
-                            FileCache.Instance.SaveFile( fileBuffer, cachedFilename );
+                            FileCache.Instance.SaveFile( fileBuffer, cachedFilename, expirationTime );
                             fileBuffer.Dispose( );
 
                             result = true;
