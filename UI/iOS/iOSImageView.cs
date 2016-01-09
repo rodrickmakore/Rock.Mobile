@@ -65,15 +65,22 @@ namespace Rock.Mobile
 
             protected override void setImage( MemoryStream imageStream )
             {
-                NSData imageData = NSData.FromStream( imageStream );
-
-                if ( _ScaleForDPI == true )
+                if( imageStream != null )
                 {
-                    ImageView.Image = new UIImage( imageData, UIKit.UIScreen.MainScreen.Scale );
+                    NSData imageData = NSData.FromStream( imageStream );
+
+                    if ( _ScaleForDPI == true )
+                    {
+                        ImageView.Image = new UIImage( imageData, UIKit.UIScreen.MainScreen.Scale );
+                    }
+                    else
+                    {
+                        ImageView.Image = new UIImage( imageData, 1 );
+                    }
                 }
                 else
                 {
-                    ImageView.Image = new UIImage( imageData, 1 );
+                    ImageView.Image = null;
                 }
             }
 

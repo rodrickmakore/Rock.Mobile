@@ -85,19 +85,29 @@ namespace Rock.Mobile
 
             protected override void setImage( MemoryStream imageStream )
             {
-                // if they requsted it, scale the image by the device's density so we get
-                // an image that isn't overly large.
-                BitmapFactory.Options decodeOptions = new BitmapFactory.Options( );
-                if ( _ScaleForDPI )
+                if( imageStream != null )
                 {
-                    decodeOptions.InSampleSize = (int)System.Math.Ceiling( Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density );
+                    // if they requsted it, scale the image by the device's density so we get
+                    // an image that isn't overly large.
+                    BitmapFactory.Options decodeOptions = new BitmapFactory.Options( );
+                    if ( _ScaleForDPI )
+                    {
+                        decodeOptions.InSampleSize = (int)System.Math.Ceiling( Rock.Mobile.PlatformSpecific.Android.Core.Context.Resources.DisplayMetrics.Density );
+                    }
+
+                    ImageRef = BitmapFactory.DecodeStream( imageStream, null, decodeOptions );
+
+                    ImageView.SetImageBitmap( ImageRef );
+                    ImageView.LayoutParameters.Width = ImageRef.Width;
+                    ImageView.LayoutParameters.Height = ImageRef.Height;
                 }
-
-                ImageRef = BitmapFactory.DecodeStream( imageStream, null, decodeOptions );
-
-                ImageView.SetImageBitmap( ImageRef );
-                ImageView.LayoutParameters.Width = ImageRef.Width;
-                ImageView.LayoutParameters.Height = ImageRef.Height;
+                else
+                {
+                    ImageRef = null;
+                    ImageView.SetImageBitmap( null );
+                    ImageView.LayoutParameters.Width = 0;
+                    ImageView.LayoutParameters.Height = 0;
+                }
             }
 
             // Properties

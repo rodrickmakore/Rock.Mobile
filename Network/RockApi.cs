@@ -273,12 +273,24 @@ namespace Rock.Mobile
 
 
 
-            const string EndPoint_GetImage = "GetImage.ashx?id={0}&width={1}&height={1}";
-            public static void Get_GetImage( string photoId, uint dimensionSize, HttpRequest.RequestResult<MemoryStream> resultHandler )
+            const string EndPoint_GetImage = "GetImage.ashx?id={0}";
+            public static void Get_GetImage( string photoId, uint? width, uint? height, HttpRequest.RequestResult<MemoryStream> resultHandler )
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = GetRockRestRequest( Method.GET );
-                string requestUrl = BaseUrl + string.Format( EndPoint_GetImage, photoId, dimensionSize, dimensionSize );
+                string requestUrl = BaseUrl + string.Format( EndPoint_GetImage, photoId );
+
+                // add the requested dimensions
+                if( width.HasValue )
+                {
+                    requestUrl += string.Format( "&width={0}", width );
+                }
+
+                // add the requested dimensions
+                if( height.HasValue )
+                {
+                    requestUrl += string.Format( "&height={0}", height );
+                }
 
                 // get the raw response
                 Request.ExecuteAsync( requestUrl, request, delegate(HttpStatusCode statusCode, string statusDescription, byte[] model) 
@@ -305,7 +317,7 @@ namespace Rock.Mobile
             {
                 // send up the file
                 RestRequest request = GetRockRestRequest( Method.POST );
-                request.AddFile( "file0", fileBuffer.ToArray( ), "file.dat" );
+                request.AddFile( "file0", fileBuffer.ToArray( ), "image.jpg" );
 
                 string requestUrl = string.Format( BaseUrl + EndPoint_FileUploader, isBinary, fileTypeGuid, isTemporary );
 
