@@ -4,6 +4,7 @@ using System.Net;
 using System.IO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rock.Mobile.Network
 {
@@ -420,6 +421,42 @@ namespace Rock.Mobile.Network
 
                         } );
                 } );
+        }
+
+        public delegate void GroupsForPersonDelegate( List<Rock.Client.Group> groupList );
+        public static void GetGroupsForPerson( Rock.Client.Person person, GroupsForPersonDelegate onResult )
+        {
+            ResolvePersonAliasId( person, 
+                delegate(int personId) 
+                {
+                    string groupQuery = string.Format( "?$filter=Members/any(o: o/PersonId eq {0})", personId );
+
+                    RockApi.Get_Groups<List<Rock.Client.Group>>( groupQuery, 
+                        delegate(HttpStatusCode groupCode, string groupDesc, List<Rock.Client.Group> groupList) 
+                        {
+                            onResult( groupList );
+                        });
+                });
+        }
+
+        public delegate void GroupMembersForPersonDelegate( List<Rock.Client.GroupMember> groupMemberList );
+        public static void GetGroupMembersForPerson( Rock.Client.Person person, GroupMembersForPersonDelegate onResult )
+        {
+            ResolvePersonAliasId( person, 
+                delegate(int personId) 
+                {
+                    // get all the groupMembers that are this person.
+                    string query = string.Format( "?$filter=PersonId eq {0}", personId );
+
+                    RockApi.Get_GroupMembers( query, 
+                        delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.GroupMember> groupMemberList) 
+                        {
+                            if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
+                            {
+                                onResult( groupMemberList );
+                            }
+                        });
+                });
         }
 
         /// <summary>
