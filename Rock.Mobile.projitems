@@ -99,6 +99,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Rock.Client.Extensions\Family.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Rock.Client.Extensions\GuestFamily.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\AsyncTaskScheduler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\GroupExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)UI\.gitignore" />
