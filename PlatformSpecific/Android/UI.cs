@@ -16,6 +16,78 @@ using Android;
 namespace Rock.Mobile.PlatformSpecific.Android.UI
 {
     /// <summary>
+    /// Subclass of Android's ScrollView to allow us to disable scrolling.
+    /// </summary>
+    public class LockableScrollView : ScrollView
+    {
+        public delegate bool OnInterceptTouchEventDelegate( MotionEvent ev );
+        public OnInterceptTouchEventDelegate OnTouchIntercept { get; set; }
+
+        public delegate void OnScrollChangedDelegate( float delta );
+        public OnScrollChangedDelegate OnChangedScroll { get; set; }
+
+        /// <summary>
+        /// True when the scroll view can scroll. False when it cannot.
+        /// </summary>
+        public bool ScrollEnabled { get; set; }
+
+        public LockableScrollView( Context c ) : base( c )
+        {
+            ScrollEnabled = true;
+        }
+
+        public LockableScrollView( Context c, global::Android.Util.IAttributeSet ias ) : base( c, ias )
+        {
+            ScrollEnabled = true;
+        }
+
+        //This is a total hack but it works perfectly.
+        //For some reason, when focus is changed to a text element, the
+        //RelativeView gets focus first. Since it's at 0, 0,
+        //The scrollView wants to scroll to the TOP, then when the editText
+        //gets focus, it jumps back down to its position.
+        // This is not an acceptable long term solution, but I really need to move on right now.
+        public override void ScrollTo(int x, int y)
+        {
+            //base.ScrollTo(x, y);
+        }
+
+        public override void ScrollBy(int x, int y)
+        {
+            //base.ScrollBy(x, y);
+        }
+
+        public void ForceScrollTo(int x, int y)
+        {
+            base.ScrollTo(x, y);
+        }
+
+        public override bool OnInterceptTouchEvent(MotionEvent ev)
+        {
+            // verify from our parent we can scroll, and that scrolling is enabled
+            if( ScrollEnabled == true )
+            {
+                if( OnChangedScroll == null || OnTouchIntercept( ev ) == true )
+                {
+                    return base.OnInterceptTouchEvent(ev);
+                }
+            }
+
+            return false;
+        }
+
+        protected override void OnScrollChanged(int l, int t, int oldl, int oldt)
+        {
+            base.OnScrollChanged(l, t, oldl, oldt);
+
+            if( OnChangedScroll != null )
+            {
+                OnChangedScroll( t - oldt );
+            }
+        }
+    }
+
+    /// <summary>
     /// Because list item references generally aren't stored by a list adapter,
     /// properties of a list item can store references to objects like bitmaps that need to be freed.
     /// This ListAdapter tracks all added items and exposes methods for calling Destroy and allowing
