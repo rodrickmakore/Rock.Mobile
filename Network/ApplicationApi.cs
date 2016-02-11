@@ -15,51 +15,6 @@ namespace Rock.Mobile.Network
     /// </summary>
     public static class ApplicationApi
     {
-        /// <summary>
-        /// Wrapper for the ResolvePersonAliasId( int ), which will use a person object and modify the Id in person object on
-        /// a successful return.
-        /// </summary>
-        public delegate void OnPersonAliasIdResolved( int personId );
-        public static void ResolvePersonAliasId( Rock.Client.Person person, OnPersonAliasIdResolved onComplete )
-        {
-            // make the request for the ID
-            ResolvePersonAliasId( person.PrimaryAliasId, 
-                delegate(int personId)
-                {
-                    if( personId != -1 )
-                    {
-                        // sync the new person ID.
-                        person.Id = personId;
-                    }
-
-                    onComplete( personId );
-                } );
-        }
-
-        public static void ResolvePersonAliasId( int? personAliasId, OnPersonAliasIdResolved onComplete )
-        {
-            // make the request for the ID
-            if ( personAliasId.HasValue )
-            {
-                RockApi.Get_PersonAliasIdToPersonId( personAliasId.Value, 
-                    delegate(HttpStatusCode statusCode, string statusDescription, RockApi.PersonIdObj model )
-                    {
-                        if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) && model != null )
-                        {
-                            onComplete( model.PersonId );
-                        }
-                        else
-                        {
-                            onComplete( -1 );
-                        }
-                    } );
-            }
-            else
-            {
-                onComplete( -1 );
-            }
-        }
-
         public static void IsRockAtURL( string url, HttpRequest.RequestResult onComplete )
         {
             // get the default person in Rock
@@ -128,27 +83,22 @@ namespace Rock.Mobile.Network
         const int CellPhoneValueId = 12;
         public static void AddOrUpdateCellPhoneNumber( Rock.Client.Person person, Rock.Client.PhoneNumber phoneNumber, bool isNew, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
-            // first, get the latest person ID
-            ResolvePersonAliasId( person, 
-                delegate(int personId )
-                {
-                    // update the phone number
-                    phoneNumber.PersonId = personId;
-                    phoneNumber.NumberTypeValueId = CellPhoneValueId;
+            // update the phone number
+            phoneNumber.PersonId = person.Id;
+            phoneNumber.NumberTypeValueId = CellPhoneValueId;
 
-                    // now we can upload it.
-                    if ( isNew )
-                    {
-                        // set the required values for a new phone number
-                        phoneNumber.Guid = Guid.NewGuid( );
-                        RockApi.Post_PhoneNumbers( phoneNumber, modifiedById, resultHandler );
-                    }
-                    else
-                    {
-                        // or just update the existing number
-                        RockApi.Put_PhoneNumbers( phoneNumber, modifiedById, resultHandler );
-                    }
-                } );
+            // now we can upload it.
+            if ( isNew )
+            {
+                // set the required values for a new phone number
+                phoneNumber.Guid = Guid.NewGuid( );
+                RockApi.Post_PhoneNumbers( phoneNumber, modifiedById, resultHandler );
+            }
+            else
+            {
+                // or just update the existing number
+                RockApi.Put_PhoneNumbers( phoneNumber, modifiedById, resultHandler );
+            }
         }
 
         public static void GetPhoneNumberByGuid( Guid guid, HttpRequest.RequestResult<Rock.Client.PhoneNumber> resultHandler )
@@ -189,12 +139,9 @@ namespace Rock.Mobile.Network
 
         public static void GetFamiliesOfPerson( Rock.Client.Person person, HttpRequest.RequestResult< List<Rock.Client.Group> > resultHandler )
         {
-            ResolvePersonAliasId( person, delegate(int personId )
-                {
-                    string oDataFilter = "?$expand=GroupType,Campus,Members/GroupRole,GroupLocations/Location,GroupLocations/GroupLocationTypeValue,GroupLocations/Location/LocationTypeValue";
+            string oDataFilter = "?$expand=GroupType,Campus,Members/GroupRole,GroupLocations/Location,GroupLocations/GroupLocationTypeValue,GroupLocations/Location/LocationTypeValue";
 
-                    RockApi.Get_FamiliesOfPerson( personId, oDataFilter, resultHandler );
-                } );
+            RockApi.Get_FamiliesOfPerson( person.Id, oDataFilter, resultHandler );
         }
 
         public static void GetFamilyGroupModelById( int familyGroupId, HttpRequest.RequestResult<Rock.Client.Group> resultHandler )
@@ -222,12 +169,7 @@ namespace Rock.Mobile.Network
 
         public static void UpdatePerson( Rock.Client.Person person, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
-            // update the profile by the personID
-            ResolvePersonAliasId( person, 
-                delegate(int personId )
-                {
-                    RockApi.Put_People( person, modifiedById, resultHandler );
-                } );
+            RockApi.Put_People( person, modifiedById, resultHandler );
         }
 
         /// <summary>
@@ -373,89 +315,77 @@ namespace Rock.Mobile.Network
         const Rock.Client.Enums.GroupMemberStatus GroupMemberStatus_Pending_ValueId = Rock.Client.Enums.GroupMemberStatus.Pending;
         static void UpdatePersonImageGroup( Rock.Client.Person person, int modifiedById, HttpRequest.RequestResult resultHandler )
         {
-            ResolvePersonAliasId( person, 
-                delegate(int personId )
+            string oDataFilter = string.Format( "?$filter=PersonId eq {0} and GroupId eq {1}", person.Id, ApplicationGroup_PhotoRequest_ValueId );
+            RockApi.Get_GroupMembers( oDataFilter, delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.GroupMember> model )
                 {
-                    string oDataFilter = string.Format( "?$filter=PersonId eq {0} and GroupId eq {1}", personId, ApplicationGroup_PhotoRequest_ValueId );
-                    RockApi.Get_GroupMembers( oDataFilter, delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.GroupMember> model )
+                    if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
+                    {
+                        // if it's null, they are NOT in the group and we should POST. if it's valid,
+                        // we can simply update the existing.
+                        if ( model.Count == 0 )
                         {
-                            if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
-                            {
-                                // if it's null, they are NOT in the group and we should POST. if it's valid,
-                                // we can simply update the existing.
-                                if ( model.Count == 0 )
-                                {
-                                    Rock.Client.GroupMember groupMember = new Rock.Client.GroupMember();
-                                    groupMember.Guid = Guid.NewGuid( );
-                                    groupMember.PersonId = personId;
-                                    groupMember.GroupMemberStatus = GroupMemberStatus_Pending_ValueId;
-                                    groupMember.GroupId = ApplicationGroup_PhotoRequest_ValueId;
-                                    groupMember.GroupRoleId = GroupMemberRole_Member_ValueId;
+                            Rock.Client.GroupMember groupMember = new Rock.Client.GroupMember();
+                            groupMember.Guid = Guid.NewGuid( );
+                            groupMember.PersonId = person.Id;
+                            groupMember.GroupMemberStatus = GroupMemberStatus_Pending_ValueId;
+                            groupMember.GroupId = ApplicationGroup_PhotoRequest_ValueId;
+                            groupMember.GroupRoleId = GroupMemberRole_Member_ValueId;
 
-                                    RockApi.Post_GroupMembers( groupMember, modifiedById, resultHandler );
-                                }
-                                else
-                                {
-                                    // otherwise, we'll do a PUT
-                                    Rock.Client.GroupMember groupMember = new Rock.Client.GroupMember();
+                            RockApi.Post_GroupMembers( groupMember, modifiedById, resultHandler );
+                        }
+                        else
+                        {
+                            // otherwise, we'll do a PUT
+                            Rock.Client.GroupMember groupMember = new Rock.Client.GroupMember();
 
-                                    // set the status to pending
-                                    groupMember.GroupMemberStatus = GroupMemberStatus_Pending_ValueId;
+                            // set the status to pending
+                            groupMember.GroupMemberStatus = GroupMemberStatus_Pending_ValueId;
 
-                                    // and copy over all the other data
-                                    groupMember.PersonId = model[ 0 ].PersonId;
-                                    groupMember.Guid = model[ 0 ].Guid;
-                                    groupMember.GroupId = model[ 0 ].GroupId;
-                                    groupMember.GroupRoleId = model[ 0 ].GroupRoleId;
-                                    groupMember.Id = model[ 0 ].Id;
-                                    groupMember.IsSystem = model[ 0 ].IsSystem;
+                            // and copy over all the other data
+                            groupMember.PersonId = model[ 0 ].PersonId;
+                            groupMember.Guid = model[ 0 ].Guid;
+                            groupMember.GroupId = model[ 0 ].GroupId;
+                            groupMember.GroupRoleId = model[ 0 ].GroupRoleId;
+                            groupMember.Id = model[ 0 ].Id;
+                            groupMember.IsSystem = model[ 0 ].IsSystem;
 
-                                    RockApi.Put_GroupMembers( groupMember, modifiedById, resultHandler );
-                                }
-                            }
-                            else
-                            {
-                                // fail...
-                                resultHandler( statusCode, statusDescription );
-                            }
+                            RockApi.Put_GroupMembers( groupMember, modifiedById, resultHandler );
+                        }
+                    }
+                    else
+                    {
+                        // fail...
+                        resultHandler( statusCode, statusDescription );
+                    }
 
-                        } );
                 } );
         }
 
         public delegate void GroupsForPersonDelegate( List<Rock.Client.Group> groupList );
         public static void GetGroupsForPerson( Rock.Client.Person person, GroupsForPersonDelegate onResult )
         {
-            ResolvePersonAliasId( person, 
-                delegate(int personId) 
-                {
-                    string groupQuery = string.Format( "?$filter=Members/any(o: o/PersonId eq {0})", personId );
+            string groupQuery = string.Format( "?$filter=Members/any(o: o/PersonId eq {0})", person.Id );
 
-                    RockApi.Get_Groups<List<Rock.Client.Group>>( groupQuery, 
-                        delegate(HttpStatusCode groupCode, string groupDesc, List<Rock.Client.Group> groupList) 
-                        {
-                            onResult( groupList );
-                        });
+            RockApi.Get_Groups<List<Rock.Client.Group>>( groupQuery, 
+                delegate(HttpStatusCode groupCode, string groupDesc, List<Rock.Client.Group> groupList) 
+                {
+                    onResult( groupList );
                 });
         }
 
         public delegate void GroupMembersForPersonDelegate( List<Rock.Client.GroupMember> groupMemberList );
         public static void GetGroupMembersForPerson( Rock.Client.Person person, GroupMembersForPersonDelegate onResult )
         {
-            ResolvePersonAliasId( person, 
-                delegate(int personId) 
-                {
-                    // get all the groupMembers that are this person.
-                    string query = string.Format( "?$filter=PersonId eq {0}", personId );
+            // get all the groupMembers that are this person.
+            string query = string.Format( "?$filter=PersonId eq {0}", person.Id );
 
-                    RockApi.Get_GroupMembers( query, 
-                        delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.GroupMember> groupMemberList) 
-                        {
-                            if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
-                            {
-                                onResult( groupMemberList );
-                            }
-                        });
+            RockApi.Get_GroupMembers( query, 
+                delegate(HttpStatusCode statusCode, string statusDescription, List<Rock.Client.GroupMember> groupMemberList) 
+                {
+                    if ( Rock.Mobile.Network.Util.StatusInSuccessRange( statusCode ) == true )
+                    {
+                        onResult( groupMemberList );
+                    }
                 });
         }
 
@@ -496,16 +426,12 @@ namespace Rock.Mobile.Network
                 } );
         }
 
-        public static void GetImpersonationToken( int personAliasId, HttpRequest.RequestResult<string> resultHandler )
+        public static void GetImpersonationToken( int personId, HttpRequest.RequestResult<string> resultHandler )
         {
-            ApplicationApi.ResolvePersonAliasId( personAliasId, 
-                delegate(int personId )
+            // with the resolved ID, get the impersonation token
+            RockApi.Get_People_GetSearchDetails( personId.ToString( ), delegate(HttpStatusCode statusCode, string statusDescription, string impersonationToken )
                 {
-                    // with the resolved ID, get the impersonation token
-                    RockApi.Get_People_GetSearchDetails( personId.ToString( ), delegate(HttpStatusCode statusCode, string statusDescription, string impersonationToken )
-                        {
-                            resultHandler( statusCode, statusDescription, impersonationToken );
-                        } );
+                    resultHandler( statusCode, statusDescription, impersonationToken );
                 } );
         }
     }
