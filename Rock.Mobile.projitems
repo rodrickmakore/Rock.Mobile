@@ -100,6 +100,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Rock.Client.Extensions\GuestFamily.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\AsyncTaskScheduler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\GroupExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Location\Location.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Location\Droid\DroidLocation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Location\Droid\LocationDelegateService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Location\Droid\LocationManagerService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Location\iOS\LocationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Location\iOS\iOSLocation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)UI\.gitignore" />

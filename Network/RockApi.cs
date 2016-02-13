@@ -248,12 +248,12 @@ namespace Rock.Mobile
 
 
 
-            const string EndPoint_Campuses = "api/Campuses/";
-            public static void Get_Campuses( HttpRequest.RequestResult< List<Rock.Client.Campus> > resultHandler )
+            const string EndPoint_Campuses = "api/Campuses";
+            public static void Get_Campuses( string queryString, HttpRequest.RequestResult< List<Rock.Client.Campus> > resultHandler )
             {
                 // request a profile by the username. If no username is specified, we'll use the logged in user's name.
                 RestRequest request = GetRockRestRequest( Method.GET );
-                string requestUrl = BaseUrl + EndPoint_Campuses;
+                string requestUrl = BaseUrl + EndPoint_Campuses + queryString;
 
                 // get the raw response
                 Request.ExecuteAsync< List<Rock.Client.Campus> >( requestUrl, request, resultHandler);

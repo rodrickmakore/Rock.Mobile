@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Rock.Mobile.Util
 {
@@ -9,6 +10,21 @@ namespace Rock.Mobile.Util
             #if DEBUG
             Console.WriteLine( output );
             #endif
+        }
+
+        public static void WriteToLog( string message )
+        {
+            Console.WriteLine( message );
+
+            using( FileStream writer = new FileStream( "sdcard" + "/" + "locLog.txt", FileMode.Append ) )
+            {
+                StreamWriter stringWriter = new StreamWriter( writer );
+                stringWriter.Write( DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") + ": " + message + "\n" );
+
+                stringWriter.Close( );
+
+                writer.Close( );
+            }
         }
 
         public static void DisplayError( string errorTitle, string errorMessage )
