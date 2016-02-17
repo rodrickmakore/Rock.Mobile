@@ -14,7 +14,7 @@ namespace Rock.Mobile.Util
         public static int IsMemberTypeOfGroup( List<Rock.Client.Group> groups, int groupType, int groupRole )
         {
             // find all the groups of 'groupType' that
-            List<Rock.Client.Group> groupList = groups.Where( g => g.GroupTypeId == groupType ).ToList( );
+            List<Rock.Client.Group> groupList = groups.Where( g => g.GroupTypeId == groupType && g.IsActive == true ).ToList( );
             if( groupList != null )
             {
                 // now for each group, find the groupMember for the person we're looking for.
@@ -22,7 +22,10 @@ namespace Rock.Mobile.Util
                 {
                     // there should really only be one result. How could the same member multiple times in a single group?
                     // but, just check for any result, and if we get one, return the target groupID.
-                    List<Rock.Client.GroupMember> groupMember = targetGroup.Members.Where( m => m.GroupRoleId == groupRole ).ToList( );
+                    Rock.Client.GroupMember groupMember = targetGroup.Members
+                        .Where( m => m.GroupRoleId == groupRole && m.GroupMemberStatus == Client.Enums.GroupMemberStatus.Active )
+                        .FirstOrDefault();
+
                     if( groupMember != null )
                     {
                         return targetGroup.Id;
