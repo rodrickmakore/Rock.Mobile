@@ -1,4 +1,5 @@
 ﻿#if __IOS__
+#if USE_LOCATION_SERVICES
 using System;
 using CoreLocation;
 using UIKit;
@@ -446,4 +447,5 @@ namespace iOSLocationServices
         }
     }
 }
+#endif
 #endif

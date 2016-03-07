@@ -1,7 +1,14 @@
-﻿using System;
+﻿
+/// <summary>
+/// ****IF YOU WANT TO USE THIS, DEFINE THE PRE-PROCESSOR DIRECTIVE USE_LOCATION_SERVICES ****
+/// </summary>
+#if USE_LOCATION_SERVICES
+
+using System;
 
 namespace Location
 {
+    
     public abstract class Location
     {
         static Location _Instance;
@@ -52,4 +59,4 @@ namespace Location
         public OnLandmarkChangedCallback OnLandmarkChangedDelegate { get; set; }
     }
 }
-
+#endif

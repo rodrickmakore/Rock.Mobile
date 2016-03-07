@@ -1,4 +1,5 @@
 ﻿#if __ANDROID__
+#if USE_LOCATION_SERVICES
 using System;
 using Android.OS;
 using Android.Content;
@@ -1005,4 +1006,5 @@ namespace DroidLocationServices
         }
     }
 }
+#endif
 #endif
